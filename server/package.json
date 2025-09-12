@@ -1,0 +1,19 @@
+{
+  "name": "practicelink-backend",
+  "version": "1.0.0",
+  "description": "Backend server for PracticeLink Data Collection Portal",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "resend": "^3.2.0",
+    "dotenv": "^16.4.5"
+  },
+  "keywords": ["practicelink", "backend", "email"],
+  "author": "PracticeLink",
+  "license": "PRIVATE"
+}

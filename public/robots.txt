@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+
+# Block all crawlers from accessing any part of this site
+# This is a private data collection platform
