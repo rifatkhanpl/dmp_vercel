@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { BookmarkProvider } from './contexts/BookmarkContext';
 
 // Import components
@@ -20,9 +20,13 @@ import { ProviderProfile } from './components/Pages/ProviderProfile';
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   
-  if (!user) {
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (!isAuthenticated) {
     return <Navigate to="/signin" replace />;
   }
   
@@ -31,9 +35,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 // Public Route Component (redirect to dashboard if already logged in)
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   
-  if (user) {
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
   
@@ -43,8 +51,9 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <Router>
-      <BookmarkProvider>
-        <div className="App">
+      <AuthProvider>
+        <BookmarkProvider>
+          <div className="App">
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
@@ -108,8 +117,9 @@ function App() {
             {/* Catch all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </div>
-      </BookmarkProvider>
+          </div>
+        </BookmarkProvider>
+      </AuthProvider>
     </Router>
   );
 }
