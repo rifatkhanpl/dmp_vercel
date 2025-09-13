@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Layout } from '../Layout/Layout';
 import { LogIn, AlertTriangle } from 'lucide-react';
@@ -7,22 +7,15 @@ import { useNavigate } from 'react-router-dom';
 export function SignIn() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
-      window.location.href = '/dashboard';
+      navigate('/dashboard');
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
 
-  const handleLogin = async () => {
-    setIsLoading(true);
-    try {
-      await login();
-    } catch (error) {
-      console.error('Login failed:', error);
-      setIsLoading(false);
-    }
+  const handleLogin = () => {
+    login();
   };
 
   // Check if we're in development environment
@@ -35,6 +28,25 @@ export function SignIn() {
     // Bypass authentication for development
     window.location.href = '/dashboard';
   };
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       window.location.port === '5173';
+
+  const handleSkipAuth = () => {
+    // Bypass authentication for development
+    window.location.href = '/dashboard';
+  };
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       window.location.port === '5173';
+
+  const handleSkipAuth = () => {
+    // Bypass authentication for development
+    window.location.href = '/dashboard';
+  };
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       window.location.port === '5173';
 
   return (
     <Layout breadcrumbs={[{ label: 'Sign In' }]}>
@@ -71,13 +83,52 @@ export function SignIn() {
               
               <button
                 onClick={handleLogin}
-                disabled={isLoading}
-                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
                 <LogIn className="mr-2 h-5 w-5" />
-                {isLoading ? 'Signing in...' : (isDevelopment ? 'Sign in (Development Mode)' : 'Sign in with Auth0')}
+                {isLoading ? 'Signing in...' : (isDevelopment ? `Sign in as ${selectedRole === 'admin' ? 'Administrator' : 'User'}` : 'Sign in with Auth0')}
               </button>
 
+              {isDevelopment && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Select Role for Development:
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole('user')}
+                      className={`flex items-center justify-center px-4 py-3 rounded-md border transition-colors ${
+                        selectedRole === 'user'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <User className="w-4 h-4 mr-2" />
+                      <div className="text-left">
+                        <div className="font-medium">User</div>
+                        <div className="text-xs opacity-75">Standard Access</div>
+                      </div>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole('admin')}
+                      className={`flex items-center justify-center px-4 py-3 rounded-md border transition-colors ${
+                        selectedRole === 'admin'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Shield className="w-4 h-4 mr-2" />
+                      <div className="text-left">
+                        <div className="font-medium">Administrator</div>
+                        <div className="text-xs opacity-75">Full Access</div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              )}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300" />
@@ -104,7 +155,7 @@ export function SignIn() {
               <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
               <p className="text-xs text-blue-700">
                 {isDevelopment 
-                  ? 'In development mode, authentication is mocked for testing purposes.'
+                  ? 'In development mode, authentication is mocked for testing purposes. Select your role above to test different permission levels.'
                   : 'Auth0 handles both sign in and sign up. Click "Sign in with Auth0" and follow the prompts to create a new account or sign in to an existing one.'
                 }
               </p>
