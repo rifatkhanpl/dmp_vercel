@@ -173,7 +173,7 @@ export function SignIn() {
               <p className="text-xs text-blue-700">
                 {isDevelopment 
                   ? 'In development mode, authentication is mocked for testing purposes. Select your role above to test different permission levels.'
-                  : 'Auth0 handles secure authentication and user management.'}
+                  : 'Auth0 handles both sign in and sign up for production'}
               </p>
               <ul className="text-xs text-blue-700 space-y-1">
                 <li>• Use "Quick Access" buttons for immediate development access</li>
