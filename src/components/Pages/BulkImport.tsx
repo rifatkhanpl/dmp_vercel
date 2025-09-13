@@ -171,11 +171,10 @@ export function BulkImport() {
 
   return (
     <Layout
-      breadcrumbs=[
+      breadcrumbs={[
         { label: 'Dashboard', href: '/dashboard' },
-        { label: 'AI Bulk Import' },
-      ]
-    >
+        { label: 'AI Bulk Import' },]}>
+    
       <div className="flex-1 max-w-6xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
