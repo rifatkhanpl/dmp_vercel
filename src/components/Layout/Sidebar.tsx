@@ -30,3 +30,4 @@ export function SignIn() {
     window.location.href = '/dashboard';
   };
                        window.location.hostname.includes('bolt.new') ||
+}
