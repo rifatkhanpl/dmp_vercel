@@ -16,8 +16,10 @@ export function Layout({ children, breadcrumbs, hideSidebar = false }: LayoutPro
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header spans full width across top */}
       <Header />
       
+      {/* Main content area with sidebar */}
       <div className="flex flex-1">
         {!hideSidebar && (
           <Sidebar 
@@ -26,8 +28,9 @@ export function Layout({ children, breadcrumbs, hideSidebar = false }: LayoutPro
           />
         )}
         
+        {/* Main content */}
         <main className={`flex-1 flex flex-col ${!hideSidebar ? 'lg:ml-64' : ''}`}>
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-6 bg-gray-50">
             {breadcrumbs && (
               <div className="mb-6">
                 <Breadcrumb items={breadcrumbs} />
