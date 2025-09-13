@@ -1,322 +1,197 @@
 // supabase/functions/parse-hcp-data/index.ts
-
 // ---------- Types ----------
-interface Provider {
-  name: string;
-  specialty: string;
-  pgyYear: string;
-  confidence: number;
-  email?: string | null;
-  phone?: string | null;
-  location?: string | null;
-  rawText?: string | null;
-}
-
 // ---------- CORS ----------
-const DEFAULT_ALLOW_HEADERS =
-  "authorization, content-type, apikey, x-client-info";
-
+const DEFAULT_ALLOW_HEADERS = "authorization, content-type, apikey, x-client-info";
 const corsBase = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
 };
-
-function allowHeadersFrom(req: Request) {
+function allowHeadersFrom(req) {
   return req.headers.get("Access-Control-Request-Headers") ?? DEFAULT_ALLOW_HEADERS;
 }
-
-function jsonResponse(
-  req: Request,
-  body: unknown,
-  status = 200,
-  extraHeaders: Record<string, string> = {},
-) {
+function jsonResponse(req, body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       ...corsBase,
       "Access-Control-Allow-Headers": allowHeadersFrom(req),
       "Content-Type": "application/json",
-      ...extraHeaders,
-    },
+      ...extraHeaders
+    }
   });
 }
-
 // ---------- Env ----------
-function getEnvOrThrow(key: string): string {
+function getEnvOrThrow(key) {
   const val = Deno.env.get(key);
   if (!val) throw new Error(`Missing required env: ${key}`);
   return val;
 }
-
+// ---------- HTML → Text (preserve alt text & line breaks) ----------
+function decodeEntities(s) {
+  return s.replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&").replace(/&quot;/gi, '"').replace(/&#39;/gi, "'").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">");
+}
+function htmlToStructuredText(html) {
+  let t = html;
+  // Keep <noscript> content
+  t = t.replace(/<noscript[^>]*>([\s\S]*?)<\/noscript>/gi, " $1 ");
+  // Inject IMG alt text into stream (e.g., Headshot of Name, M.D.)
+  t = t.replace(/<img[^>]*\balt=["']([^"']+)["'][^>]*>/gi, (_, alt)=>`\n${alt}\n`);
+  // Remove scripts/styles
+  t = t.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
+  t = t.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
+  // Convert boundaries to newlines BEFORE stripping tags
+  t = t.replace(/<br\s*\/?>/gi, "\n").replace(/<\/(p|div|section|article|header|footer|li|h[1-6]|tr)>/gi, "\n").replace(/<(ul|ol|table|thead|tbody|tr)\b[^>]*>/gi, "\n").replace(/<(h[1-6])\b[^>]*>/gi, "\n");
+  // Strip remaining tags, decode & clean
+  t = t.replace(/<[^>]+>/g, " ");
+  t = decodeEntities(t).replace(/\u00a0/g, " ").replace(/[ \t]+\n/g, "\n").replace(/\n{2,}/g, "\n").replace(/[ \t]{2,}/g, " ").trim();
+  return t;
+}
 // ---------- URL fetch ----------
-async function fetchUrlContent(url: string): Promise<string> {
+async function fetchUrlContent(url) {
   const ctrl = new AbortController();
-  const timeout = setTimeout(() => ctrl.abort(), 12_000);
-
+  const timeout = setTimeout(()=>ctrl.abort(), 15_000);
   try {
     const res = await fetch(url, {
       signal: ctrl.signal,
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; HCP-Parser/1.0)" },
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; HCP-Parser/2.1)",
+        "Accept": "text/html,application/xhtml+xml"
+      }
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     const html = await res.text();
-
-    const text = html
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
-      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
-      .replace(/<[^>]*>/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    return text;
+    return htmlToStructuredText(html);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     throw new Error(`Failed to fetch URL content: ${msg}`);
-  } finally {
+  } finally{
     clearTimeout(timeout);
   }
 }
-
-// ---------- Degree filters ----------
-const MAJOR_DEG_RE = /\b(M\.?B\.?B\.?S\.?|M\.?D\.?|D\.?O\.?)\b/i; // MBBS / MD / DO
-function hasAllowedDegree(s: string): boolean {
-  return MAJOR_DEG_RE.test(s);
+// ---------- Filters / Utils ----------
+const DEG_RE = /\b(M\.?B\.?B\.?S\.?|M\.?D\.?|D\.?O\.?)\b/i; // MBBS / MD / DO
+function hasAllowedDegree(s) {
+  return !!s && DEG_RE.test(s);
 }
-function containsAllowedDegreeText(s?: string | null): boolean {
-  return !!s && MAJOR_DEG_RE.test(s);
+function normalizeName(n) {
+  return (n ?? "").toLowerCase().replace(/\./g, "").replace(/\s+/g, " ").trim();
 }
-
-// ---------- Deterministic SLU IM parser ----------
-function currentAcademicYearStart(d = new Date()): number {
-  const y = d.getUTCFullYear();
-  const m = d.getUTCMonth() + 1; // 1..12
-  // Academic year starts in July
-  return m >= 7 ? y : y - 1;
-}
-
-// IM = 3 years. Class year ~ AYStart + (3 - PGY + 1)
-function pgyFromClassYear(
-  classYear: number,
-  asOf = new Date(),
-  programYears = 3,
-): string {
-  const ayStart = currentAcademicYearStart(asOf);
-  const delta = classYear - ayStart; // 3->PGY-1, 2->PGY-2, 1->PGY-3 (for IM)
-  const pgy = programYears - delta + 1;
-  const clamped = Math.min(Math.max(pgy, 1), programYears);
-  return `PGY-${clamped}`;
-}
-
-function cleanNameDegrees(line: string): { name: string; degrees: string[] } {
-  const degRe = /\b(M\.?B\.?B\.?S\.?|M\.?D\.?|D\.?O\.?|Ph\.?D\.?)\b/gi;
-  const degrees = (line.match(degRe) || [])
-    .map((s) => s.replace(/\./g, "").toUpperCase());
-  const idx = line.search(degRe);
-  let name = (idx >= 0 ? line.slice(0, idx) : line).trim();
-  name = name.replace(/[,\s"”]+$/g, "").replace(/^[“"]+/g, "").trim();
-  return { name, degrees };
-}
-
-const STOP_MARKERS = [
-  "SLU Medicine Next Steps",
-  "Request Info",
-  "Apply",
-  "Give",
-  "Quick Links",
-  "Saint Louis University",
-  "Higher purpose. Greater good.",
-];
-
-function stripFooterSections(text: string): string {
-  let out = text;
-  for (const m of STOP_MARKERS) {
-    const i = out.indexOf(m);
-    if (i > -1) {
-      out = out.slice(0, i);
-      break;
-    }
-  }
-  return out;
-}
-
-function normalizeForSLU(text: string): string {
-  return text
-    .replace(/\r/g, "")
-    .replace(/\s+(Headshot of\s+)/g, "\n$1")
-    .replace(/\s+(Undergraduate school:)/g, "\n$1")
-    .replace(/\s+(Graduate school:)/g, "\n$1")
-    .replace(/\s+(Medical school:)/g, "\n$1")
-    .replace(/\n{2,}/g, "\n")
-    .trim();
-}
-
-function isSchoolLine(s: string) {
-  return /^(Undergraduate|Graduate|Medical) school:/i.test(s);
-}
-function isJunkHeading(s: string) {
-  return /(SLU Medicine Next Steps|Request Info|Apply|Give|Quick Links|Higher purpose\. Greater good\.)/i.test(s);
-}
-
-function parseSluInternalMedHousestaff(raw: string, asOf = new Date()): Provider[] {
-  const text0 = stripFooterSections(raw);
-  const text = normalizeForSLU(text0);
-  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
-
-  let currentClass: number | null = null;
-  let currentTrack: "Categorical" | "Preliminary" | null = null;
-
-  const out: Provider[] = [];
-  let pendingHeadshotName: string | null = null;
-
-  // Name line can omit degrees; we filter with hasAllowedDegree() separately
-  const nameLineRe =
-    /^([A-Z][A-Za-z .'"-]+?)(?:,\s*(?:M\.?B\.?B\.?S\.?|M\.?D\.?|D\.?O\.?|Ph\.?D\.?)(?:\s*,\s*(?:M\.?B\.?B\.?S\.?|M\.?D\.?|D\.?O\.?|Ph\.?D\.?))*)?$/;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
-    // Class markers
-    const classMatch = line.match(/Class of\s+(\d{4})/i);
-    if (classMatch) {
-      currentClass = parseInt(classMatch[1], 10);
-      currentTrack = null;
-      continue;
-    }
-
-    // Subsections
-    if (/^Categorical Residents?$/i.test(line) || /^Categorical residents$/i.test(line)) {
-      currentTrack = "Categorical";
-      continue;
-    }
-    if (/^Preliminary Residents?$/i.test(line)) {
-      currentTrack = "Preliminary";
-      continue;
-    }
-
-    // Headshot cue
-    const hs = line.match(/^Headshot of\s+(.+?)$/i);
-    if (hs) {
-      pendingHeadshotName = hs[1].trim();
-      continue;
-    }
-
-    // Name line candidate
-    if (nameLineRe.test(line)) {
-      const candidate = line;
-
-      // Degree filter: allow if candidate OR pending headshot contains MD/DO/MBBS
-      if (!hasAllowedDegree(candidate)) {
-        if (!(pendingHeadshotName && hasAllowedDegree(pendingHeadshotName))) {
-          continue; // skip (no allowed degree)
-        }
-      }
-      pendingHeadshotName = null;
-
-      const { name } = cleanNameDegrees(candidate);
-      if (!name || !currentClass) continue;
-
-      let pgy = pgyFromClassYear(currentClass, asOf);
-      if (currentTrack === "Preliminary") pgy = "PGY-1";
-
-      const snippetLines = [candidate];
-      for (let k = 1; k <= 2 && i + k < lines.length; k++) {
-        const look = lines[i + k];
-        if (isSchoolLine(look) && !isJunkHeading(look)) snippetLines.push(look);
-        else break;
-      }
-      const rawText = snippetLines.join(" | ").slice(0, 180);
-
-      out.push({
-        name,
-        specialty: "Internal Medicine",
-        pgyYear: pgy,
-        confidence: 0.92,
-        email: null,
-        phone: null,
-        location: null,
-        rawText,
-      });
-      continue;
-    }
-
-    // Fallback for dangling headshot (only if headshot line had allowed degree)
-    if (pendingHeadshotName && hasAllowedDegree(pendingHeadshotName)) {
-      const { name } = cleanNameDegrees(pendingHeadshotName);
-      if (name && currentClass) {
-        let pgy = pgyFromClassYear(currentClass, asOf);
-        if (currentTrack === "Preliminary") pgy = "PGY-1";
-        out.push({
-          name,
-          specialty: "Internal Medicine",
-          pgyYear: pgy,
-          confidence: 0.7,
-          email: null,
-          phone: null,
-          location: null,
-          rawText: `Headshot of ${pendingHeadshotName}`,
-        });
-      }
-      pendingHeadshotName = null;
-    }
-  }
-
-  // Dedupe (name + pgy + specialty)
-  const key = (p: Provider) =>
-    `${p.name.toLowerCase()}|${p.pgyYear.toLowerCase()}|${p.specialty.toLowerCase()}`;
-  const map = new Map<string, Provider>();
-  for (const p of out) {
-    const k = key(p);
-    if (!map.has(k)) map.set(k, p);
-  }
-  return Array.from(map.values());
-}
-
-// ---------- Dedupe (shared) ----------
-function normalizeName(n: string | undefined) {
-  return (n ?? "")
-    .toLowerCase()
-    .replace(/\./g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function dedupeProviders(providers: Provider[]): Provider[] {
-  const seen = new Map<string, Provider>();
-  for (const p of providers) {
-    const key =
-      `${normalizeName(p.name)}|${(p.specialty ?? "").toLowerCase().trim()}|${(p.pgyYear ?? "").toLowerCase().trim()}`;
+function dedupeProviders(providers) {
+  const seen = new Map();
+  for (const p of providers){
+    const key = `${normalizeName(p.name)}|${(p.specialty ?? "").toLowerCase().trim()}|${(p.pgyYear ?? "").toLowerCase().trim()}`;
     const prev = seen.get(key);
     if (!prev) {
       seen.set(key, p);
     } else {
       if ((p.confidence ?? 0) > (prev.confidence ?? 0)) {
-        seen.set(key, { ...p, rawText: p.rawText ?? prev.rawText });
+        seen.set(key, {
+          ...p,
+          rawText: p.rawText ?? prev.rawText
+        });
       } else if (!prev.rawText && p.rawText) {
-        seen.set(key, { ...prev, rawText: p.rawText });
+        seen.set(key, {
+          ...prev,
+          rawText
+        });
       }
     }
   }
   return Array.from(seen.values());
 }
-
-// ---------- Chunking for LLM fallback ----------
-function normalizeForChunking(text: string): string {
-  let t = stripFooterSections(text);
-  t = t.replace(/\s+(Headshot of\s+)/g, "\n$1");
-  t = t.replace(/\s+((?:Undergraduate|Graduate) school:)/g, "\n$1");
-  t = t.replace(/\s+(Medical school:)/g, "\n$1");
-  t = t.replace(/\s+((?:PGY|R\d|Resident|Fellow)\b)/gi, "\n$1");
+function isLikelyStaff(text) {
+  if (!text) return false;
+  return /(program director|associate program director|faculty|coordinator|DIO\b)/i.test(text);
+}
+function inferPGYFromText(s) {
+  if (!s) return null;
+  const m = s.match(/\bPGY[-–\s]?([123])\b/i);
+  return m ? `PGY-${m[1]}` : null;
+}
+// Try to recover degree evidence from the source text near a name
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+function makeNameRegex(name) {
+  // tolerate quotes/nicknames and variable spaces
+  const pattern = escapeRegex(name).replace(/\s+/g, "\\s+");
+  return new RegExp(pattern, "i");
+}
+function snippetAround(text, idx, span = 120) {
+  const start = Math.max(0, idx - Math.floor(span / 2));
+  const end = Math.min(text.length, idx + Math.floor(span / 2));
+  return text.slice(start, end).replace(/\s+/g, " ").trim();
+}
+function ensureDegreeEvidence(providers, sourceText, allowedOnly) {
+  if (!allowedOnly) return providers;
+  const out = [];
+  for (const p of providers){
+    const already = hasAllowedDegree(p.name) || hasAllowedDegree(p.rawText);
+    if (already) {
+      out.push(p);
+      continue;
+    }
+    // search for degree near the person's name in the source text
+    const re = makeNameRegex(p.name);
+    const m = sourceText.match(re);
+    if (m && typeof m.index === "number") {
+      // look forward a bit for degree token
+      const lookStart = m.index;
+      const lookEnd = Math.min(sourceText.length, lookStart + p.name.length + 80);
+      const window = sourceText.slice(lookStart, lookEnd);
+      if (DEG_RE.test(window)) {
+        // keep and attach snippet
+        out.push({
+          ...p,
+          rawText: p.rawText ?? snippetAround(sourceText, lookStart),
+          confidence: Math.max(p.confidence ?? 0.8, 0.85)
+        });
+        continue;
+      }
+    }
+  // no degree found -> drop
+  }
+  return out;
+}
+// ---------- Section & Chunking ----------
+function normalizeForChunking(text) {
+  let t = text;
+  t = t.replace(/\s+(Headshot of\s+[^\n]+)\s+/gi, "\n$1\n");
+  t = t.replace(/\s+(Class of\s+\d{4})/gi, "\n$1\n");
+  // broader headers to match more sites
+  t = t.replace(/\s+(Categorical Residents?|Categorical|Preliminary Residents?|Medicine\/Pediatrics|Interns)\b/gi, "\n$1\n");
+  t = t.replace(/\s+(PGY\s*[123]\b)/gi, "\n$1\n");
+  t = t.replace(/\s+(Meet The Residents?)/i, "\n$1\n");
   t = t.replace(/\n{2,}/g, "\n");
   return t.trim();
 }
-
-function chunkText(input: string, maxChars = 6_000): string[] {
-  if (input.length <= maxChars) return [input];
-
-  const chunks: string[] = [];
+function splitByProgramSections(text) {
+  const lines = text.split("\n");
+  const sections = [];
+  let buf = [];
+  const isSectionHeader = (s)=>/^Class of\s+\d{4}$/i.test(s) || /^Categorical Residents?$/i.test(s) || /^Categorical$/i.test(s) || /^Preliminary Residents?$/i.test(s) || /^Medicine\/Pediatrics$/i.test(s) || /^Interns$/i.test(s) || /^Meet The Residents?$/i.test(s);
+  for (const raw of lines){
+    const line = raw.trim();
+    if (!line) continue;
+    if (isSectionHeader(line)) {
+      if (buf.length) sections.push(buf.join("\n").trim());
+      buf = [
+        line
+      ];
+    } else {
+      buf.push(line);
+    }
+  }
+  if (buf.length) sections.push(buf.join("\n").trim());
+  return sections.filter((s)=>s.split("\n").length >= 5);
+}
+function chunkText(input, maxChars = 5_500) {
+  if (input.length <= maxChars) return [
+    input
+  ];
+  const chunks = [];
   let start = 0;
-  while (start < input.length) {
+  while(start < input.length){
     let end = Math.min(start + maxChars, input.length);
     const boundary = input.lastIndexOf("\n", end);
     if (boundary > start + maxChars * 0.6) end = boundary;
@@ -325,222 +200,209 @@ function chunkText(input: string, maxChars = 6_000): string[] {
   }
   return chunks.filter(Boolean);
 }
-
-// ---------- JSON salvage (rare truncation) ----------
-function tryParseJsonObjectStrict(s: string): any {
-  return JSON.parse(s);
-}
-function tryParseJsonObjectSalvage(s: string): any | null {
-  const i = s.lastIndexOf("}");
-  if (i > 0) {
-    try {
-      return JSON.parse(s.slice(0, i + 1));
-    } catch {}
-  }
-  return null;
-}
-
 // ---------- OpenAI (per chunk) ----------
-async function parseChunkWithOpenAI(text: string): Promise<Provider[]> {
+async function parseChunkWithOpenAI(text, opts) {
   const OPENAI_API_KEY = getEnvOrThrow("OPENAI_API_KEY");
-
-  const system =
-    "You are a medical data extraction specialist. Return ONLY valid JSON per response_format.";
+  // AY anchor to help with PGY inference if the site uses "Class of YYYY"
+  const now = new Date();
+  const month = now.getUTCMonth() + 1;
+  const academicYearStart = month >= 7 ? now.getUTCFullYear() : now.getUTCFullYear() - 1;
+  const system = "You extract resident/fellow (trainee) records from program pages. Respond with STRICT JSON only (no markdown, no code fences).";
+  const hintLines = [];
+  if (opts.specialtyHint) hintLines.push(`Specialty hint: ${opts.specialtyHint}`);
+  if (opts.allowedDegreesOnly) hintLines.push("Only include entries with MD, DO, or MBBS near the name.");
+  hintLines.push(`Academic year starts in July; current AY anchor: ${academicYearStart}. If 'Class of YYYY' is present for 3-year programs (IM/FM), map roughly: AY+(3->PGY-1, 2->PGY-2, 1->PGY-3). If unclear, leave pgyYear empty or infer from explicit PGY tags.`);
   const user = `
-Extract healthcare provider records from the text and return JSON only.
+Extract TRAINEE records (residents/fellows only; ignore staff/faculty/coordinators/directors) from the text.
 
 Schema:
-{ "providers": [ { "name": string, "specialty": string, "pgyYear": string,
-  "confidence": number, "email": string|null, "phone": string|null,
-  "location": string|null, "rawText": string|null } ] }
+{"providers":[{"name":string,"specialty":string,"pgyYear":string,"confidence":number,"email":string|null,"phone":string|null,"location":string|null,"rawText":string|null}]}
 
 Rules:
-- Return AT MOST 40 providers for this chunk.
-- Prefer rows that explicitly show MD, DO, or MBBS in the text.
-- Omit any fields whose value would be null.
-- "rawText" must be a source snippet ≤ 120 characters, or omit it.
-- "confidence" must be between 0 and 1.
-- If none found, return { "providers": [] }.
+- Output MINIFIED JSON (no spaces or newlines). No markdown. No code fences.
+- Include ONLY trainees.
+- ${opts.allowedDegreesOnly ? "Require MD, DO, or MBBS near the name." : "Prefer MD/DO/MBBS if present."}
+- If PGY appears (e.g., PGY1/PGY-2) use it; else you may infer from nearby 'Class of YYYY' headers per the hint; otherwise leave empty.
+- Use the specialty hint unless the text clearly indicates another specialty.
+- Keep rawText ≤120 chars if included.
+- confidence ∈ [0,1].
+- Return AT MOST 20 providers for this chunk.
+- If none found, return {"providers":[]}.
+
+${hintLines.length ? `Hints:${hintLines.map((h)=>`\n- ${h}`).join("")}` : ""}
 
 Text:
 ${text}
   `.trim();
-
   const resp = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${OPENAI_API_KEY}`,
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
     },
     body: JSON.stringify({
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
+        {
+          role: "system",
+          content: system
+        },
+        {
+          role: "user",
+          content: user
+        }
       ],
       temperature: 0,
-      max_tokens: 900,
-      response_format: { type: "json_object" },
-    }),
+      max_tokens: 1400,
+      response_format: {
+        type: "json_object"
+      }
+    })
   });
-
   const bodyText = await resp.text();
-
-  if (!resp.ok) {
-    throw new Error(`OpenAI ${resp.status}: ${bodyText}`);
-  }
-
-  let envelope: any;
+  if (!resp.ok) throw new Error(`OpenAI ${resp.status}: ${bodyText}`);
+  let envelope;
   try {
     envelope = JSON.parse(bodyText);
-  } catch {
+  } catch  {
     throw new Error(`Unexpected OpenAI payload (non-JSON envelope): ${bodyText.slice(0, 400)}`);
   }
-
   const content = envelope?.choices?.[0]?.message?.content;
   if (typeof content !== "string" || !content.trim()) {
     throw new Error(`Unexpected OpenAI payload (missing content): ${bodyText.slice(0, 400)}`);
   }
-
-  let extracted: any;
+  // Strict parse
+  let extracted;
   try {
-    extracted = tryParseJsonObjectStrict(content);
-  } catch {
-    const salvaged = tryParseJsonObjectSalvage(content);
-    if (salvaged) {
-      extracted = salvaged;
-      console.warn("parse warning: salvaged truncated JSON");
+    extracted = JSON.parse(content);
+  } catch  {
+    const i = content.lastIndexOf("}");
+    if (i > 0) {
+      try {
+        extracted = JSON.parse(content.slice(0, i + 1));
+      } catch  {
+        const hint = content.length > 400 ? content.slice(0, 400) + "…" : content;
+        throw new Error(`Model returned non-JSON content: ${hint}`);
+      }
     } else {
       const hint = content.length > 400 ? content.slice(0, 400) + "…" : content;
-      throw new Error(`Model returned truncated or non-JSON content: ${hint}`);
+      throw new Error(`Model returned non-JSON content: ${hint}`);
     }
   }
-
-  let providers: Provider[] = Array.isArray(extracted?.providers)
-    ? extracted.providers
-    : [];
-
-  // Normalize and enforce degree filter for LLM results using name or rawText
-  providers = providers
-    .map((p) => {
-      if (p && typeof p.pgyYear !== "string") p.pgyYear = String(p.pgyYear ?? "");
-      if (p && typeof p.specialty !== "string") p.specialty = String(p.specialty ?? "");
-      if (p && typeof p.name !== "string") p.name = String(p.name ?? "");
-      return p;
-    })
-    .filter((p) =>
-      containsAllowedDegreeText(p.name) || containsAllowedDegreeText(p.rawText)
-    );
-
+  let providers = Array.isArray(extracted?.providers) ? extracted.providers : [];
+  // Normalize
+  providers = providers.map((p)=>{
+    const out = {
+      name: String(p?.name ?? "").trim(),
+      specialty: String(p?.specialty ?? opts.specialtyHint ?? "").trim(),
+      pgyYear: String(p?.pgyYear ?? "").trim(),
+      confidence: typeof p?.confidence === "number" ? p.confidence : 0.8,
+      email: p?.email ?? null,
+      phone: p?.phone ?? null,
+      location: p?.location ?? null,
+      rawText: p?.rawText ?? null
+    };
+    if (!out.pgyYear) {
+      const maybe = inferPGYFromText(out.rawText);
+      if (maybe) out.pgyYear = maybe;
+    }
+    return out;
+  });
+  // Exclude staff-like snippets
+  providers = providers.filter((p)=>!isLikelyStaff(p.rawText));
   return providers;
 }
-
-async function parseWithOpenAIAll(text: string): Promise<Provider[]> {
-  const MAX_INPUT_LEN = 50_000;
-  let t = text;
-  if (t.length > MAX_INPUT_LEN) t = t.slice(0, MAX_INPUT_LEN) + "...";
-
+// ---------- AI-only orchestrator ----------
+async function parseWithOpenAIAll(text, opts) {
+  const MAX_INPUT_LEN = 70_000;
+  let t = text.length > MAX_INPUT_LEN ? text.slice(0, MAX_INPUT_LEN) + "..." : text;
   t = normalizeForChunking(t);
-  const chunks = chunkText(t, 6_000);
-
-  const all: Provider[] = [];
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i];
-    if (!chunk || chunk.trim().length < 40) continue;
-
-    try {
-      const providers = await parseChunkWithOpenAI(chunk);
-      all.push(...providers);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn(`Chunk ${i + 1}/${chunks.length} parse warning:`, msg);
+  const sections = splitByProgramSections(t);
+  const all = [];
+  for (const section of sections){
+    const chunks = chunkText(section, 5_500);
+    for (const chunk of chunks){
+      if (!chunk || chunk.trim().length < 40) continue;
+      try {
+        const batch = await parseChunkWithOpenAI(chunk, opts);
+        all.push(...batch);
+      } catch (err) {
+        console.warn("Section chunk parse warning:", err instanceof Error ? err.message : String(err));
+      }
     }
   }
-
-  return dedupeProviders(all);
+  // Dedupe first
+  let merged = dedupeProviders(all);
+  // Degree recovery against the full normalized text (so we can keep legit MD/DO/MBBS like "Samantha Knopp, MD")
+  merged = ensureDegreeEvidence(merged, t, opts.allowedDegreesOnly);
+  // Final degree filter (should no-op for recovered entries)
+  if (opts.allowedDegreesOnly) {
+    merged = merged.filter((p)=>hasAllowedDegree(p.name) || hasAllowedDegree(p.rawText));
+  }
+  return merged;
 }
-
-// ---------- Main handler ----------
-Deno.serve(async (req: Request) => {
+// ---------- Handler (AI-only) ----------
+Deno.serve(async (req)=>{
   if (req.method === "OPTIONS") {
     return new Response(null, {
       headers: {
         ...corsBase,
-        "Access-Control-Allow-Headers": allowHeadersFrom(req),
-      },
+        "Access-Control-Allow-Headers": allowHeadersFrom(req)
+      }
     });
   }
-
   if (req.method !== "POST") {
-    return jsonResponse(req, { error: "Method not allowed" }, 405);
+    return jsonResponse(req, {
+      error: "Method not allowed"
+    }, 405);
   }
-
   try {
-    const { type, content } = await req.json().catch(() => ({} as any));
-
-    if (!type || !content || (type !== "text" && type !== "url")) {
-      return jsonResponse(
-        req,
-        { error: "Missing or invalid fields", details: "Expected { type: 'text'|'url', content: string }" },
-        400,
-      );
+    const body = await req.json().catch(()=>({}));
+    const type = body.type;
+    const content = body.content;
+    const specialtyHint = (body.specialtyHint ?? "").trim() || undefined;
+    const allowedDegreesOnly = body.allowedDegreesOnly !== false; // default true
+    if (!type || !content || type !== "text" && type !== "url") {
+      return jsonResponse(req, {
+        error: "Missing or invalid fields",
+        details: "Expected { type: 'text'|'url', content: string, specialtyHint?, allowedDegreesOnly? }"
+      }, 400);
     }
-
-    let textContent: string = content;
+    let textContent = content;
     if (type === "url") {
       try {
         textContent = await fetchUrlContent(content);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        return jsonResponse(
-          req,
-          { error: "Failed to fetch URL content", details: msg },
-          400,
-        );
+        return jsonResponse(req, {
+          error: "Failed to fetch URL content",
+          details: msg
+        }, 400);
       }
     }
-
-    // 1) Deterministic SLU parser first
-    const deterministic = parseSluInternalMedHousestaff(textContent);
-
-    // If we got a decent haul, return it immediately
-    if (deterministic.length >= 10) {
-      return jsonResponse(req, {
-        success: true,
-        providers: deterministic,
-        processedLength: textContent.length,
-        sourceType: type,
-        parser: "deterministic-slu-im",
-      });
-    }
-
-    // 2) LLM fallback; merge & dedupe; enforce degree filter on merged set too (defense in depth)
-    const aiProviders = await parseWithOpenAIAll(textContent);
-    const merged = dedupeProviders([...deterministic, ...aiProviders]);
-    const filtered = merged.filter(
-      (p) => containsAllowedDegreeText(p.name) || containsAllowedDegreeText(p.rawText),
-    );
-
+    const providers = await parseWithOpenAIAll(textContent, {
+      specialtyHint,
+      allowedDegreesOnly
+    });
     return jsonResponse(req, {
       success: true,
-      providers: filtered,
+      providers,
       processedLength: textContent.length,
       sourceType: type,
-      parser: deterministic.length ? "deterministic-slu-im" : "slim+llm",
+      parser: "llm-only",
+      specialtyHint: specialtyHint ?? null,
+      allowedDegreesOnly
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     const isConfig = /Missing required env|not configured/i.test(msg);
     const isOpenAI4xx = /OpenAI 4\d{2}/.test(msg);
     const isTruncated = /truncated|non-JSON content|Unexpected OpenAI payload/i.test(msg);
-    const status = (isConfig || isOpenAI4xx || isTruncated) ? 400 : 500;
-
+    const status = isConfig || isOpenAI4xx || isTruncated ? 400 : 500;
     console.error("Edge function error:", msg);
-
-    return jsonResponse(
-      req,
-      { error: status === 400 ? "Bad request" : "Internal server error", details: msg },
-      status,
-    );
+    return jsonResponse(req, {
+      error: status === 400 ? "Bad request" : "Internal server error",
+      details: msg
+    }, status);
   }
 });
