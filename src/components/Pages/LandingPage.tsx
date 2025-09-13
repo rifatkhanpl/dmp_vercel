@@ -59,14 +59,13 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
             <h1 className="text-6xl font-bold text-gray-900 mb-6">
-              Data Management Portal
+              Data Management <span className="text-blue-600">Portal</span>
             </h1>
-            <p className="text-2xl text-blue-600 font-semibold mb-8">
-              The Trusted Leader in Physician/APP<br />
-              Career Management & Job Search
-            </p>
             <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
               Powered by People | Assisted by AI™
+            </p>
+            <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
+              We are working to make healthcare better.
             </p>
             
             {user ? (
@@ -75,7 +74,7 @@ export function LandingPage() {
                   href="/dashboard"
                   className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
                 >
-                  Go to Dashboard
+                  Get Started
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </a>
               </div>
@@ -85,7 +84,7 @@ export function LandingPage() {
                   href="/signin"
                   className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
                 >
-                  Sign In
+                  Get Started
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </a>
               </div>
