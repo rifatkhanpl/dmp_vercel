@@ -47,9 +47,6 @@ export function SignIn() {
             </a>
             <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
             <p className="mt-2 text-sm text-gray-600">
-                <Menu className="w-5 h-5" />
-              </button>
-            )}
               Sign in to access your PracticeLink account
             </p>
           </div>

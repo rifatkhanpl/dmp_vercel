@@ -30,16 +30,13 @@ export function SignIn() {
     window.location.href = '/dashboard';
   };
                        window.location.hostname.includes('bolt.new') ||
-    { name: 'Support Tickets', href: '/support-tickets', icon: MessageSquare },
+                       window.location.hostname.includes('127.0.0.1') ||
                        window.location.port === '5173';
 
   const handleDirectLogin = (role: 'user' | 'admin') => {
     setSelectedRole(role);
     login(role);
   };
-
-  // Check if current user is admin
-  const isAdmin = user?.role === 'administrator';
 
   return (
     <Layout breadcrumbs={[{ label: 'Sign In' }]}>
@@ -59,7 +56,7 @@ export function SignIn() {
               {/* Direct Access Buttons for Development */}
               <div className="space-y-3">
                 <p className="text-center text-sm font-medium text-gray-700 mb-4">
-                  {user?.firstName} {user?.lastName}
+                  Quick Access (Development)
                 </p>
                 
                 <button
