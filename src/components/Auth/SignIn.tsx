@@ -31,36 +31,6 @@ export function SignIn() {
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <div className="space-y-6">
-              <button
-                onClick={handleLogin}
-                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-              >
-                <LogIn className="mr-2 h-5 w-5" />
-                Sign in with Auth0
-              </button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or</span>
-                </div>
-              </div>
-
-              <div className="text-center">
-              </div>
-            </div>
-
-            <div className="mt-6 p-4 bg-blue-50 rounded-md">
-              <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
-              <p className="text-xs text-blue-700">
-                Auth0 handles both sign in and sign up. Click "Sign in with Auth0" and follow the prompts to create a new account or sign in to an existing one.
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </Layout>
