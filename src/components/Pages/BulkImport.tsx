@@ -404,7 +404,18 @@ export function BulkImport() {
                 <AlertCircle className="w-5 h-5 text-red-500" />
                 <div className="text-red-700">
                   <div className="font-medium">Error processing content</div>
-                  {errorMessage && <div className="text-sm mt-1">{errorMessage}</div>}
+                  {errorMessage && (
+                    <div className="text-sm mt-1">
+                      {errorMessage}
+                      {errorMessage.includes('OpenAI API key') && (
+                        <div className="mt-2 p-2 bg-red-100 rounded text-xs">
+                          <strong>Setup Required:</strong> Go to your Supabase project dashboard → Edge Functions → parse-hcp-data → Environment Variables and add:
+                          <br />
+                          <code className="bg-red-200 px-1 rounded">OPENAI_API_KEY = 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</code>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -74,7 +74,7 @@ async function parseWithOpenAI(content: string): Promise<ParsedProvider[]> {
   const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
   
   if (!openaiApiKey) {
-    throw new Error('OpenAI API key not configured');
+    throw new Error('OpenAI API key not configured. Please set OPENAI_API_KEY environment variable in your Supabase project settings under Edge Functions.');
   }
 
   const prompt = `
