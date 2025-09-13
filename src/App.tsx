@@ -46,8 +46,8 @@ export function SignIn() {
             <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
             </a>
             <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-              <Route path="/signin" element={<LandingPage />} />
-              <Route path="/signup" element={<LandingPage />} />
+            <p className="mt-2 text-sm text-gray-600">
+              Sign in to access your PracticeLink account
             </p>
           </div>
 
