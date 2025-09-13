@@ -19,27 +19,6 @@ export function SignIn() {
     login(selectedRole);
   };
 
-  const handleDirectLogin = (role: 'user' | 'admin') => {
-    console.log('Direct login initiated with role:', role);
-
-    // Create mock user immediately
-    const mockUser: User = {
-      id: role === 'admin' ? 'admin-123' : 'user-123',
-      firstName: role === 'admin' ? 'Admin' : 'User',
-      lastName: role === 'admin' ? 'Administrator' : 'Coordinator',
-      email: role === 'admin' ? 'admin@practicelink.com' : 'user@practicelink.com',
-      role: role === 'admin' ? 'administrator' : 'provider-relations-coordinator',
-      isEmailVerified: true,
-      createdAt: new Date().toISOString(),
-    };
-    
-    // Set authentication state immediately
-    setDirectUser(mockUser);
-    setIsDirectAuth(true);
-    
-    console.log('User authenticated:', mockUser);
-  };
-
   // Check if we're in development environment
   const isDevelopment = window.location.hostname === 'localhost' || 
                        window.location.hostname.includes('bolt.new') ||
@@ -49,6 +28,11 @@ export function SignIn() {
   const handleSkipAuth = () => {
     // Bypass authentication for development
     window.location.href = '/dashboard';
+  };
+
+  const handleDirectLogin = (role: 'user' | 'admin') => {
+    setSelectedRole(role);
+    login(role);
   };
 
   return (
@@ -169,14 +153,18 @@ export function SignIn() {
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300" />
-                  Don't have an account?{' '}
-                  <button
-                    onClick={handleLogin}
-                    className="font-medium text-blue-600 hover:text-blue-500"
-                  >
-                    Sign up
-                  </button>
-                </p>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">
+                    Don't have an account?{' '}
+                    <button
+                      onClick={handleLogin}
+                      className="font-medium text-blue-600 hover:text-blue-500"
+                    >
+                      Sign up
+                    </button>
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -185,6 +173,8 @@ export function SignIn() {
               <p className="text-xs text-blue-700">
                 {isDevelopment 
                   ? 'In development mode, authentication is mocked for testing purposes. Select your role above to test different permission levels.'
+                  : 'Auth0 handles both sign in and sign up for production'}
+              </p>
               <ul className="text-xs text-blue-700 space-y-1">
                 <li>• Use "Quick Access" buttons for immediate development access</li>
                 <li>• Auth0 handles both sign in and sign up for production</li>
