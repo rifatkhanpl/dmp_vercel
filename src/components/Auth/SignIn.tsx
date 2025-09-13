@@ -24,21 +24,6 @@ export function SignIn() {
                        window.location.hostname.includes('127.0.0.1') ||
                        window.location.port === '5173';
 
-  const handleSkipAuth = () => {
-    // Bypass authentication for development
-    window.location.href = '/dashboard';
-  };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
-
-  const handleSkipAuth = () => {
-    // Bypass authentication for development
-    window.location.href = '/dashboard';
-  };
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
-
   return (
     <Layout breadcrumbs={[{ label: 'Sign In' }]}>
       <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -79,7 +64,6 @@ export function SignIn() {
                 <LogIn className="mr-2 h-5 w-5" />
                 {isDevelopment ? 'Sign in (Development Mode)' : 'Sign in with Auth0'}
               </button>
-
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
