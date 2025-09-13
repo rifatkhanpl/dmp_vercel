@@ -22,6 +22,9 @@ interface ParsedResident {
   pgyYear: string;
   confidence: number;
   rawText?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
 }
 
 export function BulkImport() {
@@ -33,6 +36,7 @@ export function BulkImport() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  const [errorMessage, setErrorMessage] = useState('');
 
   const isBookmarked = bookmarks.some(b => b.url === '/bulk-import');
 
@@ -42,107 +46,60 @@ export function BulkImport() {
     }
   };
 
-  // Mock AI parsing function - in real implementation, this would call an AI service
+  // Real AI parsing function using Supabase Edge Function with OpenAI
   const parseResidentData = async (text: string): Promise<ParsedResident[]> => {
-    // Simulate AI processing delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-hcp-data`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'text',
+          content: text
+        }),
+      });
 
-    // Mock parsing logic - in reality, this would use AI/NLP
-    const lines = text.split('\n').filter(line => line.trim());
-    const residents: ParsedResident[] = [];
-
-    for (const line of lines) {
-      // Simple pattern matching for demonstration
-      const nameMatch = line.match(/([A-Z][a-z]+ [A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/);
-      const specialtyMatch = line.match(/(Internal Medicine|Family Medicine|Pediatrics|Surgery|Psychiatry|Emergency Medicine|Radiology|Anesthesiology|Pathology|Dermatology|Ophthalmology|Orthopedics|Cardiology|Neurology|Oncology)/i);
-      const pgyMatch = line.match(/PGY[-\s]?(\d+)|Year\s(\d+)|R(\d+)/i);
-
-      if (nameMatch) {
-        residents.push({
-          name: nameMatch[1],
-          specialty: specialtyMatch ? specialtyMatch[1] : 'Unknown',
-          pgyYear: pgyMatch ? `PGY-${pgyMatch[1] || pgyMatch[2] || pgyMatch[3]}` : 'Unknown',
-          confidence: Math.random() * 0.3 + 0.7, // Mock confidence score
-          rawText: line.trim()
-        });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to parse text');
       }
-    }
 
-    // Add some mock data if no patterns found
-    if (residents.length === 0 && text.trim()) {
-      residents.push(
-        {
-          name: 'Dr. Sarah Johnson',
-          specialty: 'Internal Medicine',
-          pgyYear: 'PGY-2',
-          confidence: 0.95,
-          rawText: 'Extracted from sample text'
-        },
-        {
-          name: 'Dr. Michael Chen',
-          specialty: 'Emergency Medicine',
-          pgyYear: 'PGY-3',
-          confidence: 0.88,
-          rawText: 'Extracted from sample text'
-        },
-        {
-          name: 'Dr. Emily Rodriguez',
-          specialty: 'Pediatrics',
-          pgyYear: 'PGY-1',
-          confidence: 0.92,
-          rawText: 'Extracted from sample text'
-        }
-      );
+      const data = await response.json();
+      return data.providers || [];
+    } catch (error) {
+      console.error('AI parsing error:', error);
+      throw error;
     }
-
-    return residents;
   };
 
-  // Mock URL fetching and parsing function
+  // Real URL fetching and parsing function using Supabase Edge Function with OpenAI
   const parseUrlContent = async (url: string): Promise<ParsedResident[]> => {
-    // Simulate fetching and parsing delay
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-hcp-data`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'url',
+          content: url
+        }),
+      });
 
-    // Mock data that would be extracted from a typical residency program webpage
-    const mockResidents: ParsedResident[] = [
-      {
-        name: 'Dr. Sarah Johnson',
-        specialty: 'Internal Medicine',
-        pgyYear: 'PGY-2',
-        confidence: 0.95,
-        rawText: `Extracted from ${url}`
-      },
-      {
-        name: 'Dr. Michael Chen',
-        specialty: 'Internal Medicine',
-        pgyYear: 'PGY-3',
-        confidence: 0.92,
-        rawText: `Extracted from ${url}`
-      },
-      {
-        name: 'Dr. Emily Rodriguez',
-        specialty: 'Internal Medicine',
-        pgyYear: 'PGY-1',
-        confidence: 0.88,
-        rawText: `Extracted from ${url}`
-      },
-      {
-        name: 'Dr. James Wilson',
-        specialty: 'Internal Medicine',
-        pgyYear: 'PGY-4',
-        confidence: 0.94,
-        rawText: `Extracted from ${url}`
-      },
-      {
-        name: 'Dr. Lisa Thompson',
-        specialty: 'Internal Medicine',
-        pgyYear: 'PGY-2',
-        confidence: 0.90,
-        rawText: `Extracted from ${url}`
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to parse URL');
       }
-    ];
 
-    return mockResidents;
+      const data = await response.json();
+      return data.providers || [];
+    } catch (error) {
+      console.error('URL parsing error:', error);
+      throw error;
+    }
   };
 
   const handleProcessText = async () => {
@@ -151,6 +108,7 @@ export function BulkImport() {
 
     setIsProcessing(true);
     setProcessingStatus('idle');
+    setErrorMessage('');
 
     try {
       const parsed = inputMode === 'text' 
@@ -161,6 +119,7 @@ export function BulkImport() {
       setProcessingStatus('success');
     } catch (error) {
       setProcessingStatus('error');
+      setErrorMessage(error.message || 'An error occurred during processing');
     } finally {
       setIsProcessing(false);
     }
@@ -311,12 +270,12 @@ Example content:
                   {isProcessing ? (
                     <>
                       <RefreshCw className="w-4 h-4 animate-spin" />
-                      <span>Processing with AI...</span>
+                      <span>Processing with OpenAI...</span>
                     </>
                   ) : (
                     <>
                       <Brain className="w-4 h-4" />
-                      <span>Parse with AI</span>
+                      <span>Parse with OpenAI</span>
                     </>
                   )}
                 </button>
@@ -346,12 +305,12 @@ Example content:
                   {isProcessing ? (
                     <>
                       <RefreshCw className="w-4 h-4 animate-spin" />
-                      <span>Fetching & Parsing...</span>
+                      <span>Fetching & Parsing with OpenAI...</span>
                     </>
                   ) : (
                     <>
                       <Brain className="w-4 h-4" />
-                      <span>Parse URL</span>
+                      <span>Parse URL with OpenAI</span>
                     </>
                   )}
                 </button>
@@ -363,7 +322,7 @@ Example content:
               </div>
               
               {/* Example URLs */}
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                OpenAI will fetch the webpage content and extract resident/fellow information automatically
                 <h4 className="text-sm font-medium text-blue-900 mb-2">Example URLs:</h4>
                 <div className="space-y-1 text-xs text-blue-800">
                   <div>• https://medicine.yale.edu/intmed/education/residency/residents/</div>
@@ -426,7 +385,22 @@ Example content:
                             <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
                               {resident.pgyYear}
                             </span>
+                            {resident.location && (
+                              <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
+                                {resident.location}
+                              </span>
+                            )}
                           </div>
+                          {(resident.email || resident.phone) && (
+                            <div className="flex items-center space-x-3 mt-1">
+                              {resident.email && (
+                                <span className="text-xs text-gray-500">📧 {resident.email}</span>
+                              )}
+                              {resident.phone && (
+                                <span className="text-xs text-gray-500">📞 {resident.phone}</span>
+                              )}
+                            </div>
+                          )}
                           {resident.rawText && (
                             <p className="text-sm text-gray-500 mt-1">
                               Source: "{resident.rawText}"
@@ -457,7 +431,10 @@ Example content:
           {processingStatus === 'error' && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 flex items-center space-x-2">
               <AlertCircle className="w-5 h-5 text-red-500" />
-              <span className="text-red-700">Error processing text. Please try again.</span>
+              <div className="text-red-700">
+                <div className="font-medium">Error processing content</div>
+                {errorMessage && <div className="text-sm mt-1">{errorMessage}</div>}
+              </div>
             </div>
           )}
 
@@ -467,9 +444,10 @@ Example content:
             <ul className="text-sm text-blue-800 space-y-1">
               <li>• {inputMode === 'text' ? 'Paste any web content' : 'Enter a URL to a residency program webpage'} containing resident/fellow information</li>
               {inputMode === 'url' && <li>• AI fetches the webpage content automatically</li>}
-              <li>• AI automatically identifies names, medical specialties, and PGY years</li>
+              <li>• OpenAI GPT-4 automatically identifies names, medical specialties, PGY years, and contact information</li>
               <li>• Review and select which entries to import</li>
               <li>• Data is added to your HCP database with proper formatting</li>
+              <li>• Confidence scores help you identify the most reliable extractions</li>
             </ul>
           </div>
         </div>
