@@ -45,10 +45,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [isAuthenticated, auth0User]);
 
   const login = () => {
-    loginWithRedirect().catch((error) => {
+    loginWithRedirect({
+      appState: { returnTo: '/dashboard' }
+    }).catch((error) => {
       console.error('Auth0 login error:', error);
-      // You could show a user-friendly error message here
-      alert('Authentication service is currently unavailable. Please try again later.');
+      // For development, show a more helpful error message
+      if (error.message.includes('refused to connect') || error.message.includes('network')) {
+        alert('Auth0 connection failed. This is likely because the development environment URL is not configured in Auth0. For development, you can bypass authentication or configure Auth0 with this domain.');
+      } else {
+        alert('Authentication service is currently unavailable. Please try again later.');
+      }
     });
   };
 
