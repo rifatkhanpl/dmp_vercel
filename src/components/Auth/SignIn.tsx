@@ -25,11 +25,11 @@ export function SignIn() {
           <div className="text-center">
             <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
             </a>
-            <p className="text-sm text-gray-600 mb-8">Career Management Platform</p>
             <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
             <p className="mt-2 text-sm text-gray-600">
               Sign in to access your PracticeLink account
             </p>
+            <p className="text-sm text-gray-600 mt-4">Career Management Platform</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-8">
