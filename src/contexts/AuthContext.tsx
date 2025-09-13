@@ -32,10 +32,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Direct auth state for development
   const [directUser, setDirectUser] = useState<User | null>(null);
   const [isDirectAuth, setIsDirectAuth] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Combined auth state
   const isAuthenticated = auth0IsAuthenticated || isDirectAuth;
-  const isLoading = auth0IsLoading;
+  const isLoading = auth0IsLoading || isLoggingIn;
   const user = isDirectAuth ? directUser : (auth0User ? {
     id: auth0User.sub || '',
     firstName: auth0User.given_name || '',
@@ -47,35 +48,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
   } : null);
 
   const login = (role: 'user' | 'admin' = 'user') => {
-    // Check if we're in development environment
-    const isDevelopment = window.location.hostname === 'localhost' || 
-                         window.location.hostname.includes('bolt.new') ||
-                         window.location.hostname.includes('127.0.0.1') ||
-                         window.location.port === '5173';
+    if (isLoggingIn) return;
+    
+    setIsLoggingIn(true);
+    console.log('Login initiated with role:', role);
 
-    if (isDevelopment) {
-      // Direct login for development
-      const mockUser: User = {
-        id: role === 'admin' ? 'admin-123' : 'user-123',
-        firstName: role === 'admin' ? 'Admin' : 'User',
-        lastName: role === 'admin' ? 'Administrator' : 'Coordinator',
-        email: role === 'admin' ? 'admin@practicelink.com' : 'user@practicelink.com',
-        role: role === 'admin' ? 'administrator' : 'provider-relations-coordinator',
-        isEmailVerified: true,
-        createdAt: new Date().toISOString(),
-      };
-      
-      setDirectUser(mockUser);
-      setIsDirectAuth(true);
-      
-      // Redirect after a short delay
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 1000);
-    } else {
-      // Use Auth0 for production
-      loginWithRedirect();
-    }
+    // Direct login for development
+    const mockUser: User = {
+      id: role === 'admin' ? 'admin-123' : 'user-123',
+      firstName: role === 'admin' ? 'Admin' : 'User',
+      lastName: role === 'admin' ? 'Administrator' : 'Coordinator',
+      email: role === 'admin' ? 'admin@practicelink.com' : 'user@practicelink.com',
+      role: role === 'admin' ? 'administrator' : 'provider-relations-coordinator',
+      isEmailVerified: true,
+      createdAt: new Date().toISOString(),
+    };
+    
+    console.log('Setting mock user:', mockUser);
+    setDirectUser(mockUser);
+    setIsDirectAuth(true);
+    
+    // Redirect after a short delay
+    setTimeout(() => {
+      setIsLoggingIn(false);
+      console.log('Redirecting to dashboard...');
+      window.location.href = '/dashboard';
+    }, 1000);
   };
 
   const logout = () => {
