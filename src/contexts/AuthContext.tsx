@@ -28,24 +28,6 @@ export function SignIn() {
     // Bypass authentication for development
     window.location.href = '/dashboard';
   };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
-
-  const handleSkipAuth = () => {
-    // Bypass authentication for development
-    window.location.href = '/dashboard';
-  };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
-
-  const handleSkipAuth = () => {
-    // Bypass authentication for development
-    window.location.href = '/dashboard';
-  };
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
 
   return (
     <Layout breadcrumbs={[{ label: 'Sign In' }]}>
@@ -63,12 +45,30 @@ export function SignIn() {
           <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="space-y-6">
               {isDevelopment && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                  <div className="flex">
+                    <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-yellow-800">
+                        Development Environment
+                      </h3>
+                      <div className="mt-2 text-sm text-yellow-700">
+                        <p>
+                          You're in development mode. Click the button below to sign in with mock authentication.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <button
+                onClick={handleLogin}
                 className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
                 <LogIn className="mr-2 h-5 w-5" />
                 {isDevelopment ? 'Sign in (Development Mode)' : 'Sign in with Auth0'}
               </button>
-
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -104,8 +104,6 @@ export function SignIn() {
           </div>
         </div>
       </div>
-    )
-    }
     </Layout>
   );
 }
