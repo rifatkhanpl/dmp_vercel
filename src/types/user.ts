@@ -1,20 +1,14 @@
+export type UserRole = 'provider-relations-coordinator' | 'administrator';
+
 export interface User {
   id: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  name: string;
-  role: 'user' | 'admin';
-  permissions: string[];
-}
-
-export interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
-
-export type UserRole = 'user' | 'admin';
-
-export interface LoginCredentials {
-  email: string;
-  password: string;
+  role: UserRole;
+  isEmailVerified: boolean;
+  createdAt: string;
+  password?: string;
+  verificationToken?: string;
+  lastLogin?: string;
 }
