@@ -24,6 +24,21 @@ export function SignIn() {
                        window.location.hostname.includes('127.0.0.1') ||
                        window.location.port === '5173';
 
+  const handleSkipAuth = () => {
+    // Bypass authentication for development
+    window.location.href = '/dashboard';
+  };
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       window.location.port === '5173';
+
+  const handleSkipAuth = () => {
+    // Bypass authentication for development
+    window.location.href = '/dashboard';
+  };
+                       window.location.hostname.includes('127.0.0.1') ||
+                       window.location.port === '5173';
+
   return (
     <Layout breadcrumbs={[{ label: 'Sign In' }]}>
       <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -49,11 +64,7 @@ export function SignIn() {
                       </h3>
                       <div className="mt-2 text-sm text-yellow-700">
                         <p>
-                          Auth0 may not work in this development environment. 
-                          For testing, you can bypass authentication by going directly to{' '}
-                          <a href="/dashboard" className="font-medium underline">
-                            /dashboard
-                          </a>
+                          You're in development mode. Click the button below to sign in with mock authentication.
                         </p>
                       </div>
                     </div>
@@ -66,19 +77,9 @@ export function SignIn() {
                 className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
                 <LogIn className="mr-2 h-5 w-5" />
-                Sign in with Auth0
+                {isDevelopment ? 'Sign in (Development Mode)' : 'Sign in with Auth0'}
               </button>
 
-              {isDevelopment && (
-                <div className="text-center">
-                  <a
-                    href="/dashboard"
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Skip Auth (Development Only)
-                  </a>
-                </div>
-              )}
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -105,7 +106,10 @@ export function SignIn() {
             <div className="mt-6 p-4 bg-blue-50 rounded-md">
               <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
               <p className="text-xs text-blue-700">
-                Auth0 handles both sign in and sign up. Click "Sign in with Auth0" and follow the prompts to create a new account or sign in to an existing one.
+                {isDevelopment 
+                  ? 'In development mode, authentication is mocked for testing purposes.'
+                  : 'Auth0 handles both sign in and sign up. Click "Sign in with Auth0" and follow the prompts to create a new account or sign in to an existing one.'
+                }
               </p>
             </div>
           </div>
