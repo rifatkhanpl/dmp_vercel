@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
@@ -12,16 +12,29 @@ interface LayoutProps {
 }
 
 export function Layout({ children, breadcrumbs, hideSidebar = false }: LayoutProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
       
-      <div className="flex">
-        {!hideSidebar && <Sidebar />}
+      <div className="flex flex-1">
+        {!hideSidebar && (
+          <Sidebar 
+            isOpen={sidebarOpen} 
+            onClose={() => setSidebarOpen(false)} 
+          />
+        )}
         
-        <main className={`flex-1 ${!hideSidebar ? 'ml-64' : ''}`}>
-          {breadcrumbs && <Breadcrumb items={breadcrumbs} />}
-          {children}
+        <main className={`flex-1 flex flex-col ${!hideSidebar ? 'lg:ml-64' : ''}`}>
+          <div className="flex-1 p-6">
+            {breadcrumbs && (
+              <div className="mb-6">
+                <Breadcrumb items={breadcrumbs} />
+              </div>
+            )}
+            {children}
+          </div>
         </main>
       </div>
       
