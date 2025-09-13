@@ -1,8 +1,20 @@
-import React, { useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { Layout } from '../Layout/Layout';
-import { LogIn, AlertTriangle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: () => void;
+  logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Check if we're in development environment
 const isDevelopment = window.location.hostname === 'localhost' || 
@@ -10,107 +22,65 @@ const isDevelopment = window.location.hostname === 'localhost' ||
                      window.location.hostname.includes('127.0.0.1') ||
                      window.location.port === '5173';
 
-export function SignIn() {
-  const { login, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
+    // In development, simulate authentication
+    if (isDevelopment) {
+      setIsLoading(false);
+    } else {
+      // In production, you would initialize Auth0 here
+      setIsLoading(false);
     }
-  }, [isAuthenticated, navigate]);
+  }, []);
 
-  const handleLogin = () => {
-    login();
+  const login = () => {
+    if (isDevelopment) {
+      // Mock login for development
+      setUser({
+        id: 'dev-user-123',
+        email: 'dev@example.com',
+        name: 'Development User'
+      });
+    } else {
+      // In production, redirect to Auth0
+      window.location.href = '/api/auth/login';
+    }
+  };
+
+  const logout = () => {
+    setUser(null);
+    if (!isDevelopment) {
+      // In production, redirect to Auth0 logout
+      window.location.href = '/api/auth/logout';
+    }
+  };
+
+  const value: AuthContextType = {
+    user,
+    isAuthenticated: !!user,
+    isLoading,
+    login,
+    logout
   };
 
   return (
-    <Layout breadcrumbs={[{ label: 'Sign In' }]}>
-      <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
-            </a>
-            <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Sign in to access your PracticeLink account
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <div className="space-y-6">
-              {isDevelopment && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-                  <div className="flex">
-                    <AlertTriangle className="h-5 w-5 text-yellow-400" />
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-yellow-800">
-                        Development Environment
-                      </h3>
-                      <div className="mt-2 text-sm text-yellow-700">
-                        <p>
-                          Auth0 may not work in this development environment. 
-                          For testing, you can bypass authentication by going directly to{' '}
-                          <a href="/dashboard" className="font-medium underline">
-                            /dashboard
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              <button
-                onClick={handleLogin}
-                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-              >
-                <LogIn className="mr-2 h-5 w-5" />
-                Sign in with Auth0
-              </button>
-
-              {isDevelopment && (
-                <div className="text-center">
-                  <a
-                    href="/dashboard"
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Skip Auth (Development Only)
-                  </a>
-                </div>
-              )}
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or</span>
-                </div>
-              </div>
-
-              <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  Don't have an account?{' '}
-                  <button
-                    onClick={handleLogin}
-                    className="font-medium text-blue-600 hover:text-blue-500"
-                  >
-                    Sign up
-                  </button>
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 p-4 bg-blue-50 rounded-md">
-              <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
-              <p className="text-xs text-blue-700">
-                Auth0 handles both sign in and sign up. Click "Sign in with Auth0" and follow the prompts to create a new account or sign in to an existing one.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Layout>
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
   );
+}
+
+export function useAuth(): AuthContextType {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }
