@@ -29,9 +29,6 @@ export function SignIn() {
     // Bypass authentication for development
     window.location.href = '/dashboard';
   };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
 
   const handleDirectLogin = (role: 'user' | 'admin') => {
     setSelectedRole(role);
@@ -173,6 +170,9 @@ export function SignIn() {
 
             <div className="mt-6 p-4 bg-blue-50 rounded-md">
               <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
+            </div>
+          </div>
+        </div>
       </div>
     </Layout>
   );
