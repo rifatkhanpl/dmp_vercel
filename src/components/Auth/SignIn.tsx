@@ -29,7 +29,6 @@ export function SignIn() {
             <p className="mt-2 text-sm text-gray-600">
               Sign in to access your PracticeLink account
             </p>
-            <p className="text-sm text-gray-600 mt-4">Career Management Platform</p>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-8">
