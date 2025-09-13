@@ -1,22 +1,31 @@
-import React, { useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { Layout } from '../Layout/Layout';
-import { LogIn, AlertTriangle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export function SignIn() {
-  const { login, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
+interface User {
+  id: string;
+  email: string;
+  name: string;
+}
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    }
-  }, [isAuthenticated, navigate]);
+interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: () => void;
+  logout: () => void;
+  register: (email: string, password: string) => Promise<void>;
+  verifyEmail: (token: string) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+}
 
-  const handleLogin = () => {
-    login();
-  };
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Check if we're in development environment
   const isDevelopment = window.location.hostname === 'localhost' || 
@@ -24,97 +33,83 @@ export function SignIn() {
                        window.location.hostname.includes('127.0.0.1') ||
                        window.location.port === '5173';
 
-  const handleSkipAuth = () => {
-    // Bypass authentication for development
-    window.location.href = '/dashboard';
+  const login = () => {
+    setIsLoading(true);
+    
+    if (isDevelopment) {
+      // Mock authentication for development
+      setTimeout(() => {
+        setUser({
+          id: 'dev-user-1',
+          email: 'dev@example.com',
+          name: 'Development User'
+        });
+        setIsLoading(false);
+      }, 1000);
+    } else {
+      // In production, this would integrate with Auth0
+      // For now, we'll use mock authentication
+      setTimeout(() => {
+        setUser({
+          id: 'user-1',
+          email: 'user@example.com',
+          name: 'Test User'
+        });
+        setIsLoading(false);
+      }, 1000);
+    }
   };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
 
-  const handleSkipAuth = () => {
-    // Bypass authentication for development
-    window.location.href = '/dashboard';
+  const logout = () => {
+    setUser(null);
+    window.location.href = '/';
   };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
+
+  const register = async (email: string, password: string) => {
+    setIsLoading(true);
+    // Mock registration
+    setTimeout(() => {
+      setUser({
+        id: 'new-user-1',
+        email,
+        name: email.split('@')[0]
+      });
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  const verifyEmail = async (token: string) => {
+    // Mock email verification
+    console.log('Verifying email with token:', token);
+  };
+
+  const resetPassword = async (email: string) => {
+    // Mock password reset
+    console.log('Resetting password for:', email);
+  };
+
+  const value: AuthContextType = {
+    user,
+    isAuthenticated: !!user,
+    isLoading,
+    login,
+    logout,
+    register,
+    verifyEmail,
+    resetPassword
+  };
 
   return (
-    <Layout breadcrumbs={[{ label: 'Sign In' }]}>
-      <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
-            </a>
-            <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Sign in to access your PracticeLink account
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <div className="space-y-6">
-              {isDevelopment && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-                  <div className="flex">
-                    <AlertTriangle className="h-5 w-5 text-yellow-400" />
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-yellow-800">
-                        Development Environment
-                      </h3>
-                      <div className="mt-2 text-sm text-yellow-700">
-                        <p>
-                          You're in development mode. Click the button below to sign in with mock authentication.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              <button
-                onClick={handleLogin}
-                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-              >
-                <LogIn className="mr-2 h-5 w-5" />
-                {isLoading ? 'Signing in...' : (isDevelopment ? 'Sign in (Development Mode)' : 'Sign in with Auth0')}
-              </button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or</span>
-                </div>
-              </div>
-
-              <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  Don't have an account?{' '}
-                  <button
-                    onClick={handleLogin}
-                    className="font-medium text-blue-600 hover:text-blue-500"
-                  >
-                    Sign up
-                  </button>
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 p-4 bg-blue-50 rounded-md">
-              <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
-              <p className="text-xs text-blue-700">
-                {isDevelopment 
-                  ? 'In development mode, authentication is mocked for testing purposes.'
-                  : 'Auth0 handles both sign in and sign up. Click "Sign in with Auth0" and follow the prompts to create a new account or sign in to an existing one.'
-                }
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Layout>
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
   );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }
