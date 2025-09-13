@@ -41,17 +41,6 @@ export function SignIn() {
                 Sign in with Auth0
               </button>
 
-              <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  Already have an account?{' '}
-                  <a
-                    href="/signup"
-                    className="font-medium text-blue-600 hover:text-blue-500"
-                  >
-                    Create one here
-                  </a>
-                </p>
-              </div>
             </div>
 
             <div className="mt-6 p-4 bg-blue-50 rounded-md">
