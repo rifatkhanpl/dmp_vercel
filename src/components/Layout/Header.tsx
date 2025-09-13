@@ -3,11 +3,22 @@ import { useAuth } from '../../contexts/AuthContext';
 import { LogOut, User, Shield } from 'lucide-react';
 
 export function Header() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, switchRole } = useAuth();
 
   if (!isAuthenticated || !user) {
     return null;
   }
+
+  // Check if we're in development environment
+  const isDevelopment = window.location.hostname === 'localhost' || 
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       window.location.port === '5173';
+
+  const handleRoleSwitch = () => {
+    const newRole = user.role === 'admin' ? 'user' : 'admin';
+    switchRole(newRole);
+  };
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
@@ -31,6 +42,15 @@ export function Header() {
                 </span>
               )}
             </div>
+
+            {isDevelopment && (
+              <button
+                onClick={handleRoleSwitch}
+                className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+              >
+                Switch to {user.role === 'admin' ? 'User' : 'Admin'}
+              </button>
+            )}
             
             <button
               onClick={logout}

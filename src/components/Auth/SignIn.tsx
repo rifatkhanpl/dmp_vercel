@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Layout } from '../Layout/Layout';
-import { LogIn, AlertTriangle } from 'lucide-react';
+import { LogIn, AlertTriangle, User, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function SignIn() {
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, isLoading } = useAuth();
+  const [selectedRole, setSelectedRole] = useState<'user' | 'admin'>('user');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,35 +16,11 @@ export function SignIn() {
   }, [isAuthenticated, navigate]);
 
   const handleLogin = () => {
-    login();
+    login(selectedRole);
   };
 
   // Check if we're in development environment
   const isDevelopment = window.location.hostname === 'localhost' || 
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
-
-  const handleSkipAuth = () => {
-    // Bypass authentication for development
-    window.location.href = '/dashboard';
-  };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
-
-  const handleSkipAuth = () => {
-    // Bypass authentication for development
-    window.location.href = '/dashboard';
-  };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
-
-  const handleSkipAuth = () => {
-    // Bypass authentication for development
-    window.location.href = '/dashboard';
-  };
                        window.location.hostname.includes('bolt.new') ||
                        window.location.hostname.includes('127.0.0.1') ||
                        window.location.port === '5173';
@@ -73,21 +50,13 @@ export function SignIn() {
                       </h3>
                       <div className="mt-2 text-sm text-yellow-700">
                         <p>
-                          You're in development mode. Click the button below to sign in with mock authentication.
+                          You're in development mode. Select your role and click sign in to test with mock authentication.
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
-              
-              <button
-                onClick={handleLogin}
-                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-              >
-                <LogIn className="mr-2 h-5 w-5" />
-                {isLoading ? 'Signing in...' : (isDevelopment ? `Sign in as ${selectedRole === 'admin' ? 'Administrator' : 'User'}` : 'Sign in with Auth0')}
-              </button>
 
               {isDevelopment && (
                 <div className="mt-4">
@@ -129,6 +98,16 @@ export function SignIn() {
                   </div>
                 </div>
               )}
+              
+              <button
+                onClick={handleLogin}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <LogIn className="mr-2 h-5 w-5" />
+                {isLoading ? 'Signing in...' : (isDevelopment ? `Sign in as ${selectedRole === 'admin' ? 'Administrator' : 'User'}` : 'Sign in with Auth0')}
+              </button>
+
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300" />

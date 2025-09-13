@@ -14,6 +14,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (role?: 'user' | 'admin') => void;
   logout: () => void;
+  switchRole: (role: 'user' | 'admin') => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -48,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           : {
               id: 'user-456',
               email: 'user@practicelink.com',
-              name: 'Standard User',
+              name: 'Provider Relations Coordinator',
               role: 'user',
               permissions: ['read', 'write']
             };
@@ -62,6 +63,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       setIsLoading(false);
     }, 1000);
+  };
+
+  const switchRole = (role: 'user' | 'admin') => {
+    if (user && isDevelopment) {
+      const updatedUser: User = role === 'admin' 
+        ? {
+            id: 'admin-123',
+            email: 'admin@practicelink.com',
+            name: 'Administrator',
+            role: 'admin',
+            permissions: ['read', 'write', 'delete', 'admin']
+          }
+        : {
+            id: 'user-456',
+            email: 'user@practicelink.com',
+            name: 'Provider Relations Coordinator',
+            role: 'user',
+            permissions: ['read', 'write']
+          };
+      
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
   };
 
   const logout = () => {
@@ -94,7 +118,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated,
       isLoading,
       login,
-      logout
+      logout,
+      switchRole
     }}>
       {children}
     </AuthContext.Provider>
