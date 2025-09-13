@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Layout } from '../Layout/Layout';
 import { LogIn, AlertTriangle } from 'lucide-react';
@@ -7,15 +7,22 @@ import { useNavigate } from 'react-router-dom';
 export function SignIn() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      window.location.href = '/dashboard';
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated]);
 
-  const handleLogin = () => {
-    login();
+  const handleLogin = async () => {
+    setIsLoading(true);
+    try {
+      await login();
+    } catch (error) {
+      console.error('Login failed:', error);
+      setIsLoading(false);
+    }
   };
 
   // Check if we're in development environment
@@ -28,17 +35,6 @@ export function SignIn() {
     // Bypass authentication for development
     window.location.href = '/dashboard';
   };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
-
-  const handleSkipAuth = () => {
-    // Bypass authentication for development
-    window.location.href = '/dashboard';
-  };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
 
   return (
     <Layout breadcrumbs={[{ label: 'Sign In' }]}>
@@ -75,7 +71,8 @@ export function SignIn() {
               
               <button
                 onClick={handleLogin}
-                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <LogIn className="mr-2 h-5 w-5" />
                 {isLoading ? 'Signing in...' : (isDevelopment ? 'Sign in (Development Mode)' : 'Sign in with Auth0')}
