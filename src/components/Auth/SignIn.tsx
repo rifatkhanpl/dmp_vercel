@@ -41,14 +41,32 @@ export function SignIn() {
                 Sign in with Auth0
               </button>
 
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Or</span>
+                </div>
+              </div>
+
+              <div className="text-center">
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{' '}
+                  <button
+                    onClick={handleLogin}
+                    className="font-medium text-blue-600 hover:text-blue-500"
+                  >
+                    Sign up
+                  </button>
+                </p>
+              </div>
             </div>
 
             <div className="mt-6 p-4 bg-blue-50 rounded-md">
               <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
               <p className="text-xs text-blue-700">
-                Auth0 handles both sign in and sign up. Click "Sign in with Auth0" 
-                and follow the prompts to create a new account or sign in to an 
-                existing one.
+                Auth0 handles both sign in and sign up. Click "Sign in with Auth0" and follow the prompts to create a new account or sign in to an existing one.
               </p>
             </div>
           </div>
