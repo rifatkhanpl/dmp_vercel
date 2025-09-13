@@ -1,9 +1,4 @@
-    if (isDirectAuth && directUser) {
-      setUser(directUser);
-      return;
-    }
-
-import React, { useEffect, useState } from 'react';
+    import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Layout } from '../Layout/Layout';
 import { LogIn, AlertTriangle, User, Shield } from 'lucide-react';
@@ -34,11 +29,8 @@ export function SignIn() {
     // Bypass authentication for development
     window.location.href = '/dashboard';
   };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
 
-  const handleSkipAuth = () => {
+  const handleSkipAuth2 = () => {
     // Clear direct auth state
     setIsDirectAuth(false);
     setDirectUser(null);
@@ -46,9 +38,6 @@ export function SignIn() {
     // Bypass authentication for development
     window.location.href = '/dashboard';
   };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
 
   const loginDirect = (role: 'user' | 'admin') => {
     const mockUser: User = {
@@ -56,11 +45,6 @@ export function SignIn() {
       firstName: role === 'admin' ? 'Admin' : 'User',
       lastName: role === 'admin' ? 'Administrator' : 'Coordinator',
       email: role === 'admin' ? 'admin@practicelink.com' : 'user@practicelink.com',
-    if (isDirectAuth) {
-      // Return a mock token for direct auth
-      return 'mock-direct-auth-token';
-    }
-    
       role: role === 'admin' ? 'administrator' : 'provider-relations-coordinator',
       isEmailVerified: true,
       createdAt: new Date().toISOString(),
@@ -68,6 +52,10 @@ export function SignIn() {
     
     setDirectUser(mockUser);
     setIsDirectAuth(true);
+  };
+
+  const handleDirectLogin = (role: 'user' | 'admin') => {
+    loginDirect(role);
   };
 
   return (
@@ -188,6 +176,8 @@ export function SignIn() {
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300" />
+                </div>
+                <p className="text-center text-sm text-gray-600">
                   Don't have an account?{' '}
                   <button
                     onClick={handleLogin}
@@ -204,17 +194,15 @@ export function SignIn() {
               <p className="text-xs text-blue-700">
                 {isDevelopment 
                   ? 'In development mode, authentication is mocked for testing purposes. Select your role above to test different permission levels.'
+                  : 'This application uses Auth0 for secure authentication.'}
+              </p>
               <ul className="text-xs text-blue-700 space-y-1">
                 <li>• Use "Quick Access" buttons for immediate development access</li>
-      isLoading: auth0Loading && !isDirectAuth,
-      isAuthenticated: isAuthenticated || isDirectAuth,
               </ul>
             </div>
           </div>
-      loginDirect,
         </div>
       </div>
     </Layout>
   );
-    // Check for direct auth first
 }
