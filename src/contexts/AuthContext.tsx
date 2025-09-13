@@ -1,35 +1,22 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { Layout } from '../Layout/Layout';
+import { LogIn, AlertTriangle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  isEmailVerified: boolean;
-}
+export function SignIn() {
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: () => void;
-  logout: () => void;
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
-  verifyEmail: (token: string) => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-  updatePassword: (token: string, newPassword: string) => Promise<void>;
-}
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const handleLogin = () => {
+    login();
+  };
 
   // Check if we're in development environment
   const isDevelopment = window.location.hostname === 'localhost' || 
@@ -37,143 +24,97 @@ export function AuthProvider({ children }: AuthProviderProps) {
                        window.location.hostname.includes('127.0.0.1') ||
                        window.location.port === '5173';
 
-  useEffect(() => {
-    // Check for existing authentication on mount
-    const checkAuth = async () => {
-      try {
-        if (isDevelopment) {
-          // In development, check localStorage for mock user
-          const mockUser = localStorage.getItem('mockUser');
-          if (mockUser) {
-            setUser(JSON.parse(mockUser));
-          }
-        } else {
-          // In production, check Auth0 authentication status
-          // This would be implemented with actual Auth0 SDK
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, [isDevelopment]);
-
-  const login = () => {
-    if (isDevelopment) {
-      // Mock authentication for development
-      const mockUser: User = {
-        id: 'dev-user-123',
-        email: 'dev@example.com',
-        firstName: 'Development',
-        lastName: 'User',
-        role: 'admin',
-        isEmailVerified: true
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem('mockUser', JSON.stringify(mockUser));
-      
-      // Redirect to dashboard after a brief delay
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 100);
-    } else {
-      // In production, redirect to Auth0
-      window.location.href = '/api/auth/login';
-    }
+  const handleSkipAuth = () => {
+    // Bypass authentication for development
+    window.location.href = '/dashboard';
   };
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       window.location.port === '5173';
 
-  const logout = () => {
-    setUser(null);
-    if (isDevelopment) {
-      localStorage.removeItem('mockUser');
-      window.location.href = '/';
-    } else {
-      // In production, redirect to Auth0 logout
-      window.location.href = '/api/auth/logout';
-    }
+  const handleSkipAuth = () => {
+    // Bypass authentication for development
+    window.location.href = '/dashboard';
   };
-
-  const register = async (email: string, password: string, firstName: string, lastName: string) => {
-    if (isDevelopment) {
-      // Mock registration for development
-      const mockUser: User = {
-        id: 'dev-user-' + Date.now(),
-        email,
-        firstName,
-        lastName,
-        role: 'user',
-        isEmailVerified: false
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem('mockUser', JSON.stringify(mockUser));
-    } else {
-      // In production, call Auth0 registration API
-      throw new Error('Registration not implemented for production');
-    }
-  };
-
-  const verifyEmail = async (token: string) => {
-    if (isDevelopment) {
-      // Mock email verification
-      if (user) {
-        const updatedUser = { ...user, isEmailVerified: true };
-        setUser(updatedUser);
-        localStorage.setItem('mockUser', JSON.stringify(updatedUser));
-      }
-    } else {
-      // In production, call Auth0 email verification API
-      throw new Error('Email verification not implemented for production');
-    }
-  };
-
-  const resetPassword = async (email: string) => {
-    if (isDevelopment) {
-      // Mock password reset
-      console.log('Mock password reset for:', email);
-    } else {
-      // In production, call Auth0 password reset API
-      throw new Error('Password reset not implemented for production');
-    }
-  };
-
-  const updatePassword = async (token: string, newPassword: string) => {
-    if (isDevelopment) {
-      // Mock password update
-      console.log('Mock password update');
-    } else {
-      // In production, call Auth0 password update API
-      throw new Error('Password update not implemented for production');
-    }
-  };
-
-  const value: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    login,
-    logout,
-    register,
-    verifyEmail,
-    resetPassword,
-    updatePassword
-  };
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       window.location.port === '5173';
 
   return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
+    <Layout breadcrumbs={[{ label: 'Sign In' }]}>
+      <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
+            </a>
+            <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Sign in to access your PracticeLink account
+            </p>
+          </div>
 
-export function useAuth(): AuthContextType {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="space-y-6">
+              {isDevelopment && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                  <div className="flex">
+                    <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-yellow-800">
+                        Development Environment
+                      </h3>
+                      <div className="mt-2 text-sm text-yellow-700">
+                        <p>
+                          You're in development mode. Click the button below to sign in with mock authentication.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <button
+                onClick={handleLogin}
+                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              >
+                <LogIn className="mr-2 h-5 w-5" />
+                {isLoading ? 'Signing in...' : (isDevelopment ? 'Sign in (Development Mode)' : 'Sign in with Auth0')}
+              </button>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Or</span>
+                </div>
+              </div>
+
+              <div className="text-center">
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{' '}
+                  <button
+                    onClick={handleLogin}
+                    className="font-medium text-blue-600 hover:text-blue-500"
+                  >
+                    Sign up
+                  </button>
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 p-4 bg-blue-50 rounded-md">
+              <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
+              <p className="text-xs text-blue-700">
+                {isDevelopment 
+                  ? 'In development mode, authentication is mocked for testing purposes.'
+                  : 'Auth0 handles both sign in and sign up. Click "Sign in with Auth0" and follow the prompts to create a new account or sign in to an existing one.'
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
 }
