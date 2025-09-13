@@ -45,7 +45,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [isAuthenticated, auth0User]);
 
   const login = () => {
-    loginWithRedirect();
+    loginWithRedirect().catch((error) => {
+      console.error('Auth0 login error:', error);
+      // You could show a user-friendly error message here
+      alert('Authentication service is currently unavailable. Please try again later.');
+    });
   };
 
   const logout = () => {
