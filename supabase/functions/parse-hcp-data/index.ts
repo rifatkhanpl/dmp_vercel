@@ -149,10 +149,23 @@ ${content}
 
     // Try to parse the JSON response
     try {
-      const parsed = JSON.parse(content);
+      // Extract JSON array from the response content
+      // OpenAI might return additional text, so we need to find the JSON array
+      let jsonContent = content.trim();
+      
+      // Find the first '[' and last ']' to extract the JSON array
+      const firstBracket = jsonContent.indexOf('[');
+      const lastBracket = jsonContent.lastIndexOf(']');
+      
+      if (firstBracket !== -1 && lastBracket !== -1 && firstBracket < lastBracket) {
+        jsonContent = jsonContent.substring(firstBracket, lastBracket + 1);
+      }
+      
+      const parsed = JSON.parse(jsonContent);
       return Array.isArray(parsed) ? parsed : [];
     } catch (parseError) {
       console.error('Failed to parse OpenAI response as JSON:', content);
+      console.error('Parse error:', parseError);
       throw new Error('Invalid JSON response from OpenAI');
     }
   } catch (error) {
