@@ -33,10 +33,6 @@ export function SignIn() {
 
           <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="space-y-6">
-              <p className="text-center text-gray-600">
-                Click the button below to sign in with your Auth0 account
-              </p>
-              
               <button
                 onClick={handleLogin}
                 className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
