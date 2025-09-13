@@ -24,7 +24,6 @@ export function SignIn() {
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
-              <h1 className="text-4xl font-bold mb-2">PracticeLink</h1>
             </a>
             <p className="text-sm text-gray-600 mb-8">Career Management Platform</p>
             <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
