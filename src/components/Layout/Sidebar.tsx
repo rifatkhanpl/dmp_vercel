@@ -30,8 +30,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   // Admin-only navigation items
   const adminItems = [
-    { name: 'User Management', href: '/admin/users', icon: Users },
-    { name: 'Support Tickets', href: '/admin/support', icon: LifeBuoy },
+    { name: 'User Management', href: '/user-management', icon: Users },
+    { name: 'Support Tickets', href: '/support-tickets', icon: LifeBuoy },
   ];
 
   const allItems = userRole === 'admin' ? [...navigationItems, ...adminItems] : navigationItems;
