@@ -1,163 +1,195 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  LayoutDashboard, 
-  Search, 
-  UserPlus, 
-  Upload, 
-  User, 
-  Users, 
-  HelpCircle, 
-  LogOut,
-  X
-} from 'lucide-react';
+import { Layout } from '../Layout/Layout';
+import { LogIn, AlertTriangle, User, Shield } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+export function SignIn() {
+  const { login, isAuthenticated, isLoading } = useAuth();
+  const [selectedRole, setSelectedRole] = useState<'user' | 'admin'>('user');
+  const navigate = useNavigate();
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const { user, logout } = useAuth();
-  const location = useLocation();
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
-  const navigationItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Search Providers', href: '/search', icon: Search },
-    { name: 'Register Provider', href: '/register', icon: UserPlus },
-    { name: 'Bulk Import', href: '/bulk-import', icon: Upload },
-    { name: 'My Profile', href: '/profile', icon: User },
-  ];
+  const handleLogin = () => {
+    login(selectedRole);
+  };
 
-  const adminItems = [
-    { name: 'User Management', href: '/admin/users', icon: Users },
-    { name: 'Support Tickets', href: '/admin/support', icon: HelpCircle },
-  ];
+  // Check if we're in development environment
+  const isDevelopment = window.location.hostname === 'localhost' || 
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       window.location.port === '5173';
 
-  const isActive = (path: string) => location.pathname === path;
+  const handleSkipAuth = () => {
+    // Bypass authentication for development
+    window.location.href = '/dashboard';
+  };
+                       window.location.hostname.includes('bolt.new') ||
+    { name: 'Support Tickets', href: '/support-tickets', icon: MessageSquare },
+                       window.location.port === '5173';
+
+  const handleDirectLogin = (role: 'user' | 'admin') => {
+    setSelectedRole(role);
+    login(role);
+  };
+
+  // Check if current user is admin
+  const isAdmin = user?.role === 'administrator';
 
   return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={onClose}
-        />
-      )}
-      
-      {/* Sidebar */}
-      <div className={`
-        fixed top-0 left-0 z-50 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:z-auto
-      `}>
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-800">PracticeLink</h2>
-          <button
-            onClick={onClose}
-            className="lg:hidden p-1 rounded-md hover:bg-gray-100"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <Layout breadcrumbs={[{ label: 'Sign In' }]}>
+      <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
+            </a>
+            <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Sign in to access your PracticeLink account
+            </p>
+          </div>
 
-        {/* User Info */}
-        {user && (
-          <div className="p-4 border-b bg-gray-50">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-white" />
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="space-y-6">
+              {/* Direct Access Buttons for Development */}
+              <div className="space-y-3">
+                <p className="text-center text-sm font-medium text-gray-700 mb-4">
+                  {user?.firstName} {user?.lastName}
+                </p>
+                
+                <button
+                  onClick={() => handleDirectLogin('user')}
+                  className="w-full flex items-center justify-center py-3 px-4 border border-blue-300 rounded-md shadow-sm text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                >
+                  <User className="mr-2 h-5 w-5" />
+                  Sign in as User
+                </button>
+                
+                <button
+                  onClick={() => handleDirectLogin('admin')}
+                  className="w-full flex items-center justify-center py-3 px-4 border border-purple-300 rounded-md shadow-sm text-sm font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
+                >
+                  <Shield className="mr-2 h-5 w-5" />
+                  Sign in as Administrator
+                </button>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">
-                  {user.name || 'User'}
-                </p>
-                <p className="text-xs text-gray-500 capitalize">
-                  {user.role}
-                  {user.role === 'admin' && (
-                    <span className="ml-1 px-1.5 py-0.5 bg-red-100 text-red-800 text-xs rounded">
-                      Admin
-                    </span>
-                  )}
-                </p>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Or use Auth0</span>
+                </div>
+              </div>
+
+              {isDevelopment && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                  <div className="flex">
+                    <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-yellow-800">
+                        Development Environment
+                      </h3>
+                      <div className="mt-2 text-sm text-yellow-700">
+                        <p>
+                          You're in development mode. Select your role and click sign in to test with mock authentication.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {isDevelopment && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Select Role for Development:
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole('user')}
+                      className={`flex items-center justify-center px-4 py-3 rounded-md border transition-colors ${
+                        selectedRole === 'user'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <User className="w-4 h-4 mr-2" />
+                      <div className="text-left">
+                        <div className="font-medium">User</div>
+                        <div className="text-xs opacity-75">Standard Access</div>
+                      </div>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole('admin')}
+                      className={`flex items-center justify-center px-4 py-3 rounded-md border transition-colors ${
+                        selectedRole === 'admin'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Shield className="w-4 h-4 mr-2" />
+                      <div className="text-left">
+                        <div className="font-medium">Administrator</div>
+                        <div className="text-xs opacity-75">Full Access</div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              <button
+                onClick={handleLogin}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <LogIn className="mr-2 h-5 w-5" />
+                {isLoading ? 'Signing in...' : (isDevelopment ? `Sign in as ${selectedRole === 'admin' ? 'Administrator' : 'User'}` : 'Sign in with Auth0')}
+              </button>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">
+                    Don't have an account?{' '}
+                    <button
+                      onClick={handleLogin}
+                      className="font-medium text-blue-600 hover:text-blue-500"
+                    >
+                      Sign up
+                    </button>
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {navigationItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <li key={item.name}>
-                  <Link
-                    to={item.href}
-                    onClick={onClose}
-                    className={`
-                      flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors
-                      ${isActive(item.href)
-                        ? 'bg-indigo-100 text-indigo-700'
-                        : 'text-gray-700 hover:bg-gray-100'
-                      }
-                    `}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span>{item.name}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-
-          {/* Admin Section */}
-          {user?.role === 'admin' && (
-            <div className="mt-8">
-              <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Administration
-              </h3>
-              <ul className="mt-2 space-y-2">
-                {adminItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <li key={item.name}>
-                      <Link
-                        to={item.href}
-                        onClick={onClose}
-                        className={`
-                          flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors
-                          ${isActive(item.href)
-                            ? 'bg-indigo-100 text-indigo-700'
-                            : 'text-gray-700 hover:bg-gray-100'
-                          }
-                        `}
-                      >
-                        <Icon className="w-5 h-5" />
-                        <span>{item.name}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
+            <div className="mt-6 p-4 bg-blue-50 rounded-md">
+              <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
+              <p className="text-xs text-blue-700">
+                {isDevelopment 
+                  ? 'In development mode, authentication is mocked for testing purposes. Select your role above to test different permission levels.'
+                  : 'Auth0 handles both sign in and sign up for production'}
+              </p>
+              <ul className="text-xs text-blue-700 space-y-1">
+                <li>• Use "Quick Access" buttons for immediate development access</li>
+                <li>• Auth0 handles both sign in and sign up for production</li>
+                <li>• User role has standard permissions, Admin has full access</li>
               </ul>
             </div>
-          )}
-        </nav>
-
-        {/* Sign Out */}
-        <div className="p-4 border-t">
-          <button
-            onClick={logout}
-            className="flex items-center space-x-3 w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            <span>Sign Out</span>
-          </button>
+          </div>
         </div>
       </div>
-    </>
+    </Layout>
   );
 }
