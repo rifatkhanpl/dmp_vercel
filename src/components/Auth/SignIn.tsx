@@ -41,15 +41,6 @@ export function SignIn() {
                 Sign in with Auth0
               </button>
 
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or</span>
-                </div>
-              </div>
-
               <div className="text-center">
                 <p className="text-sm text-gray-600">
                   Already have an account?{' '}
