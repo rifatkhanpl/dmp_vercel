@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { Layout } from '../Layout/Layout';
+import { useAuth } from './contexts/AuthContext';
+import { Layout } from './components/Layout/Layout';
 import { LogIn, AlertTriangle, User, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -29,9 +29,6 @@ export function SignIn() {
     // Bypass authentication for development
     window.location.href = '/dashboard';
   };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
 
   const handleDirectLogin = (role: 'user' | 'admin') => {
     setSelectedRole(role);
