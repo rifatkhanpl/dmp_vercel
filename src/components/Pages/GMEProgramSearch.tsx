@@ -16,7 +16,8 @@ import {
   Square,
   CheckSquare,
   FileText,
-  Download
+  Download,
+  ArrowLeft
 } from 'lucide-react';
 
 interface GMEProgram {
@@ -53,6 +54,8 @@ export function GMEProgramSearch() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedPrograms, setSelectedPrograms] = useState<Set<string>>(new Set());
   const [showBulkActions, setShowBulkActions] = useState(false);
+  const [viewMode, setViewMode] = useState<'programs' | 'institutions'>('programs');
+  const [selectedInstitution, setSelectedInstitution] = useState<string | null>(null);
 
   // Mock GME program data
   const mockResults: GMEProgram[] = [
@@ -123,6 +126,23 @@ export function GMEProgramSearch() {
     }
   ];
 
+  // Group programs by institution
+  const institutionGroups = mockResults.reduce((acc, program) => {
+    if (!acc[program.institution]) {
+      acc[program.institution] = [];
+    }
+    acc[program.institution].push(program);
+    return acc;
+  }, {} as Record<string, GMEProgram[]>);
+
+  const institutions = Object.keys(institutionGroups).map(name => ({
+    name,
+    programs: institutionGroups[name],
+    programCount: institutionGroups[name].length,
+    specialties: [...new Set(institutionGroups[name].map(p => p.specialty))],
+    totalPositions: institutionGroups[name].reduce((sum, p) => sum + p.positions, 0)
+  }));
+
   const handleSearch = async () => {
     setIsSearching(true);
     
@@ -169,6 +189,18 @@ export function GMEProgramSearch() {
     
     setResults(filtered);
     setIsSearching(false);
+  };
+
+  const handleInstitutionSelect = (institutionName: string) => {
+    setSelectedInstitution(institutionName);
+    setResults(institutionGroups[institutionName] || []);
+    setViewMode('programs');
+  };
+
+  const handleBackToInstitutions = () => {
+    setSelectedInstitution(null);
+    setViewMode('institutions');
+    setResults([]);
   };
 
   const handleSort = (field: 'programName' | 'institution' | 'specialty' | 'state') => {
@@ -315,6 +347,13 @@ export function GMEProgramSearch() {
                 <SearchIcon className="h-4 w-4" />
                 <span>{isSearching ? 'Searching...' : 'Search'}</span>
               </button>
+              <button
+                onClick={() => setViewMode(viewMode === 'programs' ? 'institutions' : 'programs')}
+                className="flex items-center space-x-2 px-4 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <Building className="h-4 w-4" />
+                <span>{viewMode === 'programs' ? 'View by Institution' : 'View Programs'}</span>
+              </button>
             </div>
 
             {/* Filters */}
@@ -404,14 +443,77 @@ export function GMEProgramSearch() {
           </div>
         </div>
 
+        {/* Institution View */}
+        {viewMode === 'institutions' && (
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Institutions ({institutions.length})
+              </h2>
+            </div>
+            <div className="divide-y divide-gray-200">
+              {institutions.map((institution) => (
+                <div key={institution.name} className="p-6 hover:bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full">
+                        <Building className="h-6 w-6 text-purple-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-medium text-gray-900">
+                          {institution.name}
+                        </h3>
+                        <div className="mt-1 space-y-1">
+                          <div className="flex items-center space-x-4 text-sm text-gray-600">
+                            <div className="flex items-center">
+                              <GraduationCap className="h-4 w-4 mr-1" />
+                              {institution.programCount} program{institution.programCount !== 1 ? 's' : ''}
+                            </div>
+                            <div className="flex items-center">
+                              <Users className="h-4 w-4 mr-1" />
+                              {institution.totalPositions} total positions
+                            </div>
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Stethoscope className="h-4 w-4 mr-2" />
+                            <span>Specialties: {institution.specialties.join(', ')}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleInstitutionSelect(institution.name)}
+                        className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span>View Programs</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Results */}
-        {results.length > 0 && (
+        {results.length > 0 && viewMode === 'programs' && (
           <div className="bg-white rounded-lg shadow-sm">
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
+                  {selectedInstitution && (
+                    <button
+                      onClick={handleBackToInstitutions}
+                      className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-700"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      <span>Back to Institutions</span>
+                    </button>
+                  )}
                   <h2 className="text-lg font-semibold text-gray-900">
-                    Search Results ({results.length})
+                    {selectedInstitution ? `${selectedInstitution} Programs` : 'Search Results'} ({results.length})
                   </h2>
                   {selectedPrograms.size > 0 && (
                     <span className="text-sm text-blue-600 font-medium">
@@ -594,7 +696,7 @@ export function GMEProgramSearch() {
         )}
 
         {/* No Results */}
-        {results.length === 0 && searchQuery && !isSearching && (
+        {results.length === 0 && searchQuery && !isSearching && viewMode === 'programs' && (
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
             <GraduationCap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No programs found</h3>

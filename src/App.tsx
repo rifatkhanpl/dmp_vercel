@@ -143,6 +143,11 @@ function App() {
                 <GMEProgramDetail />
               </ProtectedRoute>
             } />
+            <Route path="/institution-programs" element={
+              <ProtectedRoute>
+                <GMEProgramSearch />
+              </ProtectedRoute>
+            } />
             
             {/* Catch all route */}
             <Route path="*" element={<Navigate to="/" replace />} />

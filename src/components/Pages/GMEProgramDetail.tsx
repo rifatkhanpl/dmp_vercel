@@ -119,6 +119,13 @@ export function GMEProgramDetail() {
               >
                 <ArrowLeft className="h-5 w-5" />
               </a>
+              <a
+                href={`/institution-programs?name=${encodeURIComponent(program.institution)}`}
+                className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1"
+              >
+                <Building className="h-4 w-4" />
+                <span>View all {program.institution} programs</span>
+              </a>
               <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full">
                 <GraduationCap className="h-8 w-8 text-blue-600" />
               </div>
