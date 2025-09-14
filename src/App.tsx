@@ -20,6 +20,8 @@ import { ProviderProfile } from './components/Pages/ProviderProfile';
 import { UserManagement } from './components/Pages/UserManagement';
 import { UserProfile } from './components/Pages/UserProfile';
 import { UserSettings } from './components/Pages/UserSettings';
+import { GMEProgramSearch } from './components/Pages/GMEProgramSearch';
+import { GMEProgramDetail } from './components/Pages/GMEProgramDetail';
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -129,6 +131,16 @@ function App() {
             <Route path="/user-settings" element={
               <ProtectedRoute>
                 <UserSettings />
+              </ProtectedRoute>
+            } />
+            <Route path="/gme-program-search" element={
+              <ProtectedRoute>
+                <GMEProgramSearch />
+              </ProtectedRoute>
+            } />
+            <Route path="/gme-program-detail" element={
+              <ProtectedRoute>
+                <GMEProgramDetail />
               </ProtectedRoute>
             } />
             

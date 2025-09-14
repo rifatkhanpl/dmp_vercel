@@ -10,7 +10,8 @@ import {
   User,
   Users,
   Settings,
-  FileText
+  FileText,
+  GraduationCap
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -52,6 +53,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       href: '/search',
       icon: Search,
       current: location.pathname === '/search'
+    },
+    {
+      name: 'GME Programs',
+      href: '/gme-program-search',
+      icon: GraduationCap,
+      current: location.pathname === '/gme-program-search'
     }
   ];
 
