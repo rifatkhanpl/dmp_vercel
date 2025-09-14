@@ -8,6 +8,7 @@ import {
   Search, 
   Database,
   User,
+  Users,
   Settings,
   FileText
 } from 'lucide-react';
