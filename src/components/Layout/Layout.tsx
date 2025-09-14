@@ -28,9 +28,6 @@ export function SignIn() {
     // Bypass authentication for development
     window.location.href = '/dashboard';
   };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
 
   const handleDirectLogin = (role: 'user' | 'admin') => {
     setSelectedRole(role);
@@ -183,20 +180,9 @@ export function SignIn() {
               <li>• Auth0 handles both sign in and sign up for production</li>
               <li>• User role has standard permissions, Admin has full access</li>
             </ul>
-        {isAuthenticated && <Sidebar />}
-        
-        <main className={`flex-1 ${isAuthenticated ? 'ml-64' : ''}`}>
-          {showBreadcrumbs && breadcrumbs.length > 0 && (
-            <div className="bg-white border-b border-gray-200">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-                <Breadcrumb items={breadcrumbs} />
-              </div>
-            </div>
-          )}
-          
-        </main>
+          </div>
+        </div>
       </div>
-      
     </div>
   );
 }
