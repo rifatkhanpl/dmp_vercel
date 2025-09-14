@@ -15,7 +15,7 @@ import {
 
 interface Assignment {
   id: string;
-  type: 'profession' | 'specialty' | 'subspecialty';
+  type: 'profession' | 'specialty' | 'subspecialty' | 'state';
   name: string;
   category?: string;
 }
@@ -28,10 +28,12 @@ export function UserSettings() {
     { id: '3', type: 'specialty', name: 'Internal Medicine', category: 'Primary Care' },
     { id: '4', type: 'specialty', name: 'Emergency Medicine', category: 'Hospital-Based' },
     { id: '5', type: 'subspecialty', name: 'Cardiology', category: 'Internal Medicine' },
+    { id: '6', type: 'state', name: 'California' },
+    { id: '7', type: 'state', name: 'New York' },
   ]);
 
   const [newAssignment, setNewAssignment] = useState({
-    type: 'profession' as 'profession' | 'specialty' | 'subspecialty',
+    type: 'profession' as 'profession' | 'specialty' | 'subspecialty' | 'state',
     name: '',
     category: ''
   });
@@ -76,6 +78,16 @@ export function UserSettings() {
     { name: 'Neuro Surgery', category: 'Surgery' }
   ];
 
+  const stateOptions = [
+    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware',
+    'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky',
+    'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi',
+    'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico',
+    'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania',
+    'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+    'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+  ];
+
   const handleAddAssignment = () => {
     if (!newAssignment.name.trim()) return;
 
@@ -117,6 +129,8 @@ export function UserSettings() {
         return 'bg-green-100 text-green-800';
       case 'subspecialty':
         return 'bg-purple-100 text-purple-800';
+      case 'state':
+        return 'bg-orange-100 text-orange-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -196,7 +210,7 @@ export function UserSettings() {
           {showAddForm && (
             <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
               <h3 className="text-md font-medium text-gray-900 mb-4">Add New Assignment</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
                   <select
@@ -262,6 +276,28 @@ export function UserSettings() {
                     {subspecialtyOptions.map((option, index) => (
                       <option key={index} value={option.name}>
                         {option.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                  <select
+                    value={newAssignment.type === 'state' ? newAssignment.name : ''}
+                    onChange={(e) => {
+                      setNewAssignment(prev => ({ 
+                        ...prev, 
+                        type: 'state',
+                        name: e.target.value,
+                        category: ''
+                      }));
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select state</option>
+                    {stateOptions.map((state, index) => (
+                      <option key={index} value={state}>
+                        {state}
                       </option>
                     ))}
                   </select>
@@ -368,6 +404,29 @@ export function UserSettings() {
               </div>
             </div>
           </div>
+            {/* States */}
+            <div>
+              <h3 className="text-md font-medium text-gray-900 mb-3">States</h3>
+              <div className="flex flex-wrap gap-2">
+                {getAssignmentsByType('state').map((assignment) => (
+                  <div
+                    key={assignment.id}
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(assignment.type)}`}
+                  >
+                    <span>{assignment.name}</span>
+                    <button
+                      onClick={() => handleRemoveAssignment(assignment.id)}
+                      className="ml-2 hover:text-red-600"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                {getAssignmentsByType('state').length === 0 && (
+                  <p className="text-sm text-gray-500 italic">No states assigned</p>
+                )}
+              </div>
+            </div>
 
           {/* Save Button */}
           <div className="flex justify-end mt-6 pt-6 border-t border-gray-200">
