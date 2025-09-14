@@ -10,7 +10,10 @@ import {
   Mail,
   Eye,
   Edit,
-  MoreVertical
+  MoreVertical,
+  ArrowUpDown,
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react';
 
 interface Provider {
@@ -35,6 +38,8 @@ export function Search() {
   const [showFilters, setShowFilters] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState<Provider[]>([]);
+  const [sortBy, setSortBy] = useState<'name' | 'specialty' | 'location' | 'status'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   // Mock data
   const mockResults: Provider[] = [
@@ -108,6 +113,44 @@ export function Search() {
     
     setResults(filtered);
     setIsSearching(false);
+  };
+
+  const handleSort = (field: 'name' | 'specialty' | 'location' | 'status') => {
+    const newOrder = sortBy === field && sortOrder === 'asc' ? 'desc' : 'asc';
+    setSortBy(field);
+    setSortOrder(newOrder);
+    
+    const sorted = [...results].sort((a, b) => {
+      let aValue = '';
+      let bValue = '';
+      
+      switch (field) {
+        case 'name':
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+          break;
+        case 'specialty':
+          aValue = a.specialty.toLowerCase();
+          bValue = b.specialty.toLowerCase();
+          break;
+        case 'location':
+          aValue = a.location.toLowerCase();
+          bValue = b.location.toLowerCase();
+          break;
+        case 'status':
+          aValue = a.status.toLowerCase();
+          bValue = b.status.toLowerCase();
+          break;
+      }
+      
+      if (newOrder === 'asc') {
+        return aValue.localeCompare(bValue);
+      } else {
+        return bValue.localeCompare(aValue);
+      }
+    });
+    
+    setResults(sorted);
   };
 
   const handleFilterChange = (key: string, value: string) => {
@@ -233,9 +276,76 @@ export function Search() {
         {results.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Search Results ({results.length})
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Search Results ({results.length})
+                </h2>
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm text-gray-500">Sort by:</span>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleSort('name')}
+                      className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                        sortBy === 'name' 
+                          ? 'bg-blue-100 text-blue-700' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      }`}
+                    >
+                      <span>Name</span>
+                      {sortBy === 'name' ? (
+                        sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+                      ) : (
+                        <ArrowUpDown className="h-3 w-3" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleSort('specialty')}
+                      className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                        sortBy === 'specialty' 
+                          ? 'bg-blue-100 text-blue-700' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      }`}
+                    >
+                      <span>Specialty</span>
+                      {sortBy === 'specialty' ? (
+                        sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+                      ) : (
+                        <ArrowUpDown className="h-3 w-3" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleSort('location')}
+                      className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                        sortBy === 'location' 
+                          ? 'bg-blue-100 text-blue-700' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      }`}
+                    >
+                      <span>Location</span>
+                      {sortBy === 'location' ? (
+                        sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+                      ) : (
+                        <ArrowUpDown className="h-3 w-3" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleSort('status')}
+                      className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                        sortBy === 'status' 
+                          ? 'bg-blue-100 text-blue-700' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      }`}
+                    >
+                      <span>Status</span>
+                      {sortBy === 'status' ? (
+                        sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+                      ) : (
+                        <ArrowUpDown className="h-3 w-3" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="divide-y divide-gray-200">
               {results.map((provider) => (
