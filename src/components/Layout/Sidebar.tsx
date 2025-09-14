@@ -36,7 +36,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       current: location.pathname === '/hcp-registration'
     },
     {
-      name: 'Bulk Import',
+      name: 'HCP Import',
       href: '/bulk-import',
       icon: Upload,
       current: location.pathname === '/bulk-import'
