@@ -4,7 +4,7 @@ import { Layout } from '../Layout/Layout';
 import { LogIn, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export function SignIn() {
+export function ForgotPassword() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 

@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export function SignIn() {
+export function SignUp() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
