@@ -122,6 +122,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </nav>
 
           {/* User info at bottom */}
+        </div>
       </div>
     </>
   );
