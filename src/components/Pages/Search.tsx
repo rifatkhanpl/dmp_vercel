@@ -13,7 +13,12 @@ import {
   MoreVertical,
   ArrowUpDown,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  Square,
+  CheckSquare,
+  Bookmark,
+  FileText,
+  Download
 } from 'lucide-react';
 
 interface Provider {
