@@ -59,8 +59,557 @@ export function GMEProgramSearch() {
 
   // Mock GME program data
   const mockResults: GMEProgram[] = [
+    // Johns Hopkins Hospital - 18 programs (Large Academic Medical Center)
     {
       id: '1',
+      programName: 'Internal Medicine Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Internal Medicine',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 52,
+      programDirector: 'Dr. Sarah Johnson, MD',
+      website: 'https://hopkinsmedicine.org/internal-medicine',
+      description: 'Premier internal medicine training with world-class subspecialty exposure and research opportunities.',
+      established: 1889
+    },
+    {
+      id: '2',
+      programName: 'Surgery Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Surgery',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 28,
+      programDirector: 'Dr. Michael Chen, MD',
+      website: 'https://hopkinsmedicine.org/surgery',
+      description: 'Comprehensive surgical training with emphasis on innovation and minimally invasive techniques.',
+      established: 1889
+    },
+    {
+      id: '3',
+      programName: 'Emergency Medicine Residency',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Emergency Medicine',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 36,
+      programDirector: 'Dr. Emily Rodriguez, MD',
+      website: 'https://hopkinsmedicine.org/emergency-medicine',
+      description: 'High-acuity emergency medicine training with trauma, pediatric, and critical care rotations.',
+      established: 1978
+    },
+    {
+      id: '4',
+      programName: 'Pediatrics Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Pediatrics',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 42,
+      programDirector: 'Dr. James Wilson, MD',
+      website: 'https://hopkinsmedicine.org/pediatrics',
+      description: 'Comprehensive pediatric training at one of the nation\'s top children\'s hospitals.',
+      established: 1912
+    },
+    {
+      id: '5',
+      programName: 'Anesthesiology Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Anesthesiology',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 32,
+      programDirector: 'Dr. Lisa Park, MD',
+      website: 'https://hopkinsmedicine.org/anesthesiology',
+      description: 'Advanced anesthesiology training with cardiac, pediatric, and pain management subspecialties.',
+      established: 1945
+    },
+    {
+      id: '6',
+      programName: 'Radiology Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Radiology',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 24,
+      programDirector: 'Dr. Robert Kim, MD',
+      website: 'https://hopkinsmedicine.org/radiology',
+      description: 'Cutting-edge radiology training with advanced imaging and interventional procedures.',
+      established: 1950
+    },
+    {
+      id: '7',
+      programName: 'Psychiatry Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Psychiatry',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 28,
+      programDirector: 'Dr. Maria Garcia, MD',
+      website: 'https://hopkinsmedicine.org/psychiatry',
+      description: 'Comprehensive psychiatry training with research opportunities in neuroscience and mental health.',
+      established: 1913
+    },
+    {
+      id: '8',
+      programName: 'Orthopedic Surgery Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Orthopedic Surgery',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 20,
+      programDirector: 'Dr. David Thompson, MD',
+      website: 'https://hopkinsmedicine.org/orthopedics',
+      description: 'Premier orthopedic surgery training with sports medicine and spine subspecialty tracks.',
+      established: 1925
+    },
+    {
+      id: '9',
+      programName: 'Neurology Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Neurology',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 24,
+      programDirector: 'Dr. Jennifer Lee, MD',
+      website: 'https://hopkinsmedicine.org/neurology',
+      description: 'World-renowned neurology training with cutting-edge research in neurological disorders.',
+      established: 1935
+    },
+    {
+      id: '10',
+      programName: 'Obstetrics and Gynecology Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Obstetrics and Gynecology',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 20,
+      programDirector: 'Dr. Amanda White, MD',
+      website: 'https://hopkinsmedicine.org/obgyn',
+      description: 'Comprehensive OB/GYN training with maternal-fetal medicine and gynecologic oncology.',
+      established: 1920
+    },
+    {
+      id: '11',
+      programName: 'Pathology Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Pathology',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 16,
+      programDirector: 'Dr. Steven Brown, MD',
+      website: 'https://hopkinsmedicine.org/pathology',
+      description: 'Leading pathology training with anatomic and clinical pathology subspecialties.',
+      established: 1889
+    },
+    {
+      id: '12',
+      programName: 'Dermatology Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Dermatology',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 12,
+      programDirector: 'Dr. Rachel Davis, MD',
+      website: 'https://hopkinsmedicine.org/dermatology',
+      description: 'Premier dermatology training with dermatopathology and Mohs surgery opportunities.',
+      established: 1960
+    },
+    {
+      id: '13',
+      programName: 'Ophthalmology Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Ophthalmology',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 16,
+      programDirector: 'Dr. Kevin Martinez, MD',
+      website: 'https://hopkinsmedicine.org/ophthalmology',
+      description: 'World-class ophthalmology training with retina, cornea, and oculoplastics subspecialties.',
+      established: 1925
+    },
+    {
+      id: '14',
+      programName: 'Otolaryngology Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Otolaryngology',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 12,
+      programDirector: 'Dr. Patricia Johnson, MD',
+      website: 'https://hopkinsmedicine.org/otolaryngology',
+      description: 'Comprehensive ENT training with head and neck surgery and rhinology subspecialties.',
+      established: 1930
+    },
+    {
+      id: '15',
+      programName: 'Urology Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Urology',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 16,
+      programDirector: 'Dr. Thomas Anderson, MD',
+      website: 'https://hopkinsmedicine.org/urology',
+      description: 'Leading urology training with robotic surgery and urologic oncology expertise.',
+      established: 1915
+    },
+    {
+      id: '16',
+      programName: 'Neurosurgery Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Neurosurgery',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 8,
+      programDirector: 'Dr. Michelle Taylor, MD',
+      website: 'https://hopkinsmedicine.org/neurosurgery',
+      description: 'Premier neurosurgery training with pediatric, vascular, and spine subspecialties.',
+      established: 1922
+    },
+    {
+      id: '17',
+      programName: 'Plastic Surgery Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Plastic Surgery',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 8,
+      programDirector: 'Dr. Christopher Wilson, MD',
+      website: 'https://hopkinsmedicine.org/plastic-surgery',
+      description: 'Comprehensive plastic surgery training with reconstructive and aesthetic surgery focus.',
+      established: 1940
+    },
+    {
+      id: '18',
+      programName: 'Radiation Oncology Residency Program',
+      institution: 'Johns Hopkins Hospital',
+      profession: 'Physician',
+      specialty: 'Radiation Oncology',
+      city: 'Baltimore',
+      state: 'MD',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 12,
+      programDirector: 'Dr. Laura Miller, MD',
+      website: 'https://hopkinsmedicine.org/radiation-oncology',
+      description: 'Advanced radiation oncology training with stereotactic radiosurgery and proton therapy.',
+      established: 1955
+    },
+
+    // Massachusetts General Hospital - 16 programs (Large Academic Medical Center)
+    {
+      id: '19',
+      programName: 'Internal Medicine Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Internal Medicine',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 48,
+      programDirector: 'Dr. Elizabeth Adams, MD',
+      website: 'https://mgh.harvard.edu/internal-medicine',
+      description: 'Harvard-affiliated internal medicine training with exceptional research opportunities.',
+      established: 1821
+    },
+    {
+      id: '20',
+      programName: 'Surgery Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Surgery',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 32,
+      programDirector: 'Dr. Mark Roberts, MD',
+      website: 'https://mgh.harvard.edu/surgery',
+      description: 'Historic surgical training program with innovation in minimally invasive techniques.',
+      established: 1821
+    },
+    {
+      id: '21',
+      programName: 'Emergency Medicine Residency',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Emergency Medicine',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 40,
+      programDirector: 'Dr. Susan Clark, MD',
+      website: 'https://mgh.harvard.edu/emergency-medicine',
+      description: 'Leading emergency medicine training with disaster medicine and toxicology expertise.',
+      established: 1972
+    },
+    {
+      id: '22',
+      programName: 'Anesthesiology Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Anesthesiology',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 36,
+      programDirector: 'Dr. Daniel Lewis, MD',
+      website: 'https://mgh.harvard.edu/anesthesiology',
+      description: 'Premier anesthesiology training with cardiac, neuroanesthesia, and pain management.',
+      established: 1846
+    },
+    {
+      id: '23',
+      programName: 'Radiology Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Radiology',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 28,
+      programDirector: 'Dr. Nancy Walker, MD',
+      website: 'https://mgh.harvard.edu/radiology',
+      description: 'Advanced radiology training with AI integration and interventional procedures.',
+      established: 1896
+    },
+    {
+      id: '24',
+      programName: 'Psychiatry Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Psychiatry',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 32,
+      programDirector: 'Dr. Paul Young, MD',
+      website: 'https://mgh.harvard.edu/psychiatry',
+      description: 'Harvard-affiliated psychiatry training with neuroscience research opportunities.',
+      established: 1934
+    },
+    {
+      id: '25',
+      programName: 'Pediatrics Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Pediatrics',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 36,
+      programDirector: 'Dr. Karen Hall, MD',
+      website: 'https://mgh.harvard.edu/pediatrics',
+      description: 'Comprehensive pediatric training with Boston Children\'s Hospital rotations.',
+      established: 1888
+    },
+    {
+      id: '26',
+      programName: 'Orthopedic Surgery Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Orthopedic Surgery',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 24,
+      programDirector: 'Dr. Richard Green, MD',
+      website: 'https://mgh.harvard.edu/orthopedics',
+      description: 'Leading orthopedic surgery training with sports medicine and joint replacement focus.',
+      established: 1900
+    },
+    {
+      id: '27',
+      programName: 'Neurology Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Neurology',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 28,
+      programDirector: 'Dr. Helen Baker, MD',
+      website: 'https://mgh.harvard.edu/neurology',
+      description: 'World-class neurology training with stroke, epilepsy, and movement disorders expertise.',
+      established: 1925
+    },
+    {
+      id: '28',
+      programName: 'Obstetrics and Gynecology Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Obstetrics and Gynecology',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 24,
+      programDirector: 'Dr. Lisa Turner, MD',
+      website: 'https://mgh.harvard.edu/obgyn',
+      description: 'Comprehensive OB/GYN training with high-risk obstetrics and minimally invasive surgery.',
+      established: 1875
+    },
+    {
+      id: '29',
+      programName: 'Dermatology Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Dermatology',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 16,
+      programDirector: 'Dr. Andrew Phillips, MD',
+      website: 'https://mgh.harvard.edu/dermatology',
+      description: 'Premier dermatology training with dermatopathology and cosmetic dermatology.',
+      established: 1950
+    },
+    {
+      id: '30',
+      programName: 'Ophthalmology Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Ophthalmology',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 20,
+      programDirector: 'Dr. Margaret Evans, MD',
+      website: 'https://mgh.harvard.edu/ophthalmology',
+      description: 'Leading ophthalmology training with retina, glaucoma, and cornea subspecialties.',
+      established: 1930
+    },
+    {
+      id: '31',
+      programName: 'Pathology Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Pathology',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 20,
+      programDirector: 'Dr. Joseph Collins, MD',
+      website: 'https://mgh.harvard.edu/pathology',
+      description: 'Comprehensive pathology training with molecular diagnostics and digital pathology.',
+      established: 1896
+    },
+    {
+      id: '32',
+      programName: 'Neurosurgery Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Neurosurgery',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 12,
+      programDirector: 'Dr. Catherine Stewart, MD',
+      website: 'https://mgh.harvard.edu/neurosurgery',
+      description: 'Premier neurosurgery training with brain tumor, vascular, and functional neurosurgery.',
+      established: 1920
+    },
+    {
+      id: '33',
+      programName: 'Urology Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Urology',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 20,
+      programDirector: 'Dr. Brian Morris, MD',
+      website: 'https://mgh.harvard.edu/urology',
+      description: 'Advanced urology training with robotic surgery and urologic oncology expertise.',
+      established: 1910
+    },
+    {
+      id: '34',
+      programName: 'Otolaryngology Residency Program',
+      institution: 'Massachusetts General Hospital',
+      profession: 'Physician',
+      specialty: 'Otolaryngology',
+      city: 'Boston',
+      state: 'MA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 16,
+      programDirector: 'Dr. Sandra Rogers, MD',
+      website: 'https://mgh.harvard.edu/otolaryngology',
+      description: 'Comprehensive ENT training with head and neck oncology and facial plastic surgery.',
+      established: 1925
+    },
+
+    // UCLA Medical Center - 14 programs (Large Academic Medical Center)
+    {
+      id: '35',
       programName: 'Internal Medicine Residency Program',
       institution: 'UCLA Medical Center',
       profession: 'Physician',
@@ -70,13 +619,789 @@ export function GMEProgramSearch() {
       programType: 'Residency',
       accreditation: 'ACGME',
       positions: 45,
-      programDirector: 'Dr. Sarah Johnson, MD',
+      programDirector: 'Dr. Maria Gonzalez, MD',
       website: 'https://ucla.edu/internal-medicine',
       description: 'Comprehensive internal medicine training with emphasis on primary care and subspecialty rotations.',
       established: 1965
     },
     {
-      id: '2',
+      id: '36',
+      programName: 'Surgery Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Surgery',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 30,
+      programDirector: 'Dr. James Kim, MD',
+      website: 'https://ucla.edu/surgery',
+      description: 'Advanced surgical training with transplant surgery and minimally invasive techniques.',
+      established: 1965
+    },
+    {
+      id: '37',
+      programName: 'Emergency Medicine Residency',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Emergency Medicine',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 38,
+      programDirector: 'Dr. Robert Chen, MD',
+      website: 'https://ucla.edu/emergency-medicine',
+      description: 'High-volume emergency medicine training with trauma and critical care emphasis.',
+      established: 1975
+    },
+    {
+      id: '38',
+      programName: 'Pediatrics Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Pediatrics',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 40,
+      programDirector: 'Dr. Jennifer Wang, MD',
+      website: 'https://ucla.edu/pediatrics',
+      description: 'Comprehensive pediatric training with UCLA Mattel Children\'s Hospital rotations.',
+      established: 1968
+    },
+    {
+      id: '39',
+      programName: 'Anesthesiology Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Anesthesiology',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 34,
+      programDirector: 'Dr. Michael Davis, MD',
+      website: 'https://ucla.edu/anesthesiology',
+      description: 'Advanced anesthesiology training with cardiac, pediatric, and neuroanesthesia subspecialties.',
+      established: 1970
+    },
+    {
+      id: '40',
+      programName: 'Radiology Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Radiology',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 26,
+      programDirector: 'Dr. Lisa Thompson, MD',
+      website: 'https://ucla.edu/radiology',
+      description: 'Cutting-edge radiology training with advanced imaging and interventional radiology.',
+      established: 1972
+    },
+    {
+      id: '41',
+      programName: 'Psychiatry Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Psychiatry',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 30,
+      programDirector: 'Dr. Sarah Martinez, MD',
+      website: 'https://ucla.edu/psychiatry',
+      description: 'Comprehensive psychiatry training with neuroscience research and community mental health.',
+      established: 1968
+    },
+    {
+      id: '42',
+      programName: 'Orthopedic Surgery Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Orthopedic Surgery',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 22,
+      programDirector: 'Dr. David Wilson, MD',
+      website: 'https://ucla.edu/orthopedics',
+      description: 'Premier orthopedic surgery training with sports medicine and spine surgery expertise.',
+      established: 1975
+    },
+    {
+      id: '43',
+      programName: 'Neurology Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Neurology',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 26,
+      programDirector: 'Dr. Patricia Lee, MD',
+      website: 'https://ucla.edu/neurology',
+      description: 'World-class neurology training with stroke, epilepsy, and movement disorders programs.',
+      established: 1978
+    },
+    {
+      id: '44',
+      programName: 'Obstetrics and Gynecology Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Obstetrics and Gynecology',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 22,
+      programDirector: 'Dr. Karen Brown, MD',
+      website: 'https://ucla.edu/obgyn',
+      description: 'Comprehensive OB/GYN training with maternal-fetal medicine and reproductive endocrinology.',
+      established: 1970
+    },
+    {
+      id: '45',
+      programName: 'Dermatology Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Dermatology',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 14,
+      programDirector: 'Dr. Steven Garcia, MD',
+      website: 'https://ucla.edu/dermatology',
+      description: 'Premier dermatology training with dermatopathology and cosmetic dermatology focus.',
+      established: 1980
+    },
+    {
+      id: '46',
+      programName: 'Ophthalmology Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Ophthalmology',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 18,
+      programDirector: 'Dr. Michelle Taylor, MD',
+      website: 'https://ucla.edu/ophthalmology',
+      description: 'Leading ophthalmology training with retina, cornea, and oculoplastics subspecialties.',
+      established: 1975
+    },
+    {
+      id: '47',
+      programName: 'Neurosurgery Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Neurosurgery',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 10,
+      programDirector: 'Dr. Christopher Anderson, MD',
+      website: 'https://ucla.edu/neurosurgery',
+      description: 'Premier neurosurgery training with pediatric, vascular, and functional neurosurgery.',
+      established: 1978
+    },
+    {
+      id: '48',
+      programName: 'Urology Residency Program',
+      institution: 'UCLA Medical Center',
+      profession: 'Physician',
+      specialty: 'Urology',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 18,
+      programDirector: 'Dr. Laura Miller, MD',
+      website: 'https://ucla.edu/urology',
+      description: 'Advanced urology training with robotic surgery and urologic oncology expertise.',
+      established: 1972
+    },
+
+    // Mayo Clinic Rochester - 12 programs (Large Academic Medical Center)
+    {
+      id: '49',
+      programName: 'Internal Medicine Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Internal Medicine',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 42,
+      programDirector: 'Dr. Thomas Johnson, MD',
+      website: 'https://mayo.edu/internal-medicine',
+      description: 'World-renowned internal medicine training with integrated practice model and research.',
+      established: 1915
+    },
+    {
+      id: '50',
+      programName: 'Surgery Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Surgery',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 26,
+      programDirector: 'Dr. Elizabeth Smith, MD',
+      website: 'https://mayo.edu/surgery',
+      description: 'Comprehensive surgical training with transplant surgery and minimally invasive techniques.',
+      established: 1915
+    },
+    {
+      id: '51',
+      programName: 'Anesthesiology Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Anesthesiology',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 30,
+      programDirector: 'Dr. Mark Williams, MD',
+      website: 'https://mayo.edu/anesthesiology',
+      description: 'Premier anesthesiology training with cardiac, neuroanesthesia, and pain management.',
+      established: 1920
+    },
+    {
+      id: '52',
+      programName: 'Radiology Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Radiology',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 24,
+      programDirector: 'Dr. Jennifer Davis, MD',
+      website: 'https://mayo.edu/radiology',
+      description: 'Advanced radiology training with AI integration and interventional procedures.',
+      established: 1925
+    },
+    {
+      id: '53',
+      programName: 'Psychiatry Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Psychiatry',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 26,
+      programDirector: 'Dr. Robert Wilson, MD',
+      website: 'https://mayo.edu/psychiatry',
+      description: 'Comprehensive psychiatry training with integrated medical and psychiatric care.',
+      established: 1930
+    },
+    {
+      id: '54',
+      programName: 'Orthopedic Surgery Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Orthopedic Surgery',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 20,
+      programDirector: 'Dr. Susan Brown, MD',
+      website: 'https://mayo.edu/orthopedics',
+      description: 'Leading orthopedic surgery training with sports medicine and joint replacement expertise.',
+      established: 1935
+    },
+    {
+      id: '55',
+      programName: 'Neurology Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Neurology',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 22,
+      programDirector: 'Dr. Paul Garcia, MD',
+      website: 'https://mayo.edu/neurology',
+      description: 'World-class neurology training with movement disorders and epilepsy expertise.',
+      established: 1928
+    },
+    {
+      id: '56',
+      programName: 'Dermatology Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Dermatology',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 12,
+      programDirector: 'Dr. Lisa Martinez, MD',
+      website: 'https://mayo.edu/dermatology',
+      description: 'Premier dermatology training with dermatopathology and Mohs surgery focus.',
+      established: 1955
+    },
+    {
+      id: '57',
+      programName: 'Ophthalmology Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Ophthalmology',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 16,
+      programDirector: 'Dr. Kevin Lee, MD',
+      website: 'https://mayo.edu/ophthalmology',
+      description: 'Leading ophthalmology training with retina, glaucoma, and oculoplastics subspecialties.',
+      established: 1940
+    },
+    {
+      id: '58',
+      programName: 'Neurosurgery Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Neurosurgery',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 8,
+      programDirector: 'Dr. Amanda Clark, MD',
+      website: 'https://mayo.edu/neurosurgery',
+      description: 'Premier neurosurgery training with brain tumor, spine, and vascular neurosurgery.',
+      established: 1932
+    },
+    {
+      id: '59',
+      programName: 'Urology Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Urology',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 16,
+      programDirector: 'Dr. Daniel Turner, MD',
+      website: 'https://mayo.edu/urology',
+      description: 'Advanced urology training with robotic surgery and urologic oncology expertise.',
+      established: 1925
+    },
+    {
+      id: '60',
+      programName: 'Pathology Residency Program',
+      institution: 'Mayo Clinic Rochester',
+      profession: 'Physician',
+      specialty: 'Pathology',
+      city: 'Rochester',
+      state: 'MN',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 18,
+      programDirector: 'Dr. Michelle Hall, MD',
+      website: 'https://mayo.edu/pathology',
+      description: 'Comprehensive pathology training with molecular diagnostics and digital pathology.',
+      established: 1920
+    },
+
+    // Cleveland Clinic - 11 programs (Large Academic Medical Center)
+    {
+      id: '61',
+      programName: 'Internal Medicine Residency Program',
+      institution: 'Cleveland Clinic',
+      profession: 'Physician',
+      specialty: 'Internal Medicine',
+      city: 'Cleveland',
+      state: 'OH',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 40,
+      programDirector: 'Dr. Richard Baker, MD',
+      website: 'https://clevelandclinic.org/internal-medicine',
+      description: 'Comprehensive internal medicine training with emphasis on cardiovascular medicine.',
+      established: 1921
+    },
+    {
+      id: '62',
+      programName: 'Surgery Residency Program',
+      institution: 'Cleveland Clinic',
+      profession: 'Physician',
+      specialty: 'Surgery',
+      city: 'Cleveland',
+      state: 'OH',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 28,
+      programDirector: 'Dr. Helen Young, MD',
+      website: 'https://clevelandclinic.org/surgery',
+      description: 'Advanced surgical training with transplant surgery and minimally invasive techniques.',
+      established: 1921
+    },
+    {
+      id: '63',
+      programName: 'Anesthesiology Residency Program',
+      institution: 'Cleveland Clinic',
+      profession: 'Physician',
+      specialty: 'Anesthesiology',
+      city: 'Cleveland',
+      state: 'OH',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 32,
+      programDirector: 'Dr. Joseph Phillips, MD',
+      website: 'https://clevelandclinic.org/anesthesiology',
+      description: 'Premier anesthesiology training with cardiac, neuroanesthesia, and pain management.',
+      established: 1925
+    },
+    {
+      id: '64',
+      programName: 'Emergency Medicine Residency',
+      institution: 'Cleveland Clinic',
+      profession: 'Physician',
+      specialty: 'Emergency Medicine',
+      city: 'Cleveland',
+      state: 'OH',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 36,
+      programDirector: 'Dr. Catherine Evans, MD',
+      website: 'https://clevelandclinic.org/emergency-medicine',
+      description: 'High-volume emergency medicine training with trauma and critical care emphasis.',
+      established: 1980
+    },
+    {
+      id: '65',
+      programName: 'Radiology Residency Program',
+      institution: 'Cleveland Clinic',
+      profession: 'Physician',
+      specialty: 'Radiology',
+      city: 'Cleveland',
+      state: 'OH',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 22,
+      programDirector: 'Dr. Brian Stewart, MD',
+      website: 'https://clevelandclinic.org/radiology',
+      description: 'Advanced radiology training with cardiovascular imaging and interventional procedures.',
+      established: 1930
+    },
+    {
+      id: '66',
+      programName: 'Orthopedic Surgery Residency Program',
+      institution: 'Cleveland Clinic',
+      profession: 'Physician',
+      specialty: 'Orthopedic Surgery',
+      city: 'Cleveland',
+      state: 'OH',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 18,
+      programDirector: 'Dr. Sandra Morris, MD',
+      website: 'https://clevelandclinic.org/orthopedics',
+      description: 'Leading orthopedic surgery training with sports medicine and joint replacement expertise.',
+      established: 1935
+    },
+    {
+      id: '67',
+      programName: 'Neurology Residency Program',
+      institution: 'Cleveland Clinic',
+      profession: 'Physician',
+      specialty: 'Neurology',
+      city: 'Cleveland',
+      state: 'OH',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 20,
+      programDirector: 'Dr. Margaret Rogers, MD',
+      website: 'https://clevelandclinic.org/neurology',
+      description: 'World-class neurology training with stroke, epilepsy, and movement disorders programs.',
+      established: 1940
+    },
+    {
+      id: '68',
+      programName: 'Neurosurgery Residency Program',
+      institution: 'Cleveland Clinic',
+      profession: 'Physician',
+      specialty: 'Neurosurgery',
+      city: 'Cleveland',
+      state: 'OH',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 10,
+      programDirector: 'Dr. Christopher Collins, MD',
+      website: 'https://clevelandclinic.org/neurosurgery',
+      description: 'Premier neurosurgery training with brain tumor, spine, and vascular neurosurgery.',
+      established: 1945
+    },
+    {
+      id: '69',
+      programName: 'Urology Residency Program',
+      institution: 'Cleveland Clinic',
+      profession: 'Physician',
+      specialty: 'Urology',
+      city: 'Cleveland',
+      state: 'OH',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 14,
+      programDirector: 'Dr. Laura Walker, MD',
+      website: 'https://clevelandclinic.org/urology',
+      description: 'Advanced urology training with robotic surgery and urologic oncology expertise.',
+      established: 1930
+    },
+    {
+      id: '70',
+      programName: 'Dermatology Residency Program',
+      institution: 'Cleveland Clinic',
+      profession: 'Physician',
+      specialty: 'Dermatology',
+      city: 'Cleveland',
+      state: 'OH',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 10,
+      programDirector: 'Dr. Andrew Lewis, MD',
+      website: 'https://clevelandclinic.org/dermatology',
+      description: 'Premier dermatology training with dermatopathology and cosmetic dermatology focus.',
+      established: 1960
+    },
+    {
+      id: '71',
+      programName: 'Pathology Residency Program',
+      institution: 'Cleveland Clinic',
+      profession: 'Physician',
+      specialty: 'Pathology',
+      city: 'Cleveland',
+      state: 'OH',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 16,
+      programDirector: 'Dr. Nancy Green, MD',
+      website: 'https://clevelandclinic.org/pathology',
+      description: 'Comprehensive pathology training with molecular diagnostics and cardiovascular pathology.',
+      established: 1925
+    },
+
+    // Stanford University Medical Center - 10 programs (Large Academic Medical Center)
+    {
+      id: '72',
+      programName: 'Internal Medicine Residency Program',
+      institution: 'Stanford University Medical Center',
+      profession: 'Physician',
+      specialty: 'Internal Medicine',
+      city: 'Stanford',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 38,
+      programDirector: 'Dr. Paul Turner, MD',
+      website: 'https://stanford.edu/internal-medicine',
+      description: 'Premier internal medicine training with emphasis on innovation and technology integration.',
+      established: 1959
+    },
+    {
+      id: '73',
+      programName: 'Surgery Residency Program',
+      institution: 'Stanford University Medical Center',
+      profession: 'Physician',
+      specialty: 'Surgery',
+      city: 'Stanford',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 26,
+      programDirector: 'Dr. Karen Hall, MD',
+      website: 'https://stanford.edu/surgery',
+      description: 'Advanced surgical training with transplant surgery and robotic surgery expertise.',
+      established: 1959
+    },
+    {
+      id: '74',
+      programName: 'Anesthesiology Residency Program',
+      institution: 'Stanford University Medical Center',
+      profession: 'Physician',
+      specialty: 'Anesthesiology',
+      city: 'Stanford',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 28,
+      programDirector: 'Dr. Richard Adams, MD',
+      website: 'https://stanford.edu/anesthesiology',
+      description: 'Premier anesthesiology training with cardiac, pediatric, and neuroanesthesia subspecialties.',
+      established: 1965
+    },
+    {
+      id: '75',
+      programName: 'Emergency Medicine Residency',
+      institution: 'Stanford University Medical Center',
+      profession: 'Physician',
+      specialty: 'Emergency Medicine',
+      city: 'Stanford',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 32,
+      programDirector: 'Dr. Elizabeth Roberts, MD',
+      website: 'https://stanford.edu/emergency-medicine',
+      description: 'High-volume emergency medicine training with trauma and disaster medicine focus.',
+      established: 1978
+    },
+    {
+      id: '76',
+      programName: 'Radiology Residency Program',
+      institution: 'Stanford University Medical Center',
+      profession: 'Physician',
+      specialty: 'Radiology',
+      city: 'Stanford',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 20,
+      programDirector: 'Dr. Mark Clark, MD',
+      website: 'https://stanford.edu/radiology',
+      description: 'Advanced radiology training with AI integration and interventional radiology.',
+      established: 1970
+    },
+    {
+      id: '77',
+      programName: 'Neurology Residency Program',
+      institution: 'Stanford University Medical Center',
+      profession: 'Physician',
+      specialty: 'Neurology',
+      city: 'Stanford',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 18,
+      programDirector: 'Dr. Susan Lewis, MD',
+      website: 'https://stanford.edu/neurology',
+      description: 'World-class neurology training with movement disorders and epilepsy expertise.',
+      established: 1975
+    },
+    {
+      id: '78',
+      programName: 'Neurosurgery Residency Program',
+      institution: 'Stanford University Medical Center',
+      profession: 'Physician',
+      specialty: 'Neurosurgery',
+      city: 'Stanford',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 8,
+      programDirector: 'Dr. Daniel Young, MD',
+      website: 'https://stanford.edu/neurosurgery',
+      description: 'Premier neurosurgery training with pediatric, functional, and vascular neurosurgery.',
+      established: 1970
+    },
+    {
+      id: '79',
+      programName: 'Orthopedic Surgery Residency Program',
+      institution: 'Stanford University Medical Center',
+      profession: 'Physician',
+      specialty: 'Orthopedic Surgery',
+      city: 'Stanford',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 16,
+      programDirector: 'Dr. Lisa Baker, MD',
+      website: 'https://stanford.edu/orthopedics',
+      description: 'Leading orthopedic surgery training with sports medicine and joint replacement expertise.',
+      established: 1972
+    },
+    {
+      id: '80',
+      programName: 'Dermatology Residency Program',
+      institution: 'Stanford University Medical Center',
+      profession: 'Physician',
+      specialty: 'Dermatology',
+      city: 'Stanford',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 12,
+      programDirector: 'Dr. Helen Phillips, MD',
+      website: 'https://stanford.edu/dermatology',
+      description: 'Premier dermatology training with dermatopathology and cosmetic dermatology focus.',
+      established: 1980
+    },
+    {
+      id: '81',
+      programName: 'Family Medicine Residency',
+      institution: 'Stanford University Medical Center',
+      profession: 'Physician',
+      specialty: 'Family Medicine',
+      city: 'Stanford',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 24,
+      programDirector: 'Dr. James Wilson, MD',
+      website: 'https://stanford.edu/family-medicine',
+      description: 'Community-based family medicine training with rural and underserved population focus.',
+      established: 1972
+    },
+
+    // UCSF Medical Center - 9 programs (Large Academic Medical Center)
+    {
+      id: '82',
+      programName: 'Internal Medicine Residency Program',
+      institution: 'UCSF Medical Center',
+      profession: 'Physician',
+      specialty: 'Internal Medicine',
+      city: 'San Francisco',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 44,
+      programDirector: 'Dr. Margaret Evans, MD',
+      website: 'https://ucsf.edu/internal-medicine',
+      description: 'Premier internal medicine training with emphasis on primary care and global health.',
+      established: 1958
+    },
+    {
+      id: '83',
+      programName: 'Surgery Residency Program',
+      institution: 'UCSF Medical Center',
+      profession: 'Physician',
+      specialty: 'Surgery',
+      city: 'San Francisco',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 30,
+      programDirector: 'Dr. Joseph Stewart, MD',
+      website: 'https://ucsf.edu/surgery',
+      description: 'Advanced surgical training with transplant surgery and minimally invasive techniques.',
+      established: 1958
+    },
+    {
+      id: '84',
       programName: 'Emergency Medicine Residency',
       institution: 'UCSF Medical Center',
       profession: 'Physician',
@@ -92,7 +1417,137 @@ export function GMEProgramSearch() {
       established: 1978
     },
     {
-      id: '3',
+      id: '85',
+      programName: 'Anesthesiology Residency Program',
+      institution: 'UCSF Medical Center',
+      profession: 'Physician',
+      specialty: 'Anesthesiology',
+      city: 'San Francisco',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 30,
+      programDirector: 'Dr. Catherine Morris, MD',
+      website: 'https://ucsf.edu/anesthesiology',
+      description: 'Premier anesthesiology training with cardiac, pediatric, and neuroanesthesia subspecialties.',
+      established: 1965
+    },
+    {
+      id: '86',
+      programName: 'Radiology Residency Program',
+      institution: 'UCSF Medical Center',
+      profession: 'Physician',
+      specialty: 'Radiology',
+      city: 'San Francisco',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 24,
+      programDirector: 'Dr. Brian Rogers, MD',
+      website: 'https://ucsf.edu/radiology',
+      description: 'Advanced radiology training with AI integration and interventional radiology.',
+      established: 1970
+    },
+    {
+      id: '87',
+      programName: 'Neurology Residency Program',
+      institution: 'UCSF Medical Center',
+      profession: 'Physician',
+      specialty: 'Neurology',
+      city: 'San Francisco',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 22,
+      programDirector: 'Dr. Sandra Collins, MD',
+      website: 'https://ucsf.edu/neurology',
+      description: 'World-class neurology training with movement disorders and epilepsy expertise.',
+      established: 1975
+    },
+    {
+      id: '88',
+      programName: 'Neurosurgery Residency Program',
+      institution: 'UCSF Medical Center',
+      profession: 'Physician',
+      specialty: 'Neurosurgery',
+      city: 'San Francisco',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 10,
+      programDirector: 'Dr. Laura Walker, MD',
+      website: 'https://ucsf.edu/neurosurgery',
+      description: 'Premier neurosurgery training with pediatric, functional, and vascular neurosurgery.',
+      established: 1970
+    },
+    {
+      id: '89',
+      programName: 'Orthopedic Surgery Residency Program',
+      institution: 'UCSF Medical Center',
+      profession: 'Physician',
+      specialty: 'Orthopedic Surgery',
+      city: 'San Francisco',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 18,
+      programDirector: 'Dr. Andrew Lewis, MD',
+      website: 'https://ucsf.edu/orthopedics',
+      description: 'Leading orthopedic surgery training with sports medicine and joint replacement expertise.',
+      established: 1972
+    },
+    {
+      id: '90',
+      programName: 'Dermatology Residency Program',
+      institution: 'UCSF Medical Center',
+      profession: 'Physician',
+      specialty: 'Dermatology',
+      city: 'San Francisco',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 14,
+      programDirector: 'Dr. Nancy Green, MD',
+      website: 'https://ucsf.edu/dermatology',
+      description: 'Premier dermatology training with dermatopathology and cosmetic dermatology focus.',
+      established: 1980
+    },
+
+    // Cedars-Sinai Medical Center - 8 programs (Medium Academic Medical Center)
+    {
+      id: '91',
+      programName: 'Internal Medicine Residency Program',
+      institution: 'Cedars-Sinai Medical Center',
+      profession: 'Physician',
+      specialty: 'Internal Medicine',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 36,
+      programDirector: 'Dr. Paul Turner, MD',
+      website: 'https://cedars-sinai.edu/internal-medicine',
+      description: 'Comprehensive internal medicine training with emphasis on cardiovascular medicine.',
+      established: 1961
+    },
+    {
+      id: '92',
+      programName: 'Surgery Residency Program',
+      institution: 'Cedars-Sinai Medical Center',
+      profession: 'Physician',
+      specialty: 'Surgery',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 24,
+      programDirector: 'Dr. Karen Hall, MD',
+      website: 'https://cedars-sinai.edu/surgery',
+      description: 'Advanced surgical training with transplant surgery and minimally invasive techniques.',
+      established: 1961
+    },
+    {
+      id: '93',
       programName: 'Cardiology Fellowship Program',
       institution: 'Cedars-Sinai Medical Center',
       profession: 'Physician',
@@ -109,603 +1564,211 @@ export function GMEProgramSearch() {
       established: 1985
     },
     {
-      id: '4',
-      programName: 'Family Medicine Residency',
-      institution: 'Stanford University Medical Center',
+      id: '94',
+      programName: 'Emergency Medicine Residency',
+      institution: 'Cedars-Sinai Medical Center',
       profession: 'Physician',
-      specialty: 'Family Medicine',
-      city: 'Stanford',
+      specialty: 'Emergency Medicine',
+      city: 'Los Angeles',
       state: 'CA',
       programType: 'Residency',
       accreditation: 'ACGME',
+      positions: 28,
+      programDirector: 'Dr. Richard Adams, MD',
+      website: 'https://cedars-sinai.edu/emergency-medicine',
+      description: 'High-volume emergency medicine training with trauma and critical care emphasis.',
+      established: 1982
+    },
+    {
+      id: '95',
+      programName: 'Anesthesiology Residency Program',
+      institution: 'Cedars-Sinai Medical Center',
+      profession: 'Physician',
+      specialty: 'Anesthesiology',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 26,
+      programDirector: 'Dr. Elizabeth Roberts, MD',
+      website: 'https://cedars-sinai.edu/anesthesiology',
+      description: 'Premier anesthesiology training with cardiac and neuroanesthesia subspecialties.',
+      established: 1970
+    },
+    {
+      id: '96',
+      programName: 'Radiology Residency Program',
+      institution: 'Cedars-Sinai Medical Center',
+      profession: 'Physician',
+      specialty: 'Radiology',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 18,
+      programDirector: 'Dr. Mark Clark, MD',
+      website: 'https://cedars-sinai.edu/radiology',
+      description: 'Advanced radiology training with cardiovascular imaging and interventional procedures.',
+      established: 1975
+    },
+    {
+      id: '97',
+      programName: 'Orthopedic Surgery Residency Program',
+      institution: 'Cedars-Sinai Medical Center',
+      profession: 'Physician',
+      specialty: 'Orthopedic Surgery',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 16,
+      programDirector: 'Dr. Susan Lewis, MD',
+      website: 'https://cedars-sinai.edu/orthopedics',
+      description: 'Leading orthopedic surgery training with sports medicine and joint replacement expertise.',
+      established: 1980
+    },
+    {
+      id: '98',
+      programName: 'Neurology Residency Program',
+      institution: 'Cedars-Sinai Medical Center',
+      profession: 'Physician',
+      specialty: 'Neurology',
+      city: 'Los Angeles',
+      state: 'CA',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 14,
+      programDirector: 'Dr. Daniel Young, MD',
+      website: 'https://cedars-sinai.edu/neurology',
+      description: 'World-class neurology training with movement disorders and stroke expertise.',
+      established: 1985
+    },
+
+    // Mount Sinai Hospital - 6 programs (Medium Academic Medical Center)
+    {
+      id: '99',
+      programName: 'Internal Medicine Residency Program',
+      institution: 'Mount Sinai Hospital',
+      profession: 'Physician',
+      specialty: 'Internal Medicine',
+      city: 'New York',
+      state: 'NY',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 34,
+      programDirector: 'Dr. Lisa Baker, MD',
+      website: 'https://mountsinai.org/internal-medicine',
+      description: 'Comprehensive internal medicine training with emphasis on urban healthcare.',
+      established: 1968
+    },
+    {
+      id: '100',
+      programName: 'Surgery Residency Program',
+      institution: 'Mount Sinai Hospital',
+      profession: 'Physician',
+      specialty: 'Surgery',
+      city: 'New York',
+      state: 'NY',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 22,
+      programDirector: 'Dr. Helen Phillips, MD',
+      website: 'https://mountsinai.org/surgery',
+      description: 'Advanced surgical training with transplant surgery and minimally invasive techniques.',
+      established: 1968
+    },
+    {
+      id: '101',
+      programName: 'Emergency Medicine Residency',
+      institution: 'Mount Sinai Hospital',
+      profession: 'Physician',
+      specialty: 'Emergency Medicine',
+      city: 'New York',
+      state: 'NY',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 30,
+      programDirector: 'Dr. James Evans, MD',
+      website: 'https://mountsinai.org/emergency-medicine',
+      description: 'High-volume emergency medicine training with trauma and urban emergency care.',
+      established: 1985
+    },
+    {
+      id: '102',
+      programName: 'Anesthesiology Residency Program',
+      institution: 'Mount Sinai Hospital',
+      profession: 'Physician',
+      specialty: 'Anesthesiology',
+      city: 'New York',
+      state: 'NY',
+      programType: 'Residency',
+      accreditation: 'ACGME',
       positions: 24,
-      programDirector: 'Dr. James Wilson, MD',
-      website: 'https://stanford.edu/family-medicine',
+      programDirector: 'Dr. Margaret Stewart, MD',
+      website: 'https://mountsinai.org/anesthesiology',
+      description: 'Premier anesthesiology training with cardiac and neuroanesthesia subspecialties.',
+      established: 1975
+    },
+    {
+      id: '103',
+      programName: 'Radiology Residency Program',
+      institution: 'Mount Sinai Hospital',
+      profession: 'Physician',
+      specialty: 'Radiology',
+      city: 'New York',
+      state: 'NY',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 16,
+      programDirector: 'Dr. Joseph Morris, MD',
+      website: 'https://mountsinai.org/radiology',
+      description: 'Advanced radiology training with interventional radiology and advanced imaging.',
+      established: 1980
+    },
+    {
+      id: '104',
+      programName: 'Orthopedic Surgery Residency Program',
+      institution: 'Mount Sinai Hospital',
+      profession: 'Physician',
+      specialty: 'Orthopedic Surgery',
+      city: 'New York',
+      state: 'NY',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 14,
+      programDirector: 'Dr. Catherine Rogers, MD',
+      website: 'https://mountsinai.org/orthopedics',
+      description: 'Leading orthopedic surgery training with sports medicine and joint replacement expertise.',
+      established: 1985
+    },
+
+    // Community Medical Center - 5 programs (Community Hospital)
+    {
+      id: '105',
+      programName: 'Family Medicine Residency',
+      institution: 'Community Medical Center',
+      profession: 'Physician',
+      specialty: 'Family Medicine',
+      city: 'Phoenix',
+      state: 'AZ',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 18,
+      programDirector: 'Dr. Brian Collins, MD',
+      website: 'https://communitymedical.org/family-medicine',
       description: 'Community-based family medicine training with rural and underserved population focus.',
-      established: 1972
-    }
-  ];
-
-  // Group programs by institution
-  const institutionGroups = mockResults.reduce((acc, program) => {
-    if (!acc[program.institution]) {
-      acc[program.institution] = [];
-    }
-    acc[program.institution].push(program);
-    return acc;
-  }, {} as Record<string, GMEProgram[]>);
-
-  const institutions = Object.keys(institutionGroups).map(name => ({
-    name,
-    programs: institutionGroups[name],
-    programCount: institutionGroups[name].length,
-    specialties: [...new Set(institutionGroups[name].map(p => p.specialty))],
-    totalPositions: institutionGroups[name].reduce((sum, p) => sum + p.positions, 0)
-  }));
-
-  const handleSearch = async () => {
-    setIsSearching(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Filter mock results based on search query and filters
-    let filtered = mockResults;
-    
-    if (searchQuery) {
-      filtered = filtered.filter(program =>
-        program.programName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        program.institution.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        program.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        program.programDirector.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    
-    if (filters.profession) {
-      filtered = filtered.filter(program =>
-        program.profession.toLowerCase().includes(filters.profession.toLowerCase())
-      );
-    }
-    
-    if (filters.specialty) {
-      filtered = filtered.filter(program =>
-        program.specialty.toLowerCase().includes(filters.specialty.toLowerCase())
-      );
-    }
-    
-    if (filters.subspecialty) {
-      filtered = filtered.filter(program =>
-        program.subspecialty?.toLowerCase().includes(filters.subspecialty.toLowerCase())
-      );
-    }
-    
-    if (filters.state) {
-      filtered = filtered.filter(program => program.state === filters.state);
-    }
-    
-    if (filters.programType) {
-      filtered = filtered.filter(program => program.programType === filters.programType);
-    }
-    
-    setResults(filtered);
-    setIsSearching(false);
-  };
-
-  const handleInstitutionSelect = (institutionName: string) => {
-    setSelectedInstitution(institutionName);
-    setResults(institutionGroups[institutionName] || []);
-    setViewMode('programs');
-  };
-
-  const handleBackToInstitutions = () => {
-    setSelectedInstitution(null);
-    setViewMode('institutions');
-    setResults([]);
-  };
-
-  const handleSort = (field: 'programName' | 'institution' | 'specialty' | 'state') => {
-    const newOrder = sortBy === field && sortOrder === 'asc' ? 'desc' : 'asc';
-    setSortBy(field);
-    setSortOrder(newOrder);
-    
-    const sorted = [...results].sort((a, b) => {
-      let aValue = '';
-      let bValue = '';
-      
-      switch (field) {
-        case 'programName':
-          aValue = a.programName.toLowerCase();
-          bValue = b.programName.toLowerCase();
-          break;
-        case 'institution':
-          aValue = a.institution.toLowerCase();
-          bValue = b.institution.toLowerCase();
-          break;
-        case 'specialty':
-          aValue = a.specialty.toLowerCase();
-          bValue = b.specialty.toLowerCase();
-          break;
-        case 'state':
-          aValue = a.state.toLowerCase();
-          bValue = b.state.toLowerCase();
-          break;
-      }
-      
-      if (newOrder === 'asc') {
-        return aValue.localeCompare(bValue);
-      } else {
-        return bValue.localeCompare(aValue);
-      }
-    });
-    
-    setResults(sorted);
-  };
-
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleSelectProgram = (programId: string) => {
-    const newSelected = new Set(selectedPrograms);
-    if (newSelected.has(programId)) {
-      newSelected.delete(programId);
-    } else {
-      newSelected.add(programId);
-    }
-    setSelectedPrograms(newSelected);
-    setShowBulkActions(newSelected.size > 0);
-  };
-
-  const handleSelectAll = () => {
-    if (selectedPrograms.size === results.length) {
-      setSelectedPrograms(new Set());
-      setShowBulkActions(false);
-    } else {
-      setSelectedPrograms(new Set(results.map(p => p.id)));
-      setShowBulkActions(true);
-    }
-  };
-
-  const handleBulkAction = (action: 'save' | 'pdf' | 'csv') => {
-    const selectedData = results.filter(p => selectedPrograms.has(p.id));
-    
-    switch (action) {
-      case 'save':
-        console.log('Saving to list:', selectedData);
-        alert(`Saved ${selectedData.length} programs to list`);
-        break;
-      case 'pdf':
-        console.log('Exporting to PDF:', selectedData);
-        alert(`Exporting ${selectedData.length} programs to PDF`);
-        break;
-      case 'csv':
-        console.log('Exporting to CSV:', selectedData);
-        // Create CSV content
-        const csvContent = [
-          'Program Name,Institution,Profession,Specialty,Subspecialty,City,State,Program Type,Positions,Program Director',
-          ...selectedData.map(p => 
-            `"${p.programName}","${p.institution}","${p.profession}","${p.specialty}","${p.subspecialty || ''}","${p.city}","${p.state}","${p.programType}","${p.positions}","${p.programDirector}"`
-          )
-        ].join('\n');
-        
-        // Download CSV
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `gme_programs_export_${new Date().toISOString().split('T')[0]}.csv`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-        break;
-    }
-  };
-
-  return (
-    <Layout breadcrumbs={[{ label: 'GME Program Search' }]}>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2 flex items-center">
-            <GraduationCap className="h-6 w-6 mr-3" />
-            Graduate Medical Education Programs
-          </h1>
-          <p className="text-gray-600">
-            Search and explore GME programs by profession, specialty, subspecialty, and state.
-          </p>
-        </div>
-
-        {/* Search Form */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="space-y-4">
-            {/* Search Bar */}
-            <div className="flex space-x-4">
-              <div className="flex-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <SearchIcon className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search by program name, institution, specialty, or director..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-2 px-4 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <Filter className="h-4 w-4" />
-                <span>Filters</span>
-              </button>
-              <button
-                onClick={handleSearch}
-                disabled={isSearching}
-                className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <SearchIcon className="h-4 w-4" />
-                <span>{isSearching ? 'Searching...' : 'Search'}</span>
-              </button>
-              <button
-                onClick={() => setViewMode(viewMode === 'programs' ? 'institutions' : 'programs')}
-                className="flex items-center space-x-2 px-4 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <Building className="h-4 w-4" />
-                <span>{viewMode === 'programs' ? 'View by Institution' : 'View Programs'}</span>
-              </button>
-            </div>
-
-            {/* Filters */}
-            {showFilters && (
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Profession
-                  </label>
-                  <select
-                    value={filters.profession}
-                    onChange={(e) => handleFilterChange('profession', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">All Professions</option>
-                    <option value="Physician">Physician</option>
-                    <option value="Nurse Practitioner">Nurse Practitioner</option>
-                    <option value="Physician Assistant">Physician Assistant</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Specialty
-                  </label>
-                  <select
-                    value={filters.specialty}
-                    onChange={(e) => handleFilterChange('specialty', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">All Specialties</option>
-                    <option value="Internal Medicine">Internal Medicine</option>
-                    <option value="Emergency Medicine">Emergency Medicine</option>
-                    <option value="Family Medicine">Family Medicine</option>
-                    <option value="Pediatrics">Pediatrics</option>
-                    <option value="Surgery">Surgery</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Subspecialty
-                  </label>
-                  <select
-                    value={filters.subspecialty}
-                    onChange={(e) => handleFilterChange('subspecialty', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">All Subspecialties</option>
-                    <option value="Cardiology">Cardiology</option>
-                    <option value="Gastroenterology">Gastroenterology</option>
-                    <option value="Pulmonology">Pulmonology</option>
-                    <option value="Endocrinology">Endocrinology</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    State
-                  </label>
-                  <select
-                    value={filters.state}
-                    onChange={(e) => handleFilterChange('state', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">All States</option>
-                    <option value="CA">California</option>
-                    <option value="NY">New York</option>
-                    <option value="TX">Texas</option>
-                    <option value="FL">Florida</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Program Type
-                  </label>
-                  <select
-                    value={filters.programType}
-                    onChange={(e) => handleFilterChange('programType', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">All Types</option>
-                    <option value="Residency">Residency</option>
-                    <option value="Fellowship">Fellowship</option>
-                    <option value="Internship">Internship</option>
-                  </select>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Institution View */}
-        {viewMode === 'institutions' && (
-          <div className="bg-white rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Institutions ({institutions.length})
-              </h2>
-            </div>
-            <div className="divide-y divide-gray-200">
-              {institutions.map((institution) => (
-                <div key={institution.name} className="p-6 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full">
-                        <Building className="h-6 w-6 text-purple-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-medium text-gray-900">
-                          {institution.name}
-                        </h3>
-                        <div className="mt-1 space-y-1">
-                          <div className="flex items-center space-x-4 text-sm text-gray-600">
-                            <div className="flex items-center">
-                              <GraduationCap className="h-4 w-4 mr-1" />
-                              {institution.programCount} program{institution.programCount !== 1 ? 's' : ''}
-                            </div>
-                            <div className="flex items-center">
-                              <Users className="h-4 w-4 mr-1" />
-                              {institution.totalPositions} total positions
-                            </div>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Stethoscope className="h-4 w-4 mr-2" />
-                            <span>Specialties: {institution.specialties.join(', ')}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => handleInstitutionSelect(institution.name)}
-                        className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                      >
-                        <Eye className="h-4 w-4" />
-                        <span>View Programs</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Results */}
-        {results.length > 0 && viewMode === 'programs' && (
-          <div className="bg-white rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  {selectedInstitution && (
-                    <button
-                      onClick={handleBackToInstitutions}
-                      className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-700"
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                      <span>Back to Institutions</span>
-                    </button>
-                  )}
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {selectedInstitution ? `${selectedInstitution} Programs` : 'Search Results'} ({results.length})
-                  </h2>
-                  {selectedPrograms.size > 0 && (
-                    <span className="text-sm text-blue-600 font-medium">
-                      {selectedPrograms.size} selected
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-500">Sort by:</span>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleSort('programName')}
-                      className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                        sortBy === 'programName' 
-                          ? 'bg-blue-100 text-blue-700' 
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                      }`}
-                    >
-                      <span>Program</span>
-                      {sortBy === 'programName' ? (
-                        sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
-                      ) : (
-                        <ArrowUpDown className="h-3 w-3" />
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleSort('institution')}
-                      className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                        sortBy === 'institution' 
-                          ? 'bg-blue-100 text-blue-700' 
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                      }`}
-                    >
-                      <span>Institution</span>
-                      {sortBy === 'institution' ? (
-                        sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
-                      ) : (
-                        <ArrowUpDown className="h-3 w-3" />
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleSort('specialty')}
-                      className={`flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                        sortBy === 'specialty' 
-                          ? 'bg-blue-100 text-blue-700' 
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                      }`}
-                    >
-                      <span>Specialty</span>
-                      {sortBy === 'specialty' ? (
-                        sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
-                      ) : (
-                        <ArrowUpDown className="h-3 w-3" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Bulk Actions Bar */}
-              {showBulkActions && (
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-blue-900">
-                      {selectedPrograms.size} program{selectedPrograms.size !== 1 ? 's' : ''} selected
-                    </span>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => handleBulkAction('save')}
-                        className="flex items-center space-x-2 px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-                      >
-                        <Bookmark className="h-4 w-4" />
-                        <span>Save to List</span>
-                      </button>
-                      <button
-                        onClick={() => handleBulkAction('pdf')}
-                        className="flex items-center space-x-2 px-3 py-1.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50 transition-colors"
-                      >
-                        <FileText className="h-4 w-4" />
-                        <span>Export PDF</span>
-                      </button>
-                      <button
-                        onClick={() => handleBulkAction('csv')}
-                        className="flex items-center space-x-2 px-3 py-1.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50 transition-colors"
-                      >
-                        <Download className="h-4 w-4" />
-                        <span>Export CSV</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Select All Row */}
-              {results.length > 0 && (
-                <div className="mt-4 flex items-center space-x-3 text-sm">
-                  <button
-                    onClick={handleSelectAll}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
-                  >
-                    {selectedPrograms.size === results.length ? (
-                      <CheckSquare className="h-4 w-4 text-blue-600" />
-                    ) : (
-                      <Square className="h-4 w-4" />
-                    )}
-                    <span>
-                      {selectedPrograms.size === results.length ? 'Deselect All' : 'Select All'}
-                    </span>
-                  </button>
-                </div>
-              )}
-            </div>
-            <div className="divide-y divide-gray-200">
-              {results.map((program) => (
-                <div key={program.id} className="p-6 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <button
-                        onClick={() => handleSelectProgram(program.id)}
-                        className="flex items-center justify-center w-5 h-5 text-blue-600 hover:text-blue-700"
-                      >
-                        {selectedPrograms.has(program.id) ? (
-                          <CheckSquare className="h-5 w-5" />
-                        ) : (
-                          <Square className="h-5 w-5 text-gray-400 hover:text-blue-600" />
-                        )}
-                      </button>
-                      <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                        <GraduationCap className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2">
-                          <h3 className="text-lg font-medium text-gray-900">
-                            {program.programName}
-                          </h3>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {program.programType}
-                          </span>
-                        </div>
-                        <div className="mt-1 space-y-1">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Building className="h-4 w-4 mr-2" />
-                            {program.institution}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Stethoscope className="h-4 w-4 mr-2" />
-                            {program.specialty}
-                            {program.subspecialty && ` - ${program.subspecialty}`}
-                          </div>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600">
-                            <div className="flex items-center">
-                              <MapPin className="h-4 w-4 mr-1" />
-                              {program.city}, {program.state}
-                            </div>
-                            <div className="flex items-center">
-                              <Users className="h-4 w-4 mr-1" />
-                              {program.positions} positions
-                            </div>
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            Director: {program.programDirector}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <a
-                        href={`/gme-program-detail?id=${program.id}`}
-                        className="flex items-center space-x-2 px-3 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
-                      >
-                        <Eye className="h-4 w-4" />
-                        <span>View Program</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* No Results */}
-        {results.length === 0 && searchQuery && !isSearching && viewMode === 'programs' && (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <GraduationCap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No programs found</h3>
-            <p className="text-gray-600">
-              Try adjusting your search terms or filters to find what you're looking for.
-            </p>
-          </div>
-        )}
-      </div>
-    </Layout>
-  );
-}
+      established: 1985
+    },
+    {
+      id: '106',
+      programName: 'Internal Medicine Residency Program',
+      institution: 'Community Medical Center',
+      profession: 'Physician',
+      specialty: 'Internal Medicine',
+      city: 'Phoenix',
+      state: 'AZ',
+      programType: 'Residency',
+      accreditation: 'ACGME',
+      positions: 24,
+      programDirector: 'Dr. Sandra Walker, MD',
+      website: 
