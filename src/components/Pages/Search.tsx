@@ -40,6 +40,8 @@ export function Search() {
   const [results, setResults] = useState<Provider[]>([]);
   const [sortBy, setSortBy] = useState<'name' | 'specialty' | 'location' | 'status'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [selectedProviders, setSelectedProviders] = useState<Set<string>>(new Set());
+  const [showBulkActions, setShowBulkActions] = useState(false);
 
   // Mock data
   const mockResults: Provider[] = [
@@ -170,6 +172,60 @@ export function Search() {
     }
   };
 
+  const handleSelectProvider = (providerId: string) => {
+    const newSelected = new Set(selectedProviders);
+    if (newSelected.has(providerId)) {
+      newSelected.delete(providerId);
+    } else {
+      newSelected.add(providerId);
+    }
+    setSelectedProviders(newSelected);
+    setShowBulkActions(newSelected.size > 0);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedProviders.size === results.length) {
+      setSelectedProviders(new Set());
+      setShowBulkActions(false);
+    } else {
+      setSelectedProviders(new Set(results.map(p => p.id)));
+      setShowBulkActions(true);
+    }
+  };
+
+  const handleBulkAction = (action: 'save' | 'pdf' | 'csv') => {
+    const selectedData = results.filter(p => selectedProviders.has(p.id));
+    
+    switch (action) {
+      case 'save':
+        console.log('Saving to list:', selectedData);
+        alert(`Saved ${selectedData.length} providers to list`);
+        break;
+      case 'pdf':
+        console.log('Exporting to PDF:', selectedData);
+        alert(`Exporting ${selectedData.length} providers to PDF`);
+        break;
+      case 'csv':
+        console.log('Exporting to CSV:', selectedData);
+        // Create CSV content
+        const csvContent = [
+          'Name,Credentials,Specialty,Location,Phone,Email,NPI,Status',
+          ...selectedData.map(p => 
+            `"${p.name}","${p.credentials}","${p.specialty}","${p.location}","${p.phone}","${p.email}","${p.npi}","${p.status}"`
+          )
+        ].join('\n');
+        
+        // Download CSV
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `providers_export_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        break;
+    }
+  };
   return (
     <Layout breadcrumbs={[{ label: 'Search Providers' }]}>
       <div className="space-y-6">
@@ -277,9 +333,16 @@ export function Search() {
           <div className="bg-white rounded-lg shadow-sm">
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Search Results ({results.length})
-                </h2>
+                <div className="flex items-center space-x-4">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Search Results ({results.length})
+                  </h2>
+                  {selectedProviders.size > 0 && (
+                    <span className="text-sm text-blue-600 font-medium">
+                      {selectedProviders.size} selected
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center space-x-4">
                   <span className="text-sm text-gray-500">Sort by:</span>
                   <div className="flex space-x-2">
@@ -346,12 +409,75 @@ export function Search() {
                   </div>
                 </div>
               </div>
+              
+              {/* Bulk Actions Bar */}
+              {showBulkActions && (
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-blue-900">
+                      {selectedProviders.size} provider{selectedProviders.size !== 1 ? 's' : ''} selected
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleBulkAction('save')}
+                        className="flex items-center space-x-2 px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
+                      >
+                        <Bookmark className="h-4 w-4" />
+                        <span>Save to List</span>
+                      </button>
+                      <button
+                        onClick={() => handleBulkAction('pdf')}
+                        className="flex items-center space-x-2 px-3 py-1.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50 transition-colors"
+                      >
+                        <FileText className="h-4 w-4" />
+                        <span>Export PDF</span>
+                      </button>
+                      <button
+                        onClick={() => handleBulkAction('csv')}
+                        className="flex items-center space-x-2 px-3 py-1.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50 transition-colors"
+                      >
+                        <Download className="h-4 w-4" />
+                        <span>Export CSV</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Select All Row */}
+              {results.length > 0 && (
+                <div className="mt-4 flex items-center space-x-3 text-sm">
+                  <button
+                    onClick={handleSelectAll}
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                  >
+                    {selectedProviders.size === results.length ? (
+                      <CheckSquare className="h-4 w-4 text-blue-600" />
+                    ) : (
+                      <Square className="h-4 w-4" />
+                    )}
+                    <span>
+                      {selectedProviders.size === results.length ? 'Deselect All' : 'Select All'}
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
             <div className="divide-y divide-gray-200">
               {results.map((provider) => (
                 <div key={provider.id} className="p-6 hover:bg-gray-50">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-start space-x-4">
+                    <div className="flex items-center space-x-4">
+                      <button
+                        onClick={() => handleSelectProvider(provider.id)}
+                        className="flex items-center justify-center w-5 h-5 text-blue-600 hover:text-blue-700"
+                      >
+                        {selectedProviders.has(provider.id) ? (
+                          <CheckSquare className="h-5 w-5" />
+                        ) : (
+                          <Square className="h-5 w-5 text-gray-400 hover:text-blue-600" />
+                        )}
+                      </button>
                       <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
                         <User className="h-6 w-6 text-blue-600" />
                       </div>
