@@ -1,22 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { LogIn, AlertTriangle, User, Shield } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { AuthUser, AuthContextType } from '../types/auth';
 
-export function SignIn() {
-  const { login, isAuthenticated, isLoading } = useAuth();
-  const [selectedRole, setSelectedRole] = useState<'user' | 'admin'>('user');
-  const navigate = useNavigate();
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    }
-  }, [isAuthenticated, navigate]);
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-  const handleLogin = () => {
-    login(selectedRole);
-  };
+export function AuthProvider({ children }: AuthProviderProps) {
+  const { 
+    user: auth0User, 
+    isAuthenticated: auth0IsAuthenticated, 
+    isLoading: auth0IsLoading,
+    loginWithRedirect,
+    logout: auth0Logout,
+    getAccessTokenSilently
+  } = useAuth0();
+
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Check if we're in development environment
   const isDevelopment = window.location.hostname === 'localhost' || 
@@ -24,160 +27,153 @@ export function SignIn() {
                        window.location.hostname.includes('127.0.0.1') ||
                        window.location.port === '5173';
 
-  const handleDirectLogin = (role: 'user' | 'admin') => {
-    setSelectedRole(role);
-    login(role);
+  useEffect(() => {
+    if (isDevelopment) {
+      // In development, check for mock user in localStorage
+      const mockUser = localStorage.getItem('mockUser');
+      if (mockUser) {
+        setUser(JSON.parse(mockUser));
+      }
+      setIsLoading(false);
+    } else {
+      // In production, use Auth0
+      if (auth0IsAuthenticated && auth0User) {
+        const authUser: AuthUser = {
+          id: auth0User.sub || '',
+          firstName: auth0User.given_name || '',
+          lastName: auth0User.family_name || '',
+          email: auth0User.email || '',
+          role: auth0User['https://practicelink.com/role'] || 'provider-relations-coordinator',
+          isEmailVerified: auth0User.email_verified || false,
+          createdAt: new Date().toISOString()
+        };
+        setUser(authUser);
+      } else {
+        setUser(null);
+      }
+      setIsLoading(auth0IsLoading);
+    }
+  }, [auth0IsAuthenticated, auth0User, auth0IsLoading, isDevelopment]);
+
+  const login = async (role: 'user' | 'admin' = 'user') => {
+    if (isDevelopment) {
+      // Mock authentication for development
+      const mockUser: AuthUser = {
+        id: `mock-${role}-${Date.now()}`,
+        firstName: role === 'admin' ? 'Admin' : 'John',
+        lastName: role === 'admin' ? 'User' : 'Doe',
+        email: role === 'admin' ? 'admin@practicelink.com' : 'user@practicelink.com',
+        role: role === 'admin' ? 'administrator' : 'provider-relations-coordinator',
+        isEmailVerified: true,
+        createdAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem('mockUser', JSON.stringify(mockUser));
+      setUser(mockUser);
+    } else {
+      // Use Auth0 for production
+      await loginWithRedirect();
+    }
+  };
+
+  const register = async (email: string, password: string, firstName: string, lastName: string) => {
+    if (isDevelopment) {
+      // Mock registration for development
+      const mockUser: AuthUser = {
+        id: `mock-user-${Date.now()}`,
+        firstName,
+        lastName,
+        email,
+        role: 'provider-relations-coordinator',
+        isEmailVerified: false,
+        createdAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem('mockUser', JSON.stringify(mockUser));
+      setUser(mockUser);
+    } else {
+      // In production, redirect to Auth0 signup
+      await loginWithRedirect({
+        authorizationParams: {
+          screen_hint: 'signup'
+        }
+      });
+    }
+  };
+
+  const logout = () => {
+    if (isDevelopment) {
+      localStorage.removeItem('mockUser');
+      setUser(null);
+    } else {
+      auth0Logout({
+        logoutParams: {
+          returnTo: window.location.origin
+        }
+      });
+    }
+  };
+
+  const getAccessToken = async (): Promise<string | undefined> => {
+    if (isDevelopment) {
+      return 'mock-access-token';
+    } else {
+      try {
+        return await getAccessTokenSilently();
+      } catch (error) {
+        console.error('Error getting access token:', error);
+        return undefined;
+      }
+    }
+  };
+
+  const verifyEmail = async (token: string) => {
+    if (isDevelopment) {
+      // Mock email verification
+      if (user) {
+        const updatedUser = { ...user, isEmailVerified: true };
+        localStorage.setItem('mockUser', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      }
+    } else {
+      // In production, this would be handled by Auth0
+      console.log('Email verification handled by Auth0');
+    }
+  };
+
+  const resendVerification = async (email: string) => {
+    if (isDevelopment) {
+      // Mock resend verification
+      console.log('Mock: Verification email sent to', email);
+    } else {
+      // In production, this would be handled by Auth0
+      console.log('Resend verification handled by Auth0');
+    }
+  };
+
+  const value: AuthContextType = {
+    user,
+    isLoading,
+    isAuthenticated: !!user,
+    login,
+    register,
+    logout,
+    getAccessToken,
+    verifyEmail,
+    resendVerification
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
-            <h1 className="text-4xl font-bold mb-2">PracticeLink</h1>
-          </a>
-          <p className="text-sm text-gray-600 mb-8">Career Management Platform</p>
-          <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to access your PracticeLink account
-          </p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="space-y-6">
-            {/* Direct Access Buttons for Development */}
-            <div className="space-y-3">
-              <p className="text-center text-sm font-medium text-gray-700 mb-4">
-                Quick Access (Development)
-              </p>
-              
-              <button
-                onClick={() => handleDirectLogin('user')}
-                className="w-full flex items-center justify-center py-3 px-4 border border-blue-300 rounded-md shadow-sm text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-              >
-                <User className="mr-2 h-5 w-5" />
-                Sign in as User
-              </button>
-              
-              <button
-                onClick={() => handleDirectLogin('admin')}
-                className="w-full flex items-center justify-center py-3 px-4 border border-purple-300 rounded-md shadow-sm text-sm font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
-              >
-                <Shield className="mr-2 h-5 w-5" />
-                Sign in as Administrator
-              </button>
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or use Auth0</span>
-              </div>
-            </div>
-
-            {isDevelopment && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-                <div className="flex">
-                  <AlertTriangle className="h-5 w-5 text-yellow-400" />
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-yellow-800">
-                      Development Environment
-                    </h3>
-                    <div className="mt-2 text-sm text-yellow-700">
-                      <p>
-                        You're in development mode. Select your role and click sign in to test with mock authentication.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {isDevelopment && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Select Role for Development:
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedRole('user')}
-                    className={`flex items-center justify-center px-4 py-3 rounded-md border transition-colors ${
-                      selectedRole === 'user'
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <User className="w-4 h-4 mr-2" />
-                    <div className="text-left">
-                      <div className="font-medium">User</div>
-                      <div className="text-xs opacity-75">Standard Access</div>
-                    </div>
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => setSelectedRole('admin')}
-                    className={`flex items-center justify-center px-4 py-3 rounded-md border transition-colors ${
-                      selectedRole === 'admin'
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Shield className="w-4 h-4 mr-2" />
-                    <div className="text-left">
-                      <div className="font-medium">Administrator</div>
-                      <div className="text-xs opacity-75">Full Access</div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            )}
-            
-            <button
-              onClick={handleLogin}
-              disabled={isLoading}
-              className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <LogIn className="mr-2 h-5 w-5" />
-              {isLoading ? 'Signing in...' : (isDevelopment ? `Sign in as ${selectedRole === 'admin' ? 'Administrator' : 'User'}` : 'Sign in with Auth0')}
-            </button>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  Don't have an account?{' '}
-                  <button
-                    onClick={handleLogin}
-                    className="font-medium text-blue-600 hover:text-blue-500"
-                  >
-                    Sign up
-                  </button>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 p-4 bg-blue-50 rounded-md">
-            <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
-            <p className="text-xs text-blue-700">
-              {isDevelopment 
-                ? 'In development mode, authentication is mocked for testing purposes. Select your role above to test different permission levels.'
-                : 'Auth0 handles both sign in and sign up for production'}
-            </p>
-            <ul className="text-xs text-blue-700 space-y-1">
-              <li>• Use "Quick Access" buttons for immediate development access</li>
-              <li>• Auth0 handles both sign in and sign up for production</li>
-              <li>• User role has standard permissions, Admin has full access</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
   );
+}
+
+export function useAuth(): AuthContextType {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }
