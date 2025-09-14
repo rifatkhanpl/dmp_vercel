@@ -18,6 +18,8 @@ import { SearchResults } from './components/Pages/SearchResults';
 import { HCPDetail } from './components/Pages/HCPDetail';
 import { ProviderProfile } from './components/Pages/ProviderProfile';
 import { UserManagement } from './components/Pages/UserManagement';
+import { UserProfile } from './components/Pages/UserProfile';
+import { UserSettings } from './components/Pages/UserSettings';
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -117,6 +119,16 @@ function App() {
             <Route path="/user-management" element={
               <ProtectedRoute>
                 <UserManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-profile" element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-settings" element={
+              <ProtectedRoute>
+                <UserSettings />
               </ProtectedRoute>
             } />
             

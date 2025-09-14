@@ -30,6 +30,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       current: location.pathname === '/dashboard'
     },
     {
+      name: 'My Profile',
+      href: '/user-profile',
+      icon: User,
+      current: location.pathname === '/user-profile'
+    },
+    {
       name: 'HCP Registration',
       href: '/hcp-registration',
       icon: UserPlus,

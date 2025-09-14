@@ -393,6 +393,12 @@ export function UserManagement() {
                         >
                           <Eye className="h-4 w-4" />
                         </button>
+                        <a
+                          href={`/user-profile?id=${user.id}`}
+                          className="text-green-600 hover:text-green-900"
+                        >
+                          <User className="h-4 w-4" />
+                        </a>
                         <button className="text-gray-600 hover:text-gray-900">
                           <Edit className="h-4 w-4" />
                         </button>
