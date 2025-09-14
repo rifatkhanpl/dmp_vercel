@@ -1,616 +1,191 @@
-import React, { useState } from 'react';
-import { useBookmarks } from '../../contexts/BookmarkContext';
-import { Layout } from '../Layout/Layout';
-import { Breadcrumb } from '../Layout/Breadcrumb';
-import { 
-  UserPlus, 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  GraduationCap,
-  Stethoscope,
-  Calendar,
-  Save,
-  Bookmark,
-  BookmarkCheck,
-  AlertCircle,
-  CheckCircle
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { LogIn, AlertTriangle, User, Shield } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-interface HCPFormData {
-  firstName: string;
-  middleInitial: string;
-  lastName: string;
-  credential: string;
-  profession: string;
-  specialty: string;
-  subspecialty: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  graduationYear: string;
-  medicalSchool: string;
-  residencyProgram: string;
-  fellowshipProgram: string;
-  boardCertifications: string;
-  licenseNumber: string;
-  licenseState: string;
-  npiNumber: string;
-}
+export function SignIn() {
+  const { login, isAuthenticated, isLoading } = useAuth();
+  const [selectedRole, setSelectedRole] = useState<'user' | 'admin'>('user');
+  const navigate = useNavigate();
 
-export function HCPRegistration() {
-  const { addBookmark, bookmarks } = useBookmarks();
-  const [formData, setFormData] = useState<HCPFormData>({
-    firstName: '',
-    middleInitial: '',
-    lastName: '',
-    credential: '',
-    profession: '',
-    specialty: '',
-    subspecialty: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    graduationYear: '',
-    medicalSchool: '',
-    residencyProgram: '',
-    fellowshipProgram: '',
-    boardCertifications: '',
-    licenseNumber: '',
-    licenseState: '',
-    npiNumber: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [submitMessage, setSubmitMessage] = useState('');
-
-  const isBookmarked = bookmarks.some(b => b.url === '/hcp-registration');
-
-  const handleBookmark = () => {
-    if (!isBookmarked) {
-      addBookmark('HCP Registration', '/hcp-registration', 'Data Collection');
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
     }
+  }, [isAuthenticated, navigate]);
+
+  const handleLogin = () => {
+    login(selectedRole);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  // Check if we're in development environment
+  const isDevelopment = window.location.hostname === 'localhost' || 
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       window.location.port === '5173';
+
+  const handleSkipAuth = () => {
+    // Bypass authentication for development
+    window.location.href = '/dashboard';
   };
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       window.location.port === '5173';
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus('idle');
-    setSubmitMessage('');
-
-    // Simulate API call
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock success
-      setSubmitStatus('success');
-      setSubmitMessage('Healthcare provider registered successfully!');
-      
-      // Reset form after success
-      setTimeout(() => {
-        setFormData({
-          firstName: '',
-          middleInitial: '',
-          lastName: '',
-          credential: '',
-          profession: '',
-          specialty: '',
-          subspecialty: '',
-          email: '',
-          phone: '',
-          address: '',
-          city: '',
-          state: '',
-          zipCode: '',
-          graduationYear: '',
-          medicalSchool: '',
-          residencyProgram: '',
-          fellowshipProgram: '',
-          boardCertifications: '',
-          licenseNumber: '',
-          licenseState: '',
-          npiNumber: ''
-        });
-        setSubmitStatus('idle');
-        setSubmitMessage('');
-      }, 3000);
-    } catch (error) {
-      setSubmitStatus('error');
-      setSubmitMessage('Failed to register healthcare provider. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleDirectLogin = (role: 'user' | 'admin') => {
+    setSelectedRole(role);
+    login(role);
   };
-
-  const specialties = [
-    'Anesthesiology', 'Cardiology', 'Dermatology', 'Emergency Medicine',
-    'Family Medicine', 'Internal Medicine', 'Neurology', 'Obstetrics & Gynecology',
-    'Oncology', 'Ophthalmology', 'Orthopedics', 'Pathology', 'Pediatrics',
-    'Psychiatry', 'Radiology', 'Surgery', 'Urology'
-  ];
-
-  const states = [
-    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
-    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
-    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
-    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
-    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
-  ];
 
   return (
-    <Layout breadcrumbs={[
-      { label: 'Dashboard', href: '/dashboard' },
-      { label: 'HCP Registration' }
-    ]}>
-      <div className="flex-1 max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <UserPlus className="w-6 h-6 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Healthcare Provider Registration</h1>
-            </div>
-            <button
-              onClick={handleBookmark}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
-                isBookmarked
-                  ? 'bg-yellow-50 text-yellow-700 border border-yellow-200'
-                  : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
-              }`}
-              disabled={isBookmarked}
-            >
-              {isBookmarked ? (
-                <BookmarkCheck className="w-4 h-4" />
-              ) : (
-                <Bookmark className="w-4 h-4" />
-              )}
-              <span className="text-sm">
-                {isBookmarked ? 'Bookmarked' : 'Bookmark'}
-              </span>
-            </button>
-          </div>
-          <p className="text-gray-600 mt-2">
-            Register a new healthcare provider in the PracticeLink database
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
+            <h1 className="text-4xl font-bold mb-2">PracticeLink</h1>
+          </a>
+          <p className="text-sm text-gray-600 mb-8">Career Management Platform</p>
+          <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Sign in to access your PracticeLink account
           </p>
         </div>
 
-        <div className="p-6">
-          {/* Status Messages */}
-          {submitStatus === 'success' && (
-            <div className="mb-6 bg-green-50 border border-green-200 rounded-md p-4 flex items-center space-x-2">
-              <CheckCircle className="w-5 h-5 text-green-500" />
-              <span className="text-green-700">{submitMessage}</span>
-            </div>
-          )}
-
-          {submitStatus === 'error' && (
-            <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4 flex items-center space-x-2">
-              <AlertCircle className="w-5 h-5 text-red-500" />
-              <span className="text-red-700">{submitMessage}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Personal Information */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <User className="w-5 h-5 mr-2 text-blue-600" />
-                Personal Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                    First Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    required
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter first name"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="middleInitial" className="block text-sm font-medium text-gray-700 mb-2">
-                    Middle Initial
-                  </label>
-                  <input
-                    type="text"
-                    id="middleInitial"
-                    name="middleInitial"
-                    maxLength={1}
-                    value={formData.middleInitial}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="M"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-                    Last Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    required
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter last name"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Professional Information */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <Stethoscope className="w-5 h-5 mr-2 text-blue-600" />
-                Professional Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="credential" className="block text-sm font-medium text-gray-700 mb-2">
-                    Credential *
-                  </label>
-                  <select
-                    id="credential"
-                    name="credential"
-                    required
-                    value={formData.credential}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">Select credential</option>
-                    <option value="MD">MD</option>
-                    <option value="DO">DO</option>
-                    <option value="NP">NP</option>
-                    <option value="PA">PA</option>
-                    <option value="CRNA">CRNA</option>
-                    <option value="CNM">CNM</option>
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="profession" className="block text-sm font-medium text-gray-700 mb-2">
-                    Profession *
-                  </label>
-                  <select
-                    id="profession"
-                    name="profession"
-                    required
-                    value={formData.profession}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">Select profession</option>
-                    <option value="Physician">Physician</option>
-                    <option value="Nurse Practitioner">Nurse Practitioner</option>
-                    <option value="Physician Assistant">Physician Assistant</option>
-                    <option value="CRNA">CRNA</option>
-                    <option value="Certified Nurse Midwife">Certified Nurse Midwife</option>
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="specialty" className="block text-sm font-medium text-gray-700 mb-2">
-                    Specialty *
-                  </label>
-                  <select
-                    id="specialty"
-                    name="specialty"
-                    required
-                    value={formData.specialty}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">Select specialty</option>
-                    {specialties.map(specialty => (
-                      <option key={specialty} value={specialty}>{specialty}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="subspecialty" className="block text-sm font-medium text-gray-700 mb-2">
-                    Subspecialty
-                  </label>
-                  <input
-                    type="text"
-                    id="subspecialty"
-                    name="subspecialty"
-                    value={formData.subspecialty}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter subspecialty"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Contact Information */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <Mail className="w-5 h-5 mr-2 text-blue-600" />
-                Contact Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="doctor@example.com"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    required
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="(555) 123-4567"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Address Information */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <MapPin className="w-5 h-5 mr-2 text-blue-600" />
-                Address Information
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
-                    Street Address *
-                  </label>
-                  <input
-                    type="text"
-                    id="address"
-                    name="address"
-                    required
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="123 Main Street"
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
-                      City *
-                    </label>
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      required
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="City"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
-                      State *
-                    </label>
-                    <select
-                      id="state"
-                      name="state"
-                      required
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="">Select state</option>
-                      {states.map(state => (
-                        <option key={state} value={state}>{state}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-2">
-                      ZIP Code *
-                    </label>
-                    <input
-                      type="text"
-                      id="zipCode"
-                      name="zipCode"
-                      required
-                      value={formData.zipCode}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="12345"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Education & Training */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <GraduationCap className="w-5 h-5 mr-2 text-blue-600" />
-                Education & Training
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="medicalSchool" className="block text-sm font-medium text-gray-700 mb-2">
-                    Medical School
-                  </label>
-                  <input
-                    type="text"
-                    id="medicalSchool"
-                    name="medicalSchool"
-                    value={formData.medicalSchool}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="University Medical School"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="graduationYear" className="block text-sm font-medium text-gray-700 mb-2">
-                    Graduation Year
-                  </label>
-                  <input
-                    type="number"
-                    id="graduationYear"
-                    name="graduationYear"
-                    min="1950"
-                    max="2030"
-                    value={formData.graduationYear}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="2020"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="residencyProgram" className="block text-sm font-medium text-gray-700 mb-2">
-                    Residency Program
-                  </label>
-                  <input
-                    type="text"
-                    id="residencyProgram"
-                    name="residencyProgram"
-                    value={formData.residencyProgram}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Hospital Residency Program"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="fellowshipProgram" className="block text-sm font-medium text-gray-700 mb-2">
-                    Fellowship Program
-                  </label>
-                  <input
-                    type="text"
-                    id="fellowshipProgram"
-                    name="fellowshipProgram"
-                    value={formData.fellowshipProgram}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Fellowship Program"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Licensing & Certification */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <Calendar className="w-5 h-5 mr-2 text-blue-600" />
-                Licensing & Certification
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                    License Number
-                  </label>
-                  <input
-                    type="text"
-                    id="licenseNumber"
-                    name="licenseNumber"
-                    value={formData.licenseNumber}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="License number"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="licenseState" className="block text-sm font-medium text-gray-700 mb-2">
-                    License State
-                  </label>
-                  <select
-                    id="licenseState"
-                    name="licenseState"
-                    value={formData.licenseState}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">Select state</option>
-                    {states.map(state => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="npiNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                    NPI Number
-                  </label>
-                  <input
-                    type="text"
-                    id="npiNumber"
-                    name="npiNumber"
-                    value={formData.npiNumber}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="1234567890"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="boardCertifications" className="block text-sm font-medium text-gray-700 mb-2">
-                    Board Certifications
-                  </label>
-                  <input
-                    type="text"
-                    id="boardCertifications"
-                    name="boardCertifications"
-                    value={formData.boardCertifications}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Board certifications"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className="flex justify-end pt-6 border-t border-gray-200">
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <div className="space-y-6">
+            {/* Direct Access Buttons for Development */}
+            <div className="space-y-3">
+              <p className="text-center text-sm font-medium text-gray-700 mb-4">
+                Quick Access (Development)
+              </p>
+              
               <button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                onClick={() => handleDirectLogin('user')}
+                className="w-full flex items-center justify-center py-3 px-4 border border-blue-300 rounded-md shadow-sm text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
-                <Save className="w-5 h-5" />
-                <span>{isSubmitting ? 'Registering...' : 'Register Healthcare Provider'}</span>
+                <User className="mr-2 h-5 w-5" />
+                Sign in as User
+              </button>
+              
+              <button
+                onClick={() => handleDirectLogin('admin')}
+                className="w-full flex items-center justify-center py-3 px-4 border border-purple-300 rounded-md shadow-sm text-sm font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
+              >
+                <Shield className="mr-2 h-5 w-5" />
+                Sign in as Administrator
               </button>
             </div>
-          </form>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or use Auth0</span>
+              </div>
+            </div>
+
+            {isDevelopment && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                <div className="flex">
+                  <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-yellow-800">
+                      Development Environment
+                    </h3>
+                    <div className="mt-2 text-sm text-yellow-700">
+                      <p>
+                        You're in development mode. Select your role and click sign in to test with mock authentication.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isDevelopment && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Select Role for Development:
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRole('user')}
+                    className={`flex items-center justify-center px-4 py-3 rounded-md border transition-colors ${
+                      selectedRole === 'user'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    <div className="text-left">
+                      <div className="font-medium">User</div>
+                      <div className="text-xs opacity-75">Standard Access</div>
+                    </div>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRole('admin')}
+                    className={`flex items-center justify-center px-4 py-3 rounded-md border transition-colors ${
+                      selectedRole === 'admin'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    <div className="text-left">
+                      <div className="font-medium">Administrator</div>
+                      <div className="text-xs opacity-75">Full Access</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            <button
+              onClick={handleLogin}
+              disabled={isLoading}
+              className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <LogIn className="mr-2 h-5 w-5" />
+              {isLoading ? 'Signing in...' : (isDevelopment ? `Sign in as ${selectedRole === 'admin' ? 'Administrator' : 'User'}` : 'Sign in with Auth0')}
+            </button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">
+                  Don't have an account?{' '}
+                  <button
+                    onClick={handleLogin}
+                    className="font-medium text-blue-600 hover:text-blue-500"
+                  >
+                    Sign up
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 p-4 bg-blue-50 rounded-md">
+            <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
+            <p className="text-xs text-blue-700">
+              {isDevelopment 
+                ? 'In development mode, authentication is mocked for testing purposes. Select your role above to test different permission levels.'
+                : 'Auth0 handles both sign in and sign up for production'}
+            </p>
+            <ul className="text-xs text-blue-700 space-y-1">
+              <li>• Use "Quick Access" buttons for immediate development access</li>
+              <li>• Auth0 handles both sign in and sign up for production</li>
+              <li>• User role has standard permissions, Admin has full access</li>
+            </ul>
+          </div>
         </div>
       </div>
-      </div>
-    </Layout>
+    </div>
   );
 }

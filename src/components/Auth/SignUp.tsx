@@ -1,44 +1,82 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Layout } from '../Layout/Layout';
 import { UserPlus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-export function SignUp() {
-  const { login } = useAuth();
+export function SignIn() {
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSignUp = () => {
-    // Auth0 will handle the sign-up process
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleLogin = () => {
     login();
   };
 
-  return (
-    <Layout breadcrumbs={[{ label: 'Sign Up' }]}>
-      <div className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
-              <h1 className="text-4xl font-bold mb-2">PracticeLink</h1>
-            </a>
-            <p className="text-sm text-gray-600 mb-8">Career Management Platform</p>
-            <h2 className="text-2xl font-bold text-gray-900">Create your account</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Join PracticeLink to manage healthcare provider data
-            </p>
-          </div>
+  // Check if we're in development environment
+  const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname.includes('bolt.new');
 
-          <div className="bg-white rounded-lg shadow-lg p-8">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
+            <h1 className="text-4xl font-bold mb-2">PracticeLink</h1>
+          </a>
+          <p className="text-sm text-gray-600 mb-8">Career Management Platform</p>
+          <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Sign in to access your PracticeLink account
+          </p>
+        </div>
+
+        <div className="max-w-md w-full space-y-8">
+        <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="space-y-6">
-              <p className="text-center text-gray-600">
-                Click the button below to create your account with Auth0
-              </p>
+              {isDevelopment && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                  <div className="flex">
+                    <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-yellow-800">
+                        Development Environment
+                      </h3>
+                      <div className="mt-2 text-sm text-yellow-700">
+                        <p>
+                          Auth0 may not work in this development environment. 
+                          For testing, you can bypass authentication by going directly to{' '}
+                          <a href="/dashboard" className="font-medium underline">
+                            /dashboard
+                          </a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               <button
-                onClick={handleSignUp}
+                onClick={handleLogin}
                 className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
-                <UserPlus className="mr-2 h-5 w-5" />
-                Sign up with Auth0
+                <LogIn className="mr-2 h-5 w-5" />
+                Sign in with Auth0
               </button>
+
+              {isDevelopment && (
+                <div className="text-center">
+                  <a
+                    href="/dashboard"
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Skip Auth (Development Only)
+                  </a>
+                </div>
+              )}
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -51,29 +89,26 @@ export function SignUp() {
 
               <div className="text-center">
                 <p className="text-sm text-gray-600">
-                  Already have an account?{' '}
-                  <a
-                    href="/signin"
+                  Don't have an account?{' '}
+                  <button
+                    onClick={handleLogin}
                     className="font-medium text-blue-600 hover:text-blue-500"
                   >
-                    Sign in
-                  </a>
+                    Sign up
+                  </button>
                 </p>
               </div>
             </div>
 
             <div className="mt-6 p-4 bg-blue-50 rounded-md">
-              <h3 className="text-sm font-medium text-blue-900 mb-2">What happens next?</h3>
-              <ul className="text-xs text-blue-700 space-y-1">
-                <li>• You'll be redirected to Auth0's secure sign-up page</li>
-                <li>• Create your account with email and password</li>
-                <li>• Verify your email address</li>
-                <li>• You'll be automatically signed in and redirected back</li>
-              </ul>
+              <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
+              <p className="text-xs text-blue-700">
+                Auth0 handles both sign in and sign up. Click "Sign in with Auth0" and follow the prompts to create a new account or sign in to an existing one.
+              </p>
             </div>
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }
