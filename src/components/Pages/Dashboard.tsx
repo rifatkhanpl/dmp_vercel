@@ -15,6 +15,13 @@ import {
 export function Dashboard() {
   const { user } = useAuth();
 
+  // Redirect to dashboard if on landing page
+  React.useEffect(() => {
+    if (window.location.pathname === '/') {
+      window.history.replaceState({}, '', '/dashboard');
+    }
+  }, []);
+
   const stats = [
     {
       name: 'Total Providers',

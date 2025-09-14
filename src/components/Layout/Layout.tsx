@@ -24,13 +24,13 @@ export function Layout({ children, breadcrumbs = [], showBreadcrumbs = true }: L
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header 
         onToggleSidebar={toggleSidebar}
         isSidebarOpen={isSidebarOpen}
       />
       
-      <div className="flex min-h-screen pt-16">
+      <div className="flex flex-1 pt-16">
         {isAuthenticated && (
           <Sidebar 
             isOpen={isSidebarOpen}
@@ -38,12 +38,14 @@ export function Layout({ children, breadcrumbs = [], showBreadcrumbs = true }: L
           />
         )}
         
-        <main className={`flex-1 flex flex-col ${isAuthenticated ? 'lg:ml-64' : ''}`}>
-          <div className="flex-1 p-6">
+        <main className={`flex-1 flex flex-col min-h-0 ${isAuthenticated ? 'lg:ml-64' : ''}`}>
+          <div className="flex-1 p-4 lg:p-6 overflow-y-auto">
             {showBreadcrumbs && breadcrumbs.length > 0 && (
               <Breadcrumb items={breadcrumbs} />
             )}
-            {children}
+            <div className="max-w-7xl mx-auto">
+              {children}
+            </div>
           </div>
           <Footer />
         </main>
