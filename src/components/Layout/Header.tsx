@@ -29,9 +29,6 @@ export function SignIn() {
     // Bypass authentication for development
     window.location.href = '/dashboard';
   };
-                       window.location.hostname.includes('bolt.new') ||
-                       window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
 
   const handleDirectLogin = (role: 'user' | 'admin') => {
     setSelectedRole(role);
@@ -183,22 +180,6 @@ export function SignIn() {
                 <li>• Auth0 handles both sign in and sign up for production</li>
                 <li>• User role has standard permissions, Admin has full access</li>
               </ul>
-            )}
-            {!user && (
-              <div className="flex items-center space-x-4">
-                <a
-                  href="/signin"
-                  className="text-sm font-medium text-gray-700 hover:text-gray-900"
-                >
-                  Sign In
-                </a>
-                <a
-                  href="/signup"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Sign Up
-                </a>
-              </div>
             </div>
           </div>
         </div>
