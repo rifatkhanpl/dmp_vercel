@@ -58,6 +58,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   if (user?.role === 'administrator') {
     navigationItems.push(
       {
+        name: 'User Management',
+        href: '/user-management',
+        icon: Users,
+        current: location.pathname === '/user-management'
+      },
+      {
         name: 'Data Management',
         href: '/data-management',
         icon: Database,
