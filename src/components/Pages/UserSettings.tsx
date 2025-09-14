@@ -198,60 +198,79 @@ export function UserSettings() {
               <h3 className="text-md font-medium text-gray-900 mb-4">Add New Assignment</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                  <select
-                    value={newAssignment.type}
-                    onChange={(e) => setNewAssignment(prev => ({ 
-                      ...prev, 
-                      type: e.target.value as 'profession' | 'specialty' | 'subspecialty',
-                      name: '',
-                      category: ''
-                    }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="profession">Profession</option>
-                    <option value="specialty">Specialty</option>
-                    <option value="subspecialty">Subspecialty</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Profession</label>
                   <select
                     value={newAssignment.name}
                     onChange={(e) => {
-                      const selected = getOptions().find(o => o.name === e.target.value);
+                      const selected = professionOptions.find(p => p === e.target.value);
                       setNewAssignment(prev => ({ 
                         ...prev, 
+                        type: 'profession',
+                        name: e.target.value,
+                        category: ''
+                      }));
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select profession</option>
+                    {professionOptions.map((profession, index) => (
+                      <option key={index} value={profession}>
+                        {profession}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Specialty</label>
+                  <select
+                    value={newAssignment.type === 'specialty' ? newAssignment.name : ''}
+                    onChange={(e) => {
+                      const selected = specialtyOptions.find(s => s.name === e.target.value);
+                      setNewAssignment(prev => ({ 
+                        ...prev, 
+                        type: 'specialty',
                         name: e.target.value,
                         category: selected?.category || ''
                       }));
                     }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Select {newAssignment.type}</option>
-                    {getOptions().map((option, index) => (
+                    <option value="">Select specialty</option>
+                    {specialtyOptions.map((option, index) => (
                       <option key={index} value={option.name}>
                         {option.name}
                       </option>
                     ))}
                   </select>
                 </div>
-                {newAssignment.category && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <input
-                      type="text"
-                      value={newAssignment.category}
-                      readOnly
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600"
-                    />
-                  </div>
-                )}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Subspecialty</label>
+                  <select
+                    value={newAssignment.type === 'subspecialty' ? newAssignment.name : ''}
+                    onChange={(e) => {
+                      const selected = subspecialtyOptions.find(s => s.name === e.target.value);
+                      setNewAssignment(prev => ({ 
+                        ...prev, 
+                        type: 'subspecialty',
+                        name: e.target.value,
+                        category: selected?.category || ''
+                      }));
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select subspecialty</option>
+                    {subspecialtyOptions.map((option, index) => (
+                      <option key={index} value={option.name}>
+                        {option.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <div className="flex space-x-3 mt-4">
                 <button
                   onClick={handleAddAssignment}
-                  disabled={!newAssignment.name}
+                  disabled={!newAssignment.name || !newAssignment.type}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Add Assignment
