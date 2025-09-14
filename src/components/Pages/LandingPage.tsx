@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Layout } from '../Layout/Layout';
+import { Header } from '../Layout/Header';
+import { Footer } from '../Layout/Footer';
 import { 
   ArrowRight,
   Users,
@@ -52,8 +53,9 @@ export function LandingPage() {
   };
 
   return (
-    <Layout showBreadcrumbs={false}>
-      <div className="flex-1 bg-white">
+    <div className="min-h-screen bg-white">
+      <Header />
+      <div className="pt-16">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-blue-50 via-white to-indigo-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -109,6 +111,7 @@ export function LandingPage() {
 
       {/* Features Section */}
       </div>
-    </Layout>
+      <Footer />
+    </div>
   );
 }
