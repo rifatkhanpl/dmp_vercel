@@ -30,24 +30,22 @@ export function Layout({ children, breadcrumbs = [], showBreadcrumbs = true }: L
         isSidebarOpen={isSidebarOpen}
       />
       
-      <div className="flex min-h-screen pt-16">
-        {isAuthenticated && (
-          <Sidebar 
-            isOpen={isSidebarOpen}
-            onClose={closeSidebar}
-          />
-        )}
-        
-        <main className={`flex-1 ${isAuthenticated ? 'lg:ml-64' : ''}`}>
-          <div className="p-4 lg:p-6">
-            {showBreadcrumbs && breadcrumbs.length > 0 && (
-              <Breadcrumb items={breadcrumbs} />
-            )}
-            {children}
-          </div>
-          <Footer />
-        </main>
-      </div>
+      {isAuthenticated && (
+        <Sidebar 
+          isOpen={isSidebarOpen}
+          onClose={closeSidebar}
+        />
+      )}
+      
+      <main className={`pt-16 ${isAuthenticated ? 'lg:pl-64' : ''}`}>
+        <div className="p-6">
+          {showBreadcrumbs && breadcrumbs.length > 0 && (
+            <Breadcrumb items={breadcrumbs} />
+          )}
+          {children}
+        </div>
+        <Footer />
+      </main>
     </div>
   );
 }
