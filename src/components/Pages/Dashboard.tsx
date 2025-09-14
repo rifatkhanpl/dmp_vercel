@@ -126,7 +126,7 @@ export function Dashboard() {
                 Welcome back, {user?.firstName}!
               </h1>
               <p className="text-gray-600 mt-1">
-                Here's what's happening with your provider data today.
+                Here's what's happening with the HCP-DMP today!
               </p>
             </div>
             <div className="hidden sm:block">
