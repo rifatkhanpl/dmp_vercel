@@ -65,12 +65,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         current: location.pathname === '/user-management'
       },
       {
-        name: 'Data Management',
-        href: '/data-management',
-        icon: Database,
-        current: location.pathname === '/data-management'
-      },
-      {
         name: 'Reports',
         href: '/reports',
         icon: FileText,
