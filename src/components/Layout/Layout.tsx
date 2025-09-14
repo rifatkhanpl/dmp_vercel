@@ -30,7 +30,7 @@ export function Layout({ children, breadcrumbs = [], showBreadcrumbs = true }: L
         isSidebarOpen={isSidebarOpen}
       />
       
-      <div className="flex flex-1 pt-16">
+      <div className="flex flex-1">
         {isAuthenticated && (
           <Sidebar 
             isOpen={isSidebarOpen}
@@ -38,11 +38,8 @@ export function Layout({ children, breadcrumbs = [], showBreadcrumbs = true }: L
           />
         )}
         
-        <main className={`
-          flex-1 flex flex-col
-          ${isAuthenticated ? 'lg:ml-64' : ''}
-        `}>
-          <div className="flex-1 p-6">
+        <main className={`flex-1 flex flex-col pt-16 ${isAuthenticated ? 'lg:ml-64' : ''}`}>
+          <div className="flex-1 p-6 max-w-full">
             {showBreadcrumbs && breadcrumbs.length > 0 && (
               <Breadcrumb items={breadcrumbs} />
             )}
