@@ -1,59 +1,98 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
-  LayoutDashboard, 
-  Search, 
-  UserPlus, 
-  Users, 
-  HelpCircle,
-  Upload,
-  Settings
+  Home,
+  Users,
+  UserPlus,
+  Brain,
+  Search,
+  BarChart3,
+  Settings,
+  Bookmark
 } from 'lucide-react';
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['user', 'admin'] },
-  { name: 'Search Providers', href: '/search', icon: Search, roles: ['user', 'admin'] },
-  { name: 'Register Provider', href: '/register', icon: UserPlus, roles: ['user', 'admin'] },
-  { name: 'Bulk Import', href: '/bulk-import', icon: Upload, roles: ['admin'] },
-  { name: 'User Management', href: '/users', icon: Users, roles: ['admin'] },
-  { name: 'Support Tickets', href: '/support', icon: HelpCircle, roles: ['admin'] },
-  { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin'] },
-];
+interface SidebarProps {
+  currentPath?: string;
+}
 
-export function Sidebar() {
-  const { user, isAdmin } = useAuth();
+export function Sidebar({ currentPath = '' }: SidebarProps) {
+  const { user } = useAuth();
 
-  const filteredNavigation = navigation.filter(item => 
-    item.roles.includes(user?.role || 'user')
-  );
+  const navigationItems = [
+    {
+      name: 'Dashboard',
+      href: '/dashboard',
+      icon: Home,
+      current: currentPath === '/dashboard'
+    },
+    {
+      name: 'HCP Registration',
+      href: '/hcp-registration',
+      icon: UserPlus,
+      current: currentPath === '/hcp-registration'
+    },
+    {
+      name: 'AI Bulk Import',
+      href: '/bulk-import',
+      icon: Brain,
+      current: currentPath === '/bulk-import'
+    },
+    {
+      name: 'Search HCPs',
+      href: '/search',
+      icon: Search,
+      current: currentPath === '/search'
+    },
+    {
+      name: 'Analytics',
+      href: '/analytics',
+      icon: BarChart3,
+      current: currentPath === '/analytics'
+    },
+    {
+      name: 'Bookmarks',
+      href: '/bookmarks',
+      icon: Bookmark,
+      current: currentPath === '/bookmarks'
+    }
+  ];
+
+  // Add admin-only items
+  if (user?.role === 'administrator') {
+    navigationItems.push({
+      name: 'Settings',
+      href: '/settings',
+      icon: Settings,
+      current: currentPath === '/settings'
+    });
+  }
 
   return (
-    <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-      <div className="flex-1 flex flex-col min-h-0 bg-gray-800">
-        <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-          <nav className="mt-5 flex-1 px-2 space-y-1">
-            {filteredNavigation.map((item) => (
-              <NavLink
+    <div className="flex flex-col w-64 bg-gray-50 border-r border-gray-200">
+      <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+        <nav className="mt-5 flex-1 px-2 space-y-1">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <a
                 key={item.name}
-                to={item.href}
-                className={({ isActive }) =>
-                  `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
-                    isActive
-                      ? 'bg-gray-900 text-white'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                  }`
-                }
+                href={item.href}
+                className={`${
+                  item.current
+                    ? 'bg-blue-100 text-blue-900'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                } group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors`}
               >
-                <item.icon
-                  className="mr-3 flex-shrink-0 h-6 w-6"
-                  aria-hidden="true"
+                <Icon
+                  className={`${
+                    item.current ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'
+                  } mr-3 flex-shrink-0 h-5 w-5`}
                 />
                 {item.name}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
+              </a>
+            );
+          })}
+        </nav>
       </div>
     </div>
   );

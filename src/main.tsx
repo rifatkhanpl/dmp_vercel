@@ -5,6 +5,16 @@ import App from './App';
 import { auth0Config } from './config/auth0';
 import './index.css';
 
+// Add error boundary for Auth0 initialization
+const onRedirectCallback = (appState: any) => {
+  console.log('Auth0 redirect callback:', appState);
+  window.history.replaceState(
+    {},
+    document.title,
+    appState?.returnTo || window.location.pathname
+  );
+};
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Auth0Provider
@@ -17,6 +27,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       }}
       useRefreshTokens={auth0Config.useRefreshTokens}
       cacheLocation={auth0Config.cacheLocation}
+      onRedirectCallback={onRedirectCallback}
     >
       <App />
     </Auth0Provider>

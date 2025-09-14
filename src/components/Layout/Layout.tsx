@@ -1,43 +1,33 @@
-import React, { ReactNode } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import React from 'react';
 import { Header } from './Header';
-import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
 import { Breadcrumb } from './Breadcrumb';
 
-export interface BreadcrumbItem {
+interface BreadcrumbItem {
   label: string;
   href?: string;
 }
 
 interface LayoutProps {
-  children: ReactNode;
+  children: React.ReactNode;
   breadcrumbs?: BreadcrumbItem[];
+  showBreadcrumbs?: boolean;
 }
 
-export function Layout({ children, breadcrumbs }: LayoutProps) {
-  const { isAuthenticated } = useAuth();
-
+export function Layout({ children, breadcrumbs = [], showBreadcrumbs = true }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
-      <div className="flex pt-16">
-        {isAuthenticated && <Sidebar />}
-        
-        <main className={`flex-1 ${isAuthenticated ? 'ml-64' : ''}`}>
-          {breadcrumbs && breadcrumbs.length > 0 && (
-            <div className="bg-white border-b border-gray-200 px-6 py-4">
-              <Breadcrumb items={breadcrumbs} />
-            </div>
-          )}
-          
-          <div className="p-6">
-            {children}
+      {showBreadcrumbs && breadcrumbs.length > 0 && (
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <Breadcrumb items={breadcrumbs} />
           </div>
-        </main>
+        </div>
+      )}
+      <div className="flex-1 flex">
+        {children}
       </div>
-      
       <Footer />
     </div>
   );

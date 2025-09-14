@@ -1,83 +1,96 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, UserRole } from '../types/auth';
+import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { User, UserRole } from '../types/user';
 
 interface AuthContextType {
   user: User | null;
-  isAuthenticated: boolean;
   isLoading: boolean;
-  isAdmin: boolean;
-  login: (role: UserRole) => void;
+  isAuthenticated: boolean;
+  login: () => void;
   logout: () => void;
+  getAccessToken: () => Promise<string | undefined>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const {
+    user: auth0User,
+    isLoading: auth0Loading,
+    isAuthenticated,
+    loginWithRedirect,
+    logout: auth0Logout,
+    getAccessTokenSilently,
+  } = useAuth0();
 
-export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session on mount
-    const savedUser = localStorage.getItem('practicelink_user');
-    if (savedUser) {
-      try {
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
-      } catch (error) {
-        console.error('Error parsing saved user data:', error);
-        localStorage.removeItem('practicelink_user');
-      }
+    if (isAuthenticated && auth0User) {
+      // Transform Auth0 user to your User type
+      // You may need to fetch additional user data from your API
+      const transformedUser: User = {
+        id: auth0User.sub || '',
+        firstName: auth0User.given_name || auth0User.nickname || '',
+        lastName: auth0User.family_name || '',
+        email: auth0User.email || '',
+        role: (auth0User['https://practicelink.com/role'] as UserRole) || 'provider-relations-coordinator',
+        isEmailVerified: auth0User.email_verified || false,
+        createdAt: auth0User.updated_at || new Date().toISOString(),
+      };
+      setUser(transformedUser);
+    } else {
+      setUser(null);
     }
-    setIsLoading(false);
-  }, []);
+  }, [isAuthenticated, auth0User]);
 
-  const login = (role: UserRole) => {
-    setIsLoading(true);
-    
-    // Mock user data based on role
-    const mockUser: User = {
-      id: role === 'admin' ? 'admin-123' : 'user-456',
-      email: role === 'admin' ? 'admin@practicelink.com' : 'user@practicelink.com',
-      name: role === 'admin' ? 'System Administrator' : 'Healthcare User',
-      role,
-      createdAt: new Date().toISOString(),
-      lastLogin: new Date().toISOString(),
-    };
-
-    // Simulate API call delay
-    setTimeout(() => {
-      setUser(mockUser);
-      localStorage.setItem('practicelink_user', JSON.stringify(mockUser));
-      setIsLoading(false);
-    }, 1000);
+  const login = () => {
+    loginWithRedirect({
+      appState: { returnTo: '/dashboard' }
+    }).catch((error) => {
+      console.error('Auth0 login error:', error);
+      // For development, show a more helpful error message
+      if (error.message.includes('refused to connect') || error.message.includes('network')) {
+        alert('Auth0 connection failed. This is likely because the development environment URL is not configured in Auth0. For development, you can bypass authentication or configure Auth0 with this domain.');
+      } else {
+        alert('Authentication service is currently unavailable. Please try again later.');
+      }
+    });
   };
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem('practicelink_user');
+    auth0Logout({ 
+      logoutParams: { 
+        returnTo: window.location.origin 
+      } 
+    });
   };
 
-  const value: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    isAdmin: user?.role === 'admin',
-    login,
-    logout,
+  const getAccessToken = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      return token;
+    } catch (error) {
+      console.error('Error getting access token:', error);
+      return undefined;
+    }
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{
+      user,
+      isLoading: auth0Loading,
+      isAuthenticated,
+      login,
+      logout,
+      getAccessToken,
+    }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export function useAuth(): AuthContextType {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
