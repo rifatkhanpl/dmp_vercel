@@ -25,14 +25,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const isDevelopment = window.location.hostname === 'localhost' || 
                        window.location.hostname.includes('bolt.new') ||
                        window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
+                       window.location.port === '5173' ||
+                       import.meta.env.DEV;
 
   useEffect(() => {
     if (isDevelopment) {
       // In development, check for mock user in localStorage
       const mockUser = localStorage.getItem('mockUser');
       if (mockUser) {
-        setUser(JSON.parse(mockUser));
+        try {
+          setUser(JSON.parse(mockUser));
+        } catch (error) {
+          console.error('Error parsing mock user:', error);
+          localStorage.removeItem('mockUser');
+          setUser(null);
+        }
       }
       setIsLoading(false);
     } else {
@@ -70,6 +77,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       localStorage.setItem('mockUser', JSON.stringify(mockUser));
       setUser(mockUser);
+      return;
     } else {
       // Use Auth0 for production
       await loginWithRedirect();
@@ -91,6 +99,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       localStorage.setItem('mockUser', JSON.stringify(mockUser));
       setUser(mockUser);
+      return;
     } else {
       // In production, redirect to Auth0 signup
       await loginWithRedirect({
@@ -105,6 +114,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (isDevelopment) {
       localStorage.removeItem('mockUser');
       setUser(null);
+      // Force page reload to ensure clean state
+      window.location.reload();
     } else {
       auth0Logout({
         logoutParams: {
@@ -135,9 +146,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         localStorage.setItem('mockUser', JSON.stringify(updatedUser));
         setUser(updatedUser);
       }
+      return { success: true, message: 'Email verified successfully' };
     } else {
       // In production, this would be handled by Auth0
       console.log('Email verification handled by Auth0');
+      return { success: true, message: 'Email verification handled by Auth0' };
     }
   };
 
@@ -145,9 +158,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (isDevelopment) {
       // Mock resend verification
       console.log('Mock: Verification email sent to', email);
+      return { success: true, message: `Verification email sent to ${email}` };
     } else {
       // In production, this would be handled by Auth0
       console.log('Resend verification handled by Auth0');
+      return { success: true, message: 'Resend verification handled by Auth0' };
     }
   };
 

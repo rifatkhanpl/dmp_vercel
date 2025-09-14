@@ -22,7 +22,8 @@ export function SignIn() {
   const isDevelopment = window.location.hostname === 'localhost' || 
                        window.location.hostname.includes('bolt.new') ||
                        window.location.hostname.includes('127.0.0.1') ||
-                       window.location.port === '5173';
+                       window.location.port === '5173' ||
+                       import.meta.env.DEV;
 
   const handleDirectLogin = (role: 'user' | 'admin') => {
     setSelectedRole(role);
