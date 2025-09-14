@@ -46,12 +46,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       href: '/search',
       icon: Search,
       current: location.pathname === '/search'
-    },
-    {
-      name: 'Provider Profile',
-      href: '/provider-profile',
-      icon: User,
-      current: location.pathname === '/provider-profile'
     }
   ];
 
