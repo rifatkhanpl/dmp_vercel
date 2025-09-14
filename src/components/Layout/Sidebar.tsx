@@ -42,7 +42,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       current: location.pathname === '/bulk-import'
     },
     {
-      name: 'HCP Management',
+      name: 'HCP Search',
       href: '/search',
       icon: Search,
       current: location.pathname === '/search'
