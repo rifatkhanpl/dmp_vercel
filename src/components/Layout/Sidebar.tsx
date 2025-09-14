@@ -122,24 +122,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </nav>
 
           {/* User info at bottom */}
-          {user && (
-            <div className="p-4 border-t border-gray-200 bg-gray-50">
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
-                  <User className="h-4 w-4 text-blue-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {user.firstName} {user.lastName}
-                  </p>
-                  <p className="text-xs text-gray-500 truncate capitalize">
-                    {user.role.replace(/-/g, ' ')}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
     </>
   );
