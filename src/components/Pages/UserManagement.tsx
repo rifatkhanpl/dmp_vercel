@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Layout } from '../Layout/Layout';
 import { 
-  Users, 
+  Users,
+  User as UserIcon,
   UserPlus, 
   Search, 
   Filter,
@@ -397,7 +398,7 @@ export function UserManagement() {
                           href={`/user-profile?id=${user.id}`}
                           className="text-green-600 hover:text-green-900"
                         >
-                          <User className="h-4 w-4" />
+                          <UserIcon className="h-4 w-4" />
                         </a>
                         <button className="text-gray-600 hover:text-gray-900">
                           <Edit className="h-4 w-4" />
