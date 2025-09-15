@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Layout } from '../Layout/Layout';
 import { useLocation } from 'react-router-dom';
 import { 
@@ -9,7 +9,15 @@ import {
   Mail,
   Eye,
   Edit,
-  ArrowLeft
+  ArrowLeft,
+  Search,
+  Filter,
+  SortAsc,
+  SortDesc,
+  Download,
+  RefreshCw,
+  X,
+  ChevronDown
 } from 'lucide-react';
 
 export function SearchResults() {
@@ -17,6 +25,18 @@ export function SearchResults() {
   const searchParams = new URLSearchParams(location.search);
   const query = searchParams.get('q') || '';
   const managedBy = searchParams.get('managedBy') || '';
+
+  // Search and filter states
+  const [searchQuery, setSearchQuery] = useState(query);
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [filters, setFilters] = useState({
+    specialty: '',
+    location: '',
+    status: '',
+    credentials: ''
+  });
 
   // Mock search results - 100 total providers assigned by specialty
   const allResults = [
@@ -1229,17 +1249,91 @@ export function SearchResults() {
     }
   ];
 
-  // Filter results based on search query and managed by
-  const results = allResults.filter(provider => {
-    const matchesQuery = !query || 
+  // Get unique values for filter options
+  const specialties = [...new Set(allResults.map(p => p.specialty))].sort();
+  const locations = [...new Set(allResults.map(p => p.location.split(', ')[1]))].sort();
+  const statuses = [...new Set(allResults.map(p => p.status))];
+  const credentials = [...new Set(allResults.map(p => p.credentials))].sort();
+
+  // Filter and sort results
+  const filteredResults = allResults.filter(provider => {
+    const matchesInitialQuery = !query || 
       provider.name.toLowerCase().includes(query.toLowerCase()) ||
       provider.specialty.toLowerCase().includes(query.toLowerCase()) ||
       provider.location.toLowerCase().includes(query.toLowerCase());
     
     const matchesManagedBy = !managedBy || provider.managedBy === managedBy;
     
-    return matchesQuery && matchesManagedBy;
+    const matchesSearchQuery = !searchQuery || 
+      provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      provider.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      provider.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      provider.npi.includes(searchQuery) ||
+      provider.email.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesSpecialty = !filters.specialty || provider.specialty === filters.specialty;
+    const matchesLocation = !filters.location || provider.location.includes(filters.location);
+    const matchesStatus = !filters.status || provider.status === filters.status;
+    const matchesCredentials = !filters.credentials || provider.credentials === filters.credentials;
+    
+    return matchesInitialQuery && matchesManagedBy && matchesSearchQuery && 
+           matchesSpecialty && matchesLocation && matchesStatus && matchesCredentials;
   });
+
+  // Sort results
+  const sortedResults = [...filteredResults].sort((a, b) => {
+    let aValue, bValue;
+    
+    switch (sortBy) {
+      case 'name':
+        aValue = a.name.toLowerCase();
+        bValue = b.name.toLowerCase();
+        break;
+      case 'specialty':
+        aValue = a.specialty.toLowerCase();
+        bValue = b.specialty.toLowerCase();
+        break;
+      case 'location':
+        aValue = a.location.toLowerCase();
+        bValue = b.location.toLowerCase();
+        break;
+      case 'status':
+        aValue = a.status.toLowerCase();
+        bValue = b.status.toLowerCase();
+        break;
+      default:
+        aValue = a.name.toLowerCase();
+        bValue = b.name.toLowerCase();
+    }
+    
+    if (sortOrder === 'asc') {
+      return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+    } else {
+      return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+    }
+  });
+
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      specialty: '',
+      location: '',
+      status: '',
+      credentials: ''
+    });
+    setSearchQuery('');
+  };
+
+  const handleExport = () => {
+    // Mock export functionality
+    console.log('Exporting search results...');
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -1283,86 +1377,233 @@ export function SearchResults() {
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center space-x-4">
-            <a
-              href={managedBy ? "/user-management" : "/search"}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </a>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{getPageTitle()}</h1>
-              <p className="text-gray-600">
-                {results.length} results found
-                {query && ` for "${query}"`}
-                {managedBy && ` managed by ${managedBy}`}
-              </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <a
+                href={managedBy ? "/user-management" : "/search"}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </a>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">{getPageTitle()}</h1>
+                <p className="text-gray-600">
+                  {sortedResults.length} results found
+                  {searchQuery && ` for "${searchQuery}"`}
+                  {managedBy && ` managed by ${managedBy}`}
+                </p>
+              </div>
+            </div>
+            <div className="flex space-x-3">
+              <button
+                onClick={handleExport}
+                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+              >
+                <Download className="h-4 w-4" />
+                <span>Export</span>
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Results */}
-        <div className="bg-white rounded-lg shadow-sm divide-y divide-gray-200">
-          {results.map((provider) => (
-            <div key={provider.id} className="p-6 hover:bg-gray-50">
-              <div className="flex items-center justify-between">
-                <div className="flex items-start space-x-4">
-                  <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                    <User className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {provider.name}, {provider.credentials}
-                      </h3>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(provider.status)}`}>
-                        {provider.status}
-                      </span>
-                    </div>
-                    <div className="mt-1 space-y-1">
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Stethoscope className="h-4 w-4 mr-2" />
-                        {provider.specialty}
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        {provider.location}
-                      </div>
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
-                        <div className="flex items-center">
-                          <Phone className="h-4 w-4 mr-1" />
-                          {provider.phone}
-                        </div>
-                        <div className="flex items-center">
-                          <Mail className="h-4 w-4 mr-1" />
-                          {provider.email}
-                        </div>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        NPI: {provider.npi}
-                      </div>
-                    </div>
-                  </div>
+        {/* Search and Filters */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="space-y-4">
+            <div className="flex space-x-4">
+              <div className="flex-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
                 </div>
-                <div className="flex items-center space-x-2">
-                  <a
-                    href={`/hcp-detail?id=${provider.id}`}
-                    className="flex items-center space-x-2 px-3 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
-                  >
-                    <Eye className="h-4 w-4" />
-                    <span>View</span>
-                  </a>
-                  <a
-                    href={`/hcp-edit?id=${provider.id}`}
-                    className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-md"
-                  >
-                    <Edit className="h-4 w-4" />
-                    <span>Edit</span>
-                  </a>
-                </div>
+                <input
+                  type="text"
+                  placeholder="Search providers by name, specialty, location, NPI, or email..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center space-x-2 px-4 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                <Filter className="h-4 w-4" />
+                <span>Filters</span>
+                {Object.values(filters).some(v => v) && (
+                  <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                    {Object.values(filters).filter(v => v).length}
+                  </span>
+                )}
+              </button>
+              <div className="flex items-center space-x-2">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="name">Sort by Name</option>
+                  <option value="specialty">Sort by Specialty</option>
+                  <option value="location">Sort by Location</option>
+                  <option value="status">Sort by Status</option>
+                </select>
+                <button
+                  onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                  className="p-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                  {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+                </button>
               </div>
             </div>
-          ))}
+
+            {showFilters && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Specialty
+                  </label>
+                  <select
+                    value={filters.specialty}
+                    onChange={(e) => handleFilterChange('specialty', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All Specialties</option>
+                    {specialties.map(specialty => (
+                      <option key={specialty} value={specialty}>{specialty}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    State
+                  </label>
+                  <select
+                    value={filters.location}
+                    onChange={(e) => handleFilterChange('location', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All States</option>
+                    {locations.map(location => (
+                      <option key={location} value={location}>{location}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={filters.status}
+                    onChange={(e) => handleFilterChange('status', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All Statuses</option>
+                    {statuses.map(status => (
+                      <option key={status} value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Credentials
+                  </label>
+                  <select
+                    value={filters.credentials}
+                    onChange={(e) => handleFilterChange('credentials', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All Credentials</option>
+                    {credentials.map(credential => (
+                      <option key={credential} value={credential}>{credential}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="md:col-span-2 lg:col-span-4 flex justify-end">
+                  <button
+                    onClick={clearFilters}
+                    className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-800"
+                  >
+                    <X className="h-4 w-4" />
+                    <span>Clear Filters</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Results */}
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Providers ({sortedResults.length})
+            </h2>
+          </div>
+          <div className="divide-y divide-gray-200">
+            {sortedResults.map((provider) => (
+              <div key={provider.id} className="p-6 hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-start space-x-4">
+                    <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
+                      <User className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <h3 className="text-lg font-medium text-gray-900">
+                          {provider.name}, {provider.credentials}
+                        </h3>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(provider.status)}`}>
+                          {provider.status}
+                        </span>
+                      </div>
+                      <div className="mt-1 space-y-1">
+                        <div className="flex items-center text-sm text-gray-600">
+                          <Stethoscope className="h-4 w-4 mr-2" />
+                          {provider.specialty}
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          {provider.location}
+                        </div>
+                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+                          <div className="flex items-center">
+                            <Phone className="h-4 w-4 mr-1" />
+                            {provider.phone}
+                          </div>
+                          <div className="flex items-center">
+                            <Mail className="h-4 w-4 mr-1" />
+                            {provider.email}
+                          </div>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          NPI: {provider.npi}
+                        </div>
+                        {managedBy && (
+                          <div className="text-sm text-gray-500">
+                            Managed by: {provider.managedBy}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <a
+                      href={`/hcp-detail?id=${provider.id}`}
+                      className="flex items-center space-x-2 px-3 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span>View</span>
+                    </a>
+                    <a
+                      href={`/hcp-edit?id=${provider.id}`}
+                      className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-md"
+                    >
+                      <Edit className="h-4 w-4" />
+                      <span>Edit</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </Layout>
