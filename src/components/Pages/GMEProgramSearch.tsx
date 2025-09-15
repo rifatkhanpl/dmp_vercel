@@ -12,7 +12,8 @@ import {
   ChevronDown,
   X,
   Eye,
-  Bookmark
+  Bookmark,
+  Stethoscope
 } from 'lucide-react';
 
 interface GMEProgram {
