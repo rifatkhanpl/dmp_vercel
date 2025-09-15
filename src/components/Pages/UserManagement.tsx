@@ -420,7 +420,7 @@ export function UserManagement() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {user.providersManaged > 0 ? (
                         <a 
-                          href={`/search-results?managedBy=${encodeURIComponent(user.firstName + ' ' + user.lastName)}`}
+                          href={`/search?managedBy=${encodeURIComponent(user.firstName + ' ' + user.lastName)}`}
                           className="text-blue-600 hover:text-blue-800 hover:underline font-medium transition-colors"
                           title={`View ${user.providersManaged} providers managed by ${user.firstName} ${user.lastName}`}
                         >
