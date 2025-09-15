@@ -6,6 +6,7 @@ import {
   MapPin, 
   Stethoscope,
   Phone,
+  FileText,
   Mail,
   Eye,
   Edit,
