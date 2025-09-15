@@ -93,8 +93,7 @@ export function Search() {
       status: 'pending',
       credentials: 'MD',
       profession: 'Physician',
-      subspecialty: 'Neonatology',
-      plSpecialist: 'Emily Rodriguez'
+      managedBy: 'Emily Rodriguez'
     },
     {
       id: '4',
@@ -578,10 +577,16 @@ export function Search() {
                             NPI: {provider.npi}
                           </div>
                         )}
-                        {provider.managedBy && (
+                        {provider.subspecialty && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Stethoscope className="h-4 w-4 mr-2" />
+                            Subspecialty: {provider.subspecialty}
+                          </div>
+                        )}
+                        {provider.plSpecialist && (
                           <div className="flex items-center text-sm text-gray-600">
                             <User className="h-4 w-4 mr-2" />
-                            Managed by: {provider.managedBy}
+                            PL Specialist: {provider.plSpecialist}
                           </div>
                         )}
                       </div>
