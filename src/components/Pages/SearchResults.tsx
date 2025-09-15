@@ -603,21 +603,21 @@ export function SearchResults() {
                     </div>
                   </div>
                   <div className="relative">
-                    <button
+                        handleBulkAction('export');
                       onClick={() => setActiveDropdown(activeDropdown === provider.id ? null : provider.id)}
                       className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-md"
                     >
-                      <span>Actions</span>
-                      <ChevronDown className="h-4 w-4" />
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Selected
                     </button>
                     
                     {activeDropdown === provider.id && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                        handleBulkAction('reassign');
                         <div className="py-1">
                           <a
                             href={`/hcp-detail?id=${provider.id}`}
-                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            onClick={() => setActiveDropdown(null)}
+                      <Users className="h-4 w-4 mr-2" />
+                      Reassign to User
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
@@ -629,56 +629,15 @@ export function SearchResults() {
                             }}
                             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           >
-                            <Edit className="h-4 w-4 mr-2" />
                             Edit Provider
                           </button>
                           <button
-                            onClick={() => {
+                        handleBulkAction('delete');
                               setActiveDropdown(null);
-                              // Handle reassign action
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                             }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Users className="h-4 w-4 mr-2" />
-                            Reassign to User
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              // Handle export action
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Download className="h-4 w-4 mr-2" />
-                            Export Data
-                          </button>
-                          <div className="border-t border-gray-100"></div>
-                          <button
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              if (confirm('Are you sure you want to deactivate this provider?')) {
-                                // Handle deactivate action
-                              }
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Ban className="h-4 w-4 mr-2" />
-                            Deactivate
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              if (confirm('Are you sure you want to delete this provider? This action cannot be undone.')) {
-                                // Handle delete action
-                              }
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete Provider
-                          </button>
-                        </div>
-                      </div>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Selected
                     )}
                   </div>
                 </div>
