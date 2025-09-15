@@ -58,13 +58,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           description: 'Register new healthcare providers'
         },
         {
-          name: 'Bulk Import',
+          name: 'HCP Import',
           href: '/bulk-import',
           icon: Upload,
           description: 'Import multiple providers'
         },
         {
-          name: 'Search Providers',
+          name: 'HCP Search',
           href: '/search',
           icon: Search,
           description: 'Find and manage providers'
