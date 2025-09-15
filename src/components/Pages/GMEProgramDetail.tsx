@@ -119,20 +119,6 @@ export function GMEProgramDetail() {
               >
                 <ArrowLeft className="h-5 w-5" />
               </a>
-              <a
-                href={`/search?program=${encodeURIComponent(program.programName)}&institution=${encodeURIComponent(program.institution)}`}
-                className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1"
-              >
-                <Users className="h-4 w-4" />
-                <span>View Program Alumni & Current Residents</span>
-              </a>
-              <a
-                href={`/institution-programs?name=${encodeURIComponent(program.institution)}`}
-                className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1"
-              >
-                <Building className="h-4 w-4" />
-                <span>View all {program.institution} programs</span>
-              </a>
               <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full">
                 <GraduationCap className="h-8 w-8 text-blue-600" />
               </div>
@@ -173,6 +159,44 @@ export function GMEProgramDetail() {
           </div>
         </div>
 
+        {/* Affiliated Residents and Programs */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Users className="h-5 w-5 mr-2" />
+                Affiliated Residents
+              </h2>
+              <p className="text-gray-600 mb-4">
+                View current residents, alumni, and fellows associated with this program
+              </p>
+              <a
+                href={`/search?program=${encodeURIComponent(program.programName)}&institution=${encodeURIComponent(program.institution)}`}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                <Users className="h-4 w-4 mr-2" />
+                View Program Alumni & Current Residents
+              </a>
+            </div>
+            
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Building className="h-5 w-5 mr-2" />
+                Affiliated Programs
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Explore all residency and fellowship programs at this institution
+              </p>
+              <a
+                href={`/gme-program-search?institution=${encodeURIComponent(program.institution)}`}
+                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+              >
+                <Building className="h-4 w-4 mr-2" />
+                View All {program.institution} Programs
+              </a>
+            </div>
+          </div>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
