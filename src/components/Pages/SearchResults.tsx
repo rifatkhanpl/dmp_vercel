@@ -218,11 +218,17 @@ export function SearchResults() {
 
   const handleBulkAction = (action: string) => {
     switch (action) {
-      case 'export':
-        console.log('Exporting selected providers:', selectedProviders);
+      case 'archive':
+        if (confirm(`Are you sure you want to archive ${selectedProviders.length} providers?`)) {
+          console.log('Archiving selected providers:', selectedProviders);
+          setSelectedProviders([]);
+        }
         break;
-      case 'reassign':
-        console.log('Reassigning selected providers:', selectedProviders);
+      case 'activate':
+        if (confirm(`Are you sure you want to activate ${selectedProviders.length} providers?`)) {
+          console.log('Activating selected providers:', selectedProviders);
+          setSelectedProviders([]);
+        }
         break;
       case 'deactivate':
         if (confirm(`Are you sure you want to deactivate ${selectedProviders.length} providers?`)) {
@@ -230,9 +236,21 @@ export function SearchResults() {
           setSelectedProviders([]);
         }
         break;
-      case 'delete':
-        if (confirm(`Are you sure you want to delete ${selectedProviders.length} providers? This action cannot be undone.`)) {
-          console.log('Deleting selected providers:', selectedProviders);
+      case 'downloadPdf':
+        console.log('Downloading PDF for selected providers:', selectedProviders);
+        break;
+      case 'exportCsv':
+        console.log('Exporting CSV for selected providers:', selectedProviders);
+        break;
+      case 'reassign':
+        console.log('Reassigning selected providers:', selectedProviders);
+        break;
+      case 'sendMessage':
+        console.log('Sending message to selected providers:', selectedProviders);
+        break;
+      case 'markComplete':
+        if (confirm(`Are you sure you want to mark ${selectedProviders.length} providers as complete?`)) {
+          console.log('Marking selected providers as complete:', selectedProviders);
           setSelectedProviders([]);
         }
         break;
@@ -598,8 +616,7 @@ export function SearchResults() {
                         <div className="py-1">
                           <a
                             href={`/hcp-detail?id=${provider.id}`}
-                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            onClick={() => setActiveDropdown(null)}
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
@@ -617,42 +634,7 @@ export function SearchResults() {
                           <button
                             onClick={() => {
                               setActiveDropdown(null);
-                              // Handle reassign action
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Users className="h-4 w-4 mr-2" />
-                            Reassign to User
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              // Handle export action
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Download className="h-4 w-4 mr-2" />
-                            Export Data
-                          </button>
-                          <div className="border-t border-gray-100"></div>
-                          <button
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              if (confirm('Are you sure you want to deactivate this provider?')) {
-                                // Handle deactivate action
-                              }
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Ban className="h-4 w-4 mr-2" />
-                            Deactivate
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              if (confirm('Are you sure you want to delete this provider? This action cannot be undone.')) {
-                                // Handle delete action
-                              }
+                              // Handle delete action
                             }}
                             className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                           >
