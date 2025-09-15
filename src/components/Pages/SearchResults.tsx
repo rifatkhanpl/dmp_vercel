@@ -248,6 +248,12 @@ export function SearchResults() {
       case 'sendMessage':
         console.log('Sending message to selected providers:', selectedProviders);
         break;
+      case 'markComplete':
+        if (confirm(`Are you sure you want to mark ${selectedProviders.length} providers as complete?`)) {
+          console.log('Marking selected providers as complete:', selectedProviders);
+          setSelectedProviders([]);
+        }
+        break;
       default:
         console.log('Unknown bulk action:', action);
         break;
