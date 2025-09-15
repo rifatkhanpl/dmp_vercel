@@ -218,7 +218,7 @@ export function SearchResults() {
 
   const handleBulkAction = (action: string) => {
     switch (action) {
-      case 'export':
+      case 'archive':
         if (confirm(`Are you sure you want to archive ${selectedProviders.length} providers?`)) {
           console.log('Archiving selected providers:', selectedProviders);
           setSelectedProviders([]);
@@ -248,13 +248,19 @@ export function SearchResults() {
       case 'sendMessage':
         console.log('Sending message to selected providers:', selectedProviders);
         break;
-      case 'deactivate':
+      case 'markComplete':
         if (confirm(`Are you sure you want to mark ${selectedProviders.length} providers as complete?`)) {
           console.log('Marking selected providers as complete:', selectedProviders);
           setSelectedProviders([]);
         }
         break;
-      case 'delete':
+      case 'deleteSelected':
+        if (confirm(`Are you sure you want to delete ${selectedProviders.length} providers?`)) {
+          console.log('Deleting selected providers:', selectedProviders);
+          setSelectedProviders([]);
+        }
+        break;
+      default:
         console.log('Unknown bulk action:', action);
         break;
     }
@@ -488,7 +494,7 @@ export function SearchResults() {
                       <button
                         onClick={() => {
                           setActiveDropdown(null);
-                          handleBulkAction('export');
+                          handleBulkAction('exportCsv');
                         }}
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
@@ -508,17 +514,27 @@ export function SearchResults() {
                       <button
                         onClick={() => {
                           setActiveDropdown(null);
-                          handleBulkAction('deactivate');
+                          handleBulkAction('sendMessage');
                         }}
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         <Mail className="h-4 w-4 mr-2" />
                         Send Message
                       </button>
+                      <button
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          handleBulkAction('deleteSelected');
+                        }}
+                        className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Selected
+                      </button>
                     </div>
                   </div>
                 )}
-                          handleBulkAction('delete');
+              </div>
             </div>
           </div>
         )}
