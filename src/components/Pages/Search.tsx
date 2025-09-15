@@ -165,19 +165,19 @@ export function Search() {
 
   const handleBulkAction = (action: string) => {
     switch (action) {
-      case 'export':
+      case 'exportSelected':
         console.log('Exporting selected providers:', selectedProviders);
         break;
       case 'reassign':
         console.log('Reassigning selected providers:', selectedProviders);
         break;
-      case 'deactivate':
+      case 'deactivateSelected':
         if (confirm(`Are you sure you want to deactivate ${selectedProviders.length} providers?`)) {
           console.log('Deactivating selected providers:', selectedProviders);
           setSelectedProviders([]);
         }
         break;
-      case 'delete':
+      case 'deleteSelected':
         if (confirm(`Are you sure you want to delete ${selectedProviders.length} providers? This action cannot be undone.`)) {
           console.log('Deleting selected providers:', selectedProviders);
           setSelectedProviders([]);
