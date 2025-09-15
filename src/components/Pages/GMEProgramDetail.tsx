@@ -120,6 +120,13 @@ export function GMEProgramDetail() {
                 <ArrowLeft className="h-5 w-5" />
               </a>
               <a
+                href={`/search?program=${encodeURIComponent(program.programName)}&institution=${encodeURIComponent(program.institution)}`}
+                className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1"
+              >
+                <Users className="h-4 w-4" />
+                <span>View Program Alumni & Current Residents</span>
+              </a>
+              <a
                 href={`/institution-programs?name=${encodeURIComponent(program.institution)}`}
                 className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1"
               >
