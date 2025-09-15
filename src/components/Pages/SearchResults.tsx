@@ -16,9 +16,10 @@ export function SearchResults() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const query = searchParams.get('q') || '';
+  const managedBy = searchParams.get('managedBy') || '';
 
   // Mock search results
-  const results = [
+  const allResults = [
     {
       id: '1',
       name: 'Dr. Sarah Johnson',
@@ -28,7 +29,8 @@ export function SearchResults() {
       phone: '(555) 123-4567',
       email: 'sarah.johnson@example.com',
       npi: '1234567890',
-      status: 'active'
+      status: 'active',
+      managedBy: 'John Doe'
     },
     {
       id: '2',
@@ -39,9 +41,46 @@ export function SearchResults() {
       phone: '(555) 234-5678',
       email: 'michael.chen@example.com',
       npi: '1234567891',
-      status: 'active'
+      status: 'active',
+      managedBy: 'Sarah Johnson'
+    },
+    {
+      id: '3',
+      name: 'Dr. Emily Rodriguez',
+      credentials: 'MD',
+      specialty: 'Pediatrics',
+      location: 'Miami, FL',
+      phone: '(555) 345-6789',
+      email: 'emily.rodriguez@example.com',
+      npi: '1234567892',
+      status: 'active',
+      managedBy: 'John Doe'
+    },
+    {
+      id: '4',
+      name: 'Dr. David Wilson',
+      credentials: 'DO',
+      specialty: 'Family Medicine',
+      location: 'Dallas, TX',
+      phone: '(555) 456-7890',
+      email: 'david.wilson@example.com',
+      npi: '1234567893',
+      status: 'pending',
+      managedBy: 'John Doe'
     }
   ];
+
+  // Filter results based on search query and managed by
+  const results = allResults.filter(provider => {
+    const matchesQuery = !query || 
+      provider.name.toLowerCase().includes(query.toLowerCase()) ||
+      provider.specialty.toLowerCase().includes(query.toLowerCase()) ||
+      provider.location.toLowerCase().includes(query.toLowerCase());
+    
+    const matchesManagedBy = !managedBy || provider.managedBy === managedBy;
+    
+    return matchesQuery && matchesManagedBy;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -56,25 +95,48 @@ export function SearchResults() {
     }
   };
 
-  return (
-    <Layout breadcrumbs={[
+  const getPageTitle = () => {
+    if (managedBy && query) {
+      return `Search Results for "${query}" managed by ${managedBy}`;
+    } else if (managedBy) {
+      return `Providers managed by ${managedBy}`;
+    } else if (query) {
+      return `Search Results for "${query}"`;
+    }
+    return 'Search Results';
+  };
+
+  const getBreadcrumbs = () => {
+    if (managedBy) {
+      return [
+        { label: 'User Management', href: '/user-management' },
+        { label: 'Provider Results' }
+      ];
+    }
+    return [
       { label: 'HCP Search', href: '/search' },
       { label: 'Search Results' }
-    ]}>
+    ];
+  };
+
+  return (
+    <Layout breadcrumbs={getBreadcrumbs()}>
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-center space-x-4">
             <a
-              href="/search"
+              href={managedBy ? "/user-management" : "/search"}
               className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md"
             >
               <ArrowLeft className="h-5 w-5" />
             </a>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Search Results</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{getPageTitle()}</h1>
               <p className="text-gray-600">
-                {results.length} results found for "{query}"
+                {results.length} results found
+                {query && ` for "${query}"`}
+                {managedBy && ` managed by ${managedBy}`}
               </p>
             </div>
           </div>
