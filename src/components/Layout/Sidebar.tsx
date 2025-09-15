@@ -28,7 +28,7 @@ interface SidebarProps {
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user } = useAuth();
   const { bookmarks } = useBookmarks();
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['main']));
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['main', 'analytics', 'admin', 'user']));
 
   const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);
@@ -169,48 +169,38 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <nav className="p-4 space-y-6">
           {navigationItems.map((section) => (
             <div key={section.id}>
-              <button
-                onClick={() => toggleSection(section.id)}
-                className="flex items-center justify-between w-full text-left text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 hover:text-gray-700"
-              >
+              <div className="flex items-center justify-between w-full text-left text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                 <span>{section.title}</span>
-                {expandedSections.has(section.id) ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </button>
+              </div>
               
-              {expandedSections.has(section.id) && (
-                <div className="space-y-1">
-                  {section.items.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = window.location.pathname === item.href;
-                    
-                    return (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        onClick={onClose}
-                        className={`
-                          group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
-                          ${isActive 
-                            ? 'bg-blue-100 text-blue-700 border-r-2 border-blue-700' 
-                            : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                          }
-                        `}
-                        title={item.description}
-                      >
-                        <Icon className={`
-                          mr-3 h-5 w-5 flex-shrink-0
-                          ${isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-500'}
-                        `} />
-                        <span className="truncate">{item.name}</span>
-                      </a>
-                    );
-                  })}
-                </div>
-              )}
+              <div className="space-y-1">
+                {section.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = window.location.pathname === item.href;
+                  
+                  return (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      onClick={onClose}
+                      className={`
+                        group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+                        ${isActive 
+                          ? 'bg-blue-100 text-blue-700' 
+                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                        }
+                      `}
+                      title={item.description}
+                    >
+                      <Icon className={`
+                        mr-3 h-5 w-5 flex-shrink-0
+                        ${isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-500'}
+                      `} />
+                      <span className="truncate">{item.name}</span>
+                    </a>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </nav>
