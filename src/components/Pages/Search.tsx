@@ -410,7 +410,7 @@ export function Search() {
                     onChange={(e) => handleFilterChange('profession', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">All Professions</option>
+                    <option value="">Professions</option>
                     {professions.map(profession => (
                       <option key={profession} value={profession}>{profession}</option>
                     ))}
@@ -425,7 +425,7 @@ export function Search() {
                     onChange={(e) => handleFilterChange('managedBy', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">All Users</option>
+                    <option value="">PL Specialists</option>
                     {users.map(user => (
                       <option key={user} value={user}>{user}</option>
                     ))}
@@ -440,7 +440,7 @@ export function Search() {
                     <span>Clear Filters</span>
                   </button>
                 </div>
-              </div>
+                    <option value="">States</option>
             )}
           </div>
         </div>
@@ -666,7 +666,7 @@ export function Search() {
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete Provider
-                          </button>
+                    <option value="">Statuses</option>
                         </div>
                       </div>
                     )}
