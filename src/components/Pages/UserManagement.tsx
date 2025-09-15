@@ -70,7 +70,7 @@ export function UserManagement() {
       isEmailVerified: true,
       phone: '(555) 234-5678',
       department: 'IT Administration',
-      providersManaged: 0,
+      providersManaged: 2,
       lastActivity: '2024-01-15T16:45:00Z',
       assignedSpecialties: []
     },
@@ -102,7 +102,7 @@ export function UserManagement() {
       isEmailVerified: true,
       phone: '(555) 456-7890',
       department: 'Provider Relations',
-      providersManaged: 35,
+      providersManaged: 3,
       lastActivity: '2024-01-05T16:45:00Z',
       assignedSpecialties: ['Pediatrics', 'Family Medicine', 'Pediatric Surgery']
     },
@@ -118,7 +118,7 @@ export function UserManagement() {
       isEmailVerified: true,
       phone: '(555) 567-8901',
       department: 'Provider Relations',
-      providersManaged: 22,
+      providersManaged: 3,
       lastActivity: '2024-01-14T17:15:00Z',
       assignedSpecialties: ['Orthopedic Surgery', 'Sports Medicine', 'Physical Therapy']
     },
@@ -134,7 +134,7 @@ export function UserManagement() {
       isEmailVerified: true,
       phone: '(555) 678-9012',
       department: 'Provider Relations',
-      providersManaged: 15,
+      providersManaged: 0,
       lastActivity: '2024-01-15T15:45:00Z',
       assignedSpecialties: ['Psychiatry', 'Psychology', 'Mental Health']
     }
