@@ -40,22 +40,6 @@ interface Provider {
 }
 
 export function Search() {
-import { Layout } from '../Layout/Layout';
-import { 
-  Search as SearchIcon, 
-  Filter, 
-  User, 
-  MapPin, 
-  Stethoscope,
-  Phone,
-  Mail,
-  Eye,
-  Edit,
-  ChevronDown,
-  X
-} from 'lucide-react';
-
-export function Search() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
     specialty: '',
