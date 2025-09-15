@@ -62,7 +62,6 @@ export function Search() {
       phone: '(555) 123-4567',
       npi: '1234567890',
       status: 'active',
-      credentials: 'MD'
       credentials: 'MD',
       managedBy: 'Emily Rodriguez'
     },
@@ -75,7 +74,6 @@ export function Search() {
       phone: '(555) 234-5678',
       npi: '2345678901',
       status: 'active',
-      credentials: 'DO'
       credentials: 'DO',
       managedBy: 'David Thompson'
     },
@@ -88,7 +86,6 @@ export function Search() {
       phone: '(555) 345-6789',
       npi: '3456789012',
       status: 'pending',
-      credentials: 'MD'
       credentials: 'MD',
       managedBy: 'Emily Rodriguez'
     },
@@ -101,7 +98,6 @@ export function Search() {
       phone: '(555) 456-7890',
       npi: '4567890123',
       status: 'active',
-      credentials: 'MD'
       credentials: 'MD',
       managedBy: 'David Thompson'
     },
@@ -114,7 +110,6 @@ export function Search() {
       phone: '(555) 567-8901',
       npi: '5678901234',
       status: 'active',
-      credentials: 'DO'
       credentials: 'DO',
       managedBy: 'Emily Rodriguez'
     },
