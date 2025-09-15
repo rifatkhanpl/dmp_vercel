@@ -381,7 +381,13 @@ export function UserManagement() {
                       {formatDate(user.lastLogin)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {user.providersManaged}
+                      <a 
+                        href={`/search?managedBy=${encodeURIComponent(user.firstName + ' ' + user.lastName)}`}
+                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                        title={`View providers managed by ${user.firstName} ${user.lastName}`}
+                      >
+                        {user.providersManaged}
+                      </a>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
