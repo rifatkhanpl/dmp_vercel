@@ -38,13 +38,12 @@ export function Layout({ children, breadcrumbs = [], showBreadcrumbs = true }: L
       )}
       
       <main className={`pt-16 ${isAuthenticated ? 'lg:pl-64' : ''}`}>
-        <div className="p-6">
+        <div className="p-6 min-h-screen bg-gray-50">
           {showBreadcrumbs && breadcrumbs.length > 0 && (
             <Breadcrumb items={breadcrumbs} />
           )}
           {children}
         </div>
-        <Footer />
       </main>
     </div>
   );
