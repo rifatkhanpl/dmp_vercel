@@ -31,6 +31,8 @@ export function SearchResults() {
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
   const [filters, setFilters] = useState({
     specialty: '',
     location: '',
@@ -1335,6 +1337,47 @@ export function SearchResults() {
     console.log('Exporting search results...');
   };
 
+  const handleSelectAll = () => {
+    if (selectedProviders.length === sortedResults.length) {
+      setSelectedProviders([]);
+    } else {
+      setSelectedProviders(sortedResults.map(p => p.id));
+    }
+  };
+
+  const handleSelectProvider = (providerId: string) => {
+    setSelectedProviders(prev => {
+      if (prev.includes(providerId)) {
+        return prev.filter(id => id !== providerId);
+      } else {
+        return [...prev, providerId];
+      }
+    });
+  };
+
+  const handleBulkAction = (action: string) => {
+    console.log(`Performing ${action} on ${selectedProviders.length} providers:`, selectedProviders);
+    // Mock bulk actions
+    switch (action) {
+      case 'export':
+        console.log('Bulk exporting selected providers...');
+        break;
+      case 'deactivate':
+        console.log('Bulk deactivating selected providers...');
+        break;
+      case 'reassign':
+        console.log('Bulk reassigning selected providers...');
+        break;
+      case 'delete':
+        if (window.confirm(`Are you sure you want to delete ${selectedProviders.length} providers?`)) {
+          console.log('Bulk deleting selected providers...');
+        }
+        break;
+    }
+    setSelectedProviders([]);
+    setShowBulkActions(false);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
@@ -1402,6 +1445,46 @@ export function SearchResults() {
                 <Download className="h-4 w-4" />
                 <span>Export</span>
               </button>
+              {selectedProviders.length > 0 && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowBulkActions(!showBulkActions)}
+                    className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    <span>Actions ({selectedProviders.length})</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                  {showBulkActions && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                      <button
+                        onClick={() => handleBulkAction('export')}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Export Selected
+                      </button>
+                      <button
+                        onClick={() => handleBulkAction('reassign')}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Reassign to User
+                      </button>
+                      <button
+                        onClick={() => handleBulkAction('deactivate')}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Deactivate Selected
+                      </button>
+                      <hr className="my-1" />
+                      <button
+                        onClick={() => handleBulkAction('delete')}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                      >
+                        Delete Selected
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1533,18 +1616,46 @@ export function SearchResults() {
         {/* Results */}
         <div className="bg-white rounded-lg shadow-sm">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Providers ({sortedResults.length})
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Providers ({sortedResults.length})
+              </h2>
+              {sortedResults.length > 0 && (
+                <div className="flex items-center space-x-4">
+                  <label className="flex items-center space-x-2 text-sm text-gray-600">
+                    <input
+                      type="checkbox"
+                      checked={selectedProviders.length === sortedResults.length && sortedResults.length > 0}
+                      onChange={handleSelectAll}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <span>Select All</span>
+                  </label>
+                  {selectedProviders.length > 0 && (
+                    <span className="text-sm text-blue-600 font-medium">
+                      {selectedProviders.length} selected
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           <div className="divide-y divide-gray-200">
             {sortedResults.map((provider) => (
               <div key={provider.id} className="p-6 hover:bg-gray-50">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-start space-x-4">
+                  <div className="flex items-center space-x-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedProviders.includes(provider.id)}
+                      onChange={() => handleSelectProvider(provider.id)}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
                     <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
                       <User className="h-6 w-6 text-blue-600" />
                     </div>
+                  </div>
+                  <div className="flex items-start space-x-4">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
                         <h3 className="text-lg font-medium text-gray-900">
