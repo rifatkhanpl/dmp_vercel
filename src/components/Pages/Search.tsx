@@ -93,7 +93,8 @@ export function Search() {
       status: 'pending',
       credentials: 'MD',
       profession: 'Physician',
-      managedBy: 'Emily Rodriguez'
+      subspecialty: 'Neonatology',
+      plSpecialist: 'Emily Rodriguez'
     },
     {
       id: '4',
