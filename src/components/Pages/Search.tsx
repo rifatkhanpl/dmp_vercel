@@ -44,11 +44,12 @@ export function Search() {
   const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [filters, setFilters] = useState({
+    profession: '',
     specialty: '',
+    subspecialty: '',
     state: '',
     status: '',
-    profession: '',
-    managedBy: ''
+    plSpecialist: ''
   });
   const [sortBy, setSortBy] = useState('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
