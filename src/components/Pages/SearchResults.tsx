@@ -249,13 +249,6 @@ export function SearchResults() {
         console.log('Sending message to selected providers:', selectedProviders);
         break;
       default:
-        console.log('Unknown bulk action:', action);
-        break;
-    }
-  };
-          setSelectedProviders([]);
-        }
-        break;
     }
   };
 
