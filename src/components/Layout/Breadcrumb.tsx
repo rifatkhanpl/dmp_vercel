@@ -18,11 +18,11 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
   return (
     <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
       <a 
-        href="/dashboard" 
+        href="/" 
         className="flex items-center space-x-1 hover:text-gray-900 transition-colors"
       >
         <Home className="h-4 w-4" />
-        <span>Dashboard</span>
+        <span>Home</span>
       </a>
       
       {items.map((item, index) => (
