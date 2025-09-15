@@ -155,7 +155,7 @@ export function Dashboard() {
   };
 
   return (
-    <Layout>
+    <Layout breadcrumbs={[]}>
       <div className="space-y-6">
         {/* Welcome Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">

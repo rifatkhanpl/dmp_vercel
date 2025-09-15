@@ -60,7 +60,7 @@ export function ProviderProfile() {
   };
 
   return (
-    <Layout breadcrumbs={[{ label: 'My Profile' }]}>
+    <Layout breadcrumbs={[{ label: 'Provider Profile' }]}>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">

@@ -16,7 +16,6 @@ import { BulkImport } from './components/Pages/BulkImport';
 import { Search } from './components/Pages/Search';
 import { SearchResults } from './components/Pages/SearchResults';
 import { HCPDetail } from './components/Pages/HCPDetail';
-import { ProviderProfile } from './components/Pages/ProviderProfile';
 import { UserManagement } from './components/Pages/UserManagement';
 import { AddUser } from './components/Pages/AddUser';
 import { UserProfile } from './components/Pages/UserProfile';
@@ -114,11 +113,6 @@ function App() {
             <Route path="/hcp-detail" element={
               <ProtectedRoute>
                 <HCPDetail />
-              </ProtectedRoute>
-            } />
-            <Route path="/provider-profile" element={
-              <ProtectedRoute>
-                <ProviderProfile />
               </ProtectedRoute>
             } />
             <Route path="/user-management" element={
