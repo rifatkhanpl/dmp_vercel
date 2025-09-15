@@ -183,8 +183,8 @@ export function Dashboard() {
             const Icon = stat.icon;
             return (
               <div key={index} className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex items-start justify-between h-full">
+                  <div className="flex-1">
                     <p className="text-sm font-medium text-gray-600">{stat.title}</p>
                     <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
                     <div className="flex items-center mt-2">
@@ -196,7 +196,7 @@ export function Dashboard() {
                       <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
                     </div>
                   </div>
-                  <div className={`p-3 rounded-full ${getIconColorClasses('blue')}`}>
+                  <div className={`p-3 rounded-full ${getIconColorClasses('blue')} flex-shrink-0 ml-4`}>
                     <Icon className="h-6 w-6" />
                   </div>
                 </div>
