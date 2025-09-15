@@ -17,7 +17,8 @@ import {
   FileText,
   Users,
   Ban,
-  Trash2
+  Trash2,
+  CheckCircle
 } from 'lucide-react';
 
 interface Provider {
@@ -217,11 +218,17 @@ export function SearchResults() {
 
   const handleBulkAction = (action: string) => {
     switch (action) {
-      case 'export':
-        console.log('Exporting selected providers:', selectedProviders);
+      case 'archive':
+        if (confirm(`Are you sure you want to archive ${selectedProviders.length} providers?`)) {
+          console.log('Archiving selected providers:', selectedProviders);
+          setSelectedProviders([]);
+        }
         break;
-      case 'reassign':
-        console.log('Reassigning selected providers:', selectedProviders);
+      case 'activate':
+        if (confirm(`Are you sure you want to activate ${selectedProviders.length} providers?`)) {
+          console.log('Activating selected providers:', selectedProviders);
+          setSelectedProviders([]);
+        }
         break;
       case 'deactivate':
         if (confirm(`Are you sure you want to deactivate ${selectedProviders.length} providers?`)) {
@@ -229,9 +236,23 @@ export function SearchResults() {
           setSelectedProviders([]);
         }
         break;
-      case 'delete':
-        if (confirm(`Are you sure you want to delete ${selectedProviders.length} providers? This action cannot be undone.`)) {
-          console.log('Deleting selected providers:', selectedProviders);
+      case 'downloadPdf':
+        console.log('Downloading PDF for selected providers:', selectedProviders);
+        break;
+      case 'exportCsv':
+        console.log('Exporting CSV for selected providers:', selectedProviders);
+        break;
+      case 'reassign':
+        console.log('Reassigning selected providers:', selectedProviders);
+        break;
+      case 'sendMessage':
+        console.log('Sending message to selected providers:', selectedProviders);
+        break;
+      default:
+        console.log('Unknown bulk action:', action);
+        break;
+    }
+  };
           setSelectedProviders([]);
         }
         break;
@@ -425,12 +446,53 @@ export function SearchResults() {
                       <button
                         onClick={() => {
                           setActiveDropdown(null);
-                          handleBulkAction('export');
+                          handleBulkAction('archive');
+                        }}
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <FileText className="h-4 w-4 mr-2" />
+                        Archive Selected
+                      </button>
+                      <button
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          handleBulkAction('activate');
+                        }}
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Activate Selected
+                      </button>
+                      <button
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          handleBulkAction('deactivate');
+                        }}
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <Ban className="h-4 w-4 mr-2" />
+                        Deactivate Selected
+                      </button>
+                      <div className="border-t border-gray-100"></div>
+                      <button
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          handleBulkAction('downloadPdf');
+                        }}
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <FileText className="h-4 w-4 mr-2" />
+                        Download as PDF
+                      </button>
+                      <button
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          handleBulkAction('exportCsv');
                         }}
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         <Download className="h-4 w-4 mr-2" />
-                        Export Selected
+                        Export to CSV
                       </button>
                       <button
                         onClick={() => {
@@ -442,26 +504,15 @@ export function SearchResults() {
                         <Users className="h-4 w-4 mr-2" />
                         Reassign to User
                       </button>
-                      <div className="border-t border-gray-100"></div>
                       <button
                         onClick={() => {
                           setActiveDropdown(null);
-                          handleBulkAction('deactivate');
+                          handleBulkAction('sendMessage');
                         }}
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
-                        <Ban className="h-4 w-4 mr-2" />
-                        Deactivate Selected
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveDropdown(null);
-                          handleBulkAction('delete');
-                        }}
-                        className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete Selected
+                        <Mail className="h-4 w-4 mr-2" />
+                        Send Message
                       </button>
                     </div>
                   </div>
