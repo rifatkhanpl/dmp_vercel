@@ -37,6 +37,7 @@ interface User {
   department?: string;
   providersManaged: number;
   lastActivity: string;
+  assignedSpecialties?: string[];
 }
 
 export function UserManagement() {
@@ -53,8 +54,9 @@ export function UserManagement() {
       isEmailVerified: true,
       phone: '(555) 123-4567',
       department: 'Provider Relations',
-      providersManaged: 247,
-      lastActivity: '2024-01-15T14:22:00Z'
+      providersManaged: 28,
+      lastActivity: '2024-01-15T14:22:00Z',
+      assignedSpecialties: ['Internal Medicine', 'Cardiology', 'Gastroenterology']
     },
     {
       id: '2',
@@ -69,7 +71,8 @@ export function UserManagement() {
       phone: '(555) 234-5678',
       department: 'IT Administration',
       providersManaged: 0,
-      lastActivity: '2024-01-15T16:45:00Z'
+      lastActivity: '2024-01-15T16:45:00Z',
+      assignedSpecialties: []
     },
     {
       id: '3',
@@ -84,7 +87,8 @@ export function UserManagement() {
       phone: '(555) 345-6789',
       department: 'Provider Relations',
       providersManaged: 0,
-      lastActivity: '2024-01-10T14:20:00Z'
+      lastActivity: '2024-01-10T14:20:00Z',
+      assignedSpecialties: ['Emergency Medicine', 'Critical Care']
     },
     {
       id: '4',
@@ -92,14 +96,47 @@ export function UserManagement() {
       lastName: 'Rodriguez',
       email: 'emily.rodriguez@practicelink.com',
       role: 'provider-relations-coordinator',
-      status: 'suspended',
+      status: 'active',
       lastLogin: '2024-01-05T16:45:00Z',
       createdAt: '2023-08-22T11:15:00Z',
       isEmailVerified: true,
       phone: '(555) 456-7890',
       department: 'Provider Relations',
-      providersManaged: 156,
-      lastActivity: '2024-01-05T16:45:00Z'
+      providersManaged: 35,
+      lastActivity: '2024-01-05T16:45:00Z',
+      assignedSpecialties: ['Pediatrics', 'Family Medicine', 'Pediatric Surgery']
+    },
+    {
+      id: '5',
+      firstName: 'David',
+      lastName: 'Thompson',
+      email: 'david.thompson@practicelink.com',
+      role: 'provider-relations-coordinator',
+      status: 'active',
+      lastLogin: '2024-01-14T12:30:00Z',
+      createdAt: '2023-09-05T08:45:00Z',
+      isEmailVerified: true,
+      phone: '(555) 567-8901',
+      department: 'Provider Relations',
+      providersManaged: 22,
+      lastActivity: '2024-01-14T17:15:00Z',
+      assignedSpecialties: ['Orthopedic Surgery', 'Sports Medicine', 'Physical Therapy']
+    },
+    {
+      id: '6',
+      firstName: 'Lisa',
+      lastName: 'Wang',
+      email: 'lisa.wang@practicelink.com',
+      role: 'provider-relations-coordinator',
+      status: 'active',
+      lastLogin: '2024-01-15T09:20:00Z',
+      createdAt: '2023-07-18T13:30:00Z',
+      isEmailVerified: true,
+      phone: '(555) 678-9012',
+      department: 'Provider Relations',
+      providersManaged: 15,
+      lastActivity: '2024-01-15T15:45:00Z',
+      assignedSpecialties: ['Psychiatry', 'Psychology', 'Mental Health']
     }
   ]);
 

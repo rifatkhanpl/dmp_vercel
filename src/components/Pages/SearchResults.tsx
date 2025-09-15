@@ -20,53 +20,165 @@ export function SearchResults() {
 
   // Mock search results
   const allResults = [
+    // John Doe's Internal Medicine/Cardiology providers (28 total)
     {
       id: '1',
-      name: 'Dr. Sarah Johnson',
+      name: 'Dr. Robert Anderson',
       credentials: 'MD',
       specialty: 'Internal Medicine',
       location: 'Los Angeles, CA',
       phone: '(555) 123-4567',
-      email: 'sarah.johnson@example.com',
+      email: 'robert.anderson@example.com',
       npi: '1234567890',
       status: 'active',
       managedBy: 'John Doe'
     },
     {
       id: '2',
-      name: 'Dr. Michael Chen',
-      credentials: 'DO',
-      specialty: 'Emergency Medicine',
-      location: 'San Francisco, CA',
+      name: 'Dr. Maria Gonzalez',
+      credentials: 'MD',
+      specialty: 'Cardiology',
+      location: 'Beverly Hills, CA',
       phone: '(555) 234-5678',
-      email: 'michael.chen@example.com',
+      email: 'maria.gonzalez@example.com',
       npi: '1234567891',
       status: 'active',
-      managedBy: 'Sarah Johnson'
+      managedBy: 'John Doe'
     },
     {
       id: '3',
-      name: 'Dr. Emily Rodriguez',
+      name: 'Dr. James Wilson',
       credentials: 'MD',
-      specialty: 'Pediatrics',
-      location: 'Miami, FL',
+      specialty: 'Gastroenterology',
+      location: 'Santa Monica, CA',
       phone: '(555) 345-6789',
-      email: 'emily.rodriguez@example.com',
+      email: 'james.wilson@example.com',
       npi: '1234567892',
       status: 'active',
       managedBy: 'John Doe'
     },
     {
       id: '4',
-      name: 'Dr. David Wilson',
+      name: 'Dr. Jennifer Lee',
+      credentials: 'MD',
+      specialty: 'Internal Medicine',
+      location: 'Pasadena, CA',
+      phone: '(555) 456-7890',
+      email: 'jennifer.lee@example.com',
+      npi: '1234567893',
+      status: 'active',
+      managedBy: 'John Doe'
+    },
+    // Emily Rodriguez's Pediatrics/Family Medicine providers (35 total)
+    {
+      id: '5',
+      name: 'Dr. Sarah Martinez',
+      credentials: 'MD',
+      specialty: 'Pediatrics',
+      location: 'Miami, FL',
+      phone: '(555) 567-8901',
+      email: 'sarah.martinez@example.com',
+      npi: '1234567894',
+      status: 'active',
+      managedBy: 'Emily Rodriguez'
+    },
+    {
+      id: '6',
+      name: 'Dr. Michael Brown',
       credentials: 'DO',
       specialty: 'Family Medicine',
-      location: 'Dallas, TX',
-      phone: '(555) 456-7890',
-      email: 'david.wilson@example.com',
-      npi: '1234567893',
-      status: 'pending',
-      managedBy: 'John Doe'
+      location: 'Orlando, FL',
+      phone: '(555) 678-9012',
+      email: 'michael.brown@example.com',
+      npi: '1234567895',
+      status: 'active',
+      managedBy: 'Emily Rodriguez'
+    },
+    {
+      id: '7',
+      name: 'Dr. Amanda Davis',
+      credentials: 'MD',
+      specialty: 'Pediatric Surgery',
+      location: 'Tampa, FL',
+      phone: '(555) 789-0123',
+      email: 'amanda.davis@example.com',
+      npi: '1234567896',
+      status: 'active',
+      managedBy: 'Emily Rodriguez'
+    },
+    // David Thompson's Orthopedic/Sports Medicine providers (22 total)
+    {
+      id: '8',
+      name: 'Dr. Kevin Johnson',
+      credentials: 'MD',
+      specialty: 'Orthopedic Surgery',
+      location: 'Denver, CO',
+      phone: '(555) 890-1234',
+      email: 'kevin.johnson@example.com',
+      npi: '1234567897',
+      status: 'active',
+      managedBy: 'David Thompson'
+    },
+    {
+      id: '9',
+      name: 'Dr. Rachel Green',
+      credentials: 'DO',
+      specialty: 'Sports Medicine',
+      location: 'Boulder, CO',
+      phone: '(555) 901-2345',
+      email: 'rachel.green@example.com',
+      npi: '1234567898',
+      status: 'active',
+      managedBy: 'David Thompson'
+    },
+    {
+      id: '10',
+      name: 'Dr. Thomas Miller',
+      credentials: 'DPT',
+      specialty: 'Physical Therapy',
+      location: 'Colorado Springs, CO',
+      phone: '(555) 012-3456',
+      email: 'thomas.miller@example.com',
+      npi: '1234567899',
+      status: 'active',
+      managedBy: 'David Thompson'
+    },
+    // Lisa Wang's Mental Health providers (15 total)
+    {
+      id: '11',
+      name: 'Dr. Patricia White',
+      credentials: 'MD',
+      specialty: 'Psychiatry',
+      location: 'Seattle, WA',
+      phone: '(555) 123-4567',
+      email: 'patricia.white@example.com',
+      npi: '1234567900',
+      status: 'active',
+      managedBy: 'Lisa Wang'
+    },
+    {
+      id: '12',
+      name: 'Dr. Daniel Clark',
+      credentials: 'PsyD',
+      specialty: 'Psychology',
+      location: 'Portland, OR',
+      phone: '(555) 234-5678',
+      email: 'daniel.clark@example.com',
+      npi: '1234567901',
+      status: 'active',
+      managedBy: 'Lisa Wang'
+    },
+    {
+      id: '13',
+      name: 'Dr. Susan Taylor',
+      credentials: 'DO',
+      specialty: 'Mental Health',
+      location: 'Spokane, WA',
+      phone: '(555) 345-6789',
+      email: 'susan.taylor@example.com',
+      npi: '1234567902',
+      status: 'active',
+      managedBy: 'Lisa Wang'
     }
   ];
 
