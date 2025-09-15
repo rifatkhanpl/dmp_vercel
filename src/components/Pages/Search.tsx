@@ -28,7 +28,7 @@ interface Provider {
   email: string;
   phone: string;
   npi?: string;
-  status: 'active' | 'inactive' | 'pending';
+  status: 'active' | 'pending' | 'approved';
   credentials: string;
   managedBy?: string;
 }
@@ -97,7 +97,7 @@ export function Search() {
       email: 'david.wilson@example.com',
       phone: '(555) 456-7890',
       npi: '4567890123',
-      status: 'active',
+      status: 'approved',
       credentials: 'MD',
       managedBy: 'David Thompson'
     },
@@ -121,7 +121,7 @@ export function Search() {
       email: 'robert.martinez@example.com',
       phone: '(555) 678-9012',
       npi: '6789012345',
-      status: 'active',
+      status: 'approved',
       credentials: 'MD',
       managedBy: 'David Thompson'
     },
@@ -133,7 +133,7 @@ export function Search() {
       email: 'jennifer.lee@example.com',
       phone: '(555) 789-0123',
       npi: '7890123456',
-      status: 'active',
+      status: 'approved',
       credentials: 'DPT',
       managedBy: 'David Thompson'
     },
@@ -145,7 +145,7 @@ export function Search() {
       email: 'amanda.foster@example.com',
       phone: '(555) 890-1234',
       npi: '8901234567',
-      status: 'active',
+      status: 'approved',
       credentials: 'PsyD',
       managedBy: 'Emily Rodriguez'
     }
@@ -241,7 +241,7 @@ export function Search() {
   // Get unique values for filter options from base providers
   const specialties = [...new Set(baseProviders.map(p => p.specialty))];
   const states = [...new Set(baseProviders.map(p => p.location.split(', ')[1]))];
-  const statuses = ['active', 'inactive', 'pending'];
+  const statuses = ['active', 'pending', 'approved'];
   const credentials = [...new Set(baseProviders.map(p => p.credentials))];
 
   const activeFilterCount = Object.values(filters).filter(v => v).length;
