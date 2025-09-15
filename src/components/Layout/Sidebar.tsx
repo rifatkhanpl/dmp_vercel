@@ -153,9 +153,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Sidebar */}
       <div className={`
-        fixed top-16 left-0 z-50 w-64 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out overflow-y-auto
+        fixed top-16 left-0 z-50 w-64 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out overflow-y-auto lg:translate-x-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:z-auto
       `}>
         <div className="flex items-center justify-between p-4 border-b border-gray-200 lg:hidden">
           <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
