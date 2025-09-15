@@ -151,6 +151,11 @@ function App() {
                 <GMEProgramDetail />
               </ProtectedRoute>
             } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            } />
             <Route path="/institution-programs" element={
               <ProtectedRoute>
                 <GMEProgramSearch />
