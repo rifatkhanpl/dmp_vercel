@@ -13,7 +13,8 @@ import {
   Edit,
   ArrowLeft,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  GraduationCap
 } from 'lucide-react';
 
 export function HCPDetail() {
@@ -60,6 +61,14 @@ export function HCPDetail() {
     boardName: 'American Board of Internal Medicine',
     certificateName: 'Internal Medicine',
     certificationDate: '2010-07-01',
+    gmeTraining: {
+      programName: 'Internal Medicine Residency Program',
+      institution: 'UCLA Medical Center',
+      programType: 'Residency',
+      startDate: '2007-07-01',
+      endDate: '2010-06-30',
+      programId: '1'
+    },
     status: 'active',
     createdAt: '2023-01-15',
     updatedAt: '2024-01-10'
@@ -322,6 +331,41 @@ export function HCPDetail() {
                   <label className="block text-sm font-medium text-gray-500">Certification Date</label>
                   <p className="mt-1 text-sm text-gray-900">
                     {new Date(provider.certificationDate).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* GME Training */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <GraduationCap className="h-5 w-5 mr-2" />
+                GME Residency/Fellowship Training
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Program Name</label>
+                  <a
+                    href={`/gme-program-detail?id=${provider.gmeTraining.programId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                  >
+                    {provider.gmeTraining.programName}
+                  </a>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Institution</label>
+                  <p className="mt-1 text-sm text-gray-900">{provider.gmeTraining.institution}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Program Type</label>
+                  <p className="mt-1 text-sm text-gray-900">{provider.gmeTraining.programType}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500">Training Dates</label>
+                  <p className="mt-1 text-sm text-gray-900">
+                    {new Date(provider.gmeTraining.startDate).toLocaleDateString()} - {new Date(provider.gmeTraining.endDate).toLocaleDateString()}
                   </p>
                 </div>
               </div>
