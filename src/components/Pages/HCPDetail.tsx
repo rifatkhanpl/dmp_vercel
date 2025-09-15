@@ -286,8 +286,6 @@ export function HCPDetail() {
                   <label className="block text-sm font-medium text-gray-500">Program Name</label>
                   <a
                     href={`/gme-program-detail?id=${provider.gmeTraining.programId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="mt-1 text-sm text-blue-600 hover:text-blue-800 hover:underline"
                   >
                     {provider.gmeTraining.programName}
