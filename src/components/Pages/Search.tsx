@@ -165,19 +165,19 @@ export function Search() {
 
   const handleBulkAction = (action: string) => {
     switch (action) {
-      case 'exportSelected':
+      case 'export':
         console.log('Exporting selected providers:', selectedProviders);
         break;
       case 'reassign':
         console.log('Reassigning selected providers:', selectedProviders);
         break;
-      case 'deactivateSelected':
+      case 'deactivate':
         if (confirm(`Are you sure you want to deactivate ${selectedProviders.length} providers?`)) {
           console.log('Deactivating selected providers:', selectedProviders);
           setSelectedProviders([]);
         }
         break;
-      case 'deleteSelected':
+      case 'delete':
         if (confirm(`Are you sure you want to delete ${selectedProviders.length} providers? This action cannot be undone.`)) {
           console.log('Deleting selected providers:', selectedProviders);
           setSelectedProviders([]);
@@ -378,7 +378,7 @@ export function Search() {
                       <div className="border-t border-gray-100"></div>
                       <button
                         onClick={() => {
-                          setActiveDropdown(null);
+                          handleBulkAction('deactivate');
                           handleBulkAction('deactivate');
                         }}
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
