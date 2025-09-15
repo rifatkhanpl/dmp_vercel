@@ -14,7 +14,6 @@ import { Dashboard } from './components/Pages/Dashboard';
 import { HCPRegistration } from './components/Pages/HCPRegistration';
 import { BulkImport } from './components/Pages/BulkImport';
 import { Search } from './components/Pages/Search';
-import { SearchResults } from './components/Pages/SearchResults';
 import { HCPDetail } from './components/Pages/HCPDetail';
 import { UserManagement } from './components/Pages/UserManagement';
 import { AddUser } from './components/Pages/AddUser';
@@ -103,11 +102,6 @@ function App() {
             <Route path="/search" element={
               <ProtectedRoute>
                 <Search />
-              </ProtectedRoute>
-            } />
-            <Route path="/search-results" element={
-              <ProtectedRoute>
-                <SearchResults />
               </ProtectedRoute>
             } />
             <Route path="/hcp-detail" element={

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Layout } from '../Layout/Layout';
+import { useLocation } from 'react-router-dom';
 import { 
   Search as SearchIcon,
   Filter,
@@ -29,9 +30,14 @@ interface Provider {
   npi?: string;
   status: 'active' | 'inactive' | 'pending';
   credentials: string;
+  managedBy?: string;
 }
 
 export function Search() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const managedBy = searchParams.get('managedBy');
+
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
@@ -57,6 +63,8 @@ export function Search() {
       npi: '1234567890',
       status: 'active',
       credentials: 'MD'
+      credentials: 'MD',
+      managedBy: 'Emily Rodriguez'
     },
     {
       id: '2',
@@ -68,6 +76,8 @@ export function Search() {
       npi: '2345678901',
       status: 'active',
       credentials: 'DO'
+      credentials: 'DO',
+      managedBy: 'David Thompson'
     },
     {
       id: '3',
@@ -79,6 +89,8 @@ export function Search() {
       npi: '3456789012',
       status: 'pending',
       credentials: 'MD'
+      credentials: 'MD',
+      managedBy: 'Emily Rodriguez'
     },
     {
       id: '4',
@@ -90,6 +102,8 @@ export function Search() {
       npi: '4567890123',
       status: 'active',
       credentials: 'MD'
+      credentials: 'MD',
+      managedBy: 'David Thompson'
     },
     {
       id: '5',
@@ -101,11 +115,54 @@ export function Search() {
       npi: '5678901234',
       status: 'active',
       credentials: 'DO'
+      credentials: 'DO',
+      managedBy: 'Emily Rodriguez'
+    },
+    {
+      id: '6',
+      name: 'Dr. Robert Martinez, MD',
+      specialty: 'Orthopedic Surgery',
+      location: 'Denver, CO',
+      email: 'robert.martinez@example.com',
+      phone: '(555) 678-9012',
+      npi: '6789012345',
+      status: 'active',
+      credentials: 'MD',
+      managedBy: 'David Thompson'
+    },
+    {
+      id: '7',
+      name: 'Dr. Jennifer Lee, DPT',
+      specialty: 'Physical Therapy',
+      location: 'Seattle, WA',
+      email: 'jennifer.lee@example.com',
+      phone: '(555) 789-0123',
+      npi: '7890123456',
+      status: 'active',
+      credentials: 'DPT',
+      managedBy: 'David Thompson'
+    },
+    {
+      id: '8',
+      name: 'Dr. Amanda Foster, PsyD',
+      specialty: 'Psychology',
+      location: 'Portland, OR',
+      email: 'amanda.foster@example.com',
+      phone: '(555) 890-1234',
+      npi: '8901234567',
+      status: 'active',
+      credentials: 'PsyD',
+      managedBy: 'Emily Rodriguez'
     }
   ];
 
-  // Filter and sort providers
-  const filteredProviders = allProviders.filter(provider => {
+  // Filter providers by managedBy if specified, then apply other filters
+  const baseProviders = managedBy 
+    ? allProviders.filter(provider => provider.managedBy === managedBy)
+    : allProviders;
+
+  // Apply search and filter logic
+  const filteredProviders = baseProviders.filter(provider => {
     const matchesSearch = 
       provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       provider.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -186,22 +243,37 @@ export function Search() {
     }
   };
 
-  // Get unique values for filter options
-  const specialties = [...new Set(allProviders.map(p => p.specialty))];
-  const states = [...new Set(allProviders.map(p => p.location.split(', ')[1]))];
+  // Get unique values for filter options from base providers
+  const specialties = [...new Set(baseProviders.map(p => p.specialty))];
+  const states = [...new Set(baseProviders.map(p => p.location.split(', ')[1]))];
   const statuses = ['active', 'inactive', 'pending'];
-  const credentials = [...new Set(allProviders.map(p => p.credentials))];
+  const credentials = [...new Set(baseProviders.map(p => p.credentials))];
 
   const activeFilterCount = Object.values(filters).filter(v => v).length;
 
+  const breadcrumbs = managedBy 
+    ? [
+        { label: 'User Management', href: '/user-management' },
+        { label: `Providers managed by ${managedBy}` }
+      ]
+    : [
+        { label: 'Dashboard', href: '/dashboard' },
+        { label: 'HCP Search' }
+      ];
+
   return (
-    <Layout breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'HCP Search' }]}>
+    <Layout breadcrumbs={breadcrumbs}>
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Healthcare Provider Search</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            {managedBy ? `Providers managed by ${managedBy}` : 'Healthcare Provider Search'}
+          </h1>
           <p className="text-gray-600">
-            Search and manage healthcare provider records in the system
+            {managedBy 
+              ? `View and manage all providers assigned to ${managedBy}`
+              : 'Search and manage healthcare provider records in the system'
+            }
           </p>
         </div>
 
@@ -409,7 +481,7 @@ export function Search() {
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">
-                Search Results ({filteredProviders.length})
+                {managedBy ? 'Search Results' : 'Search Results'} ({filteredProviders.length})
               </h2>
               <div className="flex items-center space-x-2">
                 <input
@@ -472,6 +544,12 @@ export function Search() {
                           <div className="flex items-center text-sm text-gray-600">
                             <FileText className="h-4 w-4 mr-2" />
                             NPI: {provider.npi}
+                          </div>
+                        )}
+                        {provider.managedBy && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <User className="h-4 w-4 mr-2" />
+                            Managed by: {provider.managedBy}
                           </div>
                         )}
                       </div>
