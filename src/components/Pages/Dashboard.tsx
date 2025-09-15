@@ -217,7 +217,7 @@ export function Dashboard() {
                   href={action.href}
                   className="group p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all duration-200"
                 >
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-start space-x-3">
                     <div className={`p-2 rounded-lg ${getColorClasses(action.color)}`}>
                       <Icon className="h-5 w-5" />
                     </div>
