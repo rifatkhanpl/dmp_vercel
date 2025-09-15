@@ -18,6 +18,7 @@ import { SearchResults } from './components/Pages/SearchResults';
 import { HCPDetail } from './components/Pages/HCPDetail';
 import { ProviderProfile } from './components/Pages/ProviderProfile';
 import { UserManagement } from './components/Pages/UserManagement';
+import { AddUser } from './components/Pages/AddUser';
 import { UserProfile } from './components/Pages/UserProfile';
 import { UserSettings } from './components/Pages/UserSettings';
 import { GMEProgramSearch } from './components/Pages/GMEProgramSearch';
@@ -121,6 +122,11 @@ function App() {
             <Route path="/user-management" element={
               <ProtectedRoute>
                 <UserManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/add-user" element={
+              <ProtectedRoute>
+                <AddUser />
               </ProtectedRoute>
             } />
             <Route path="/user-profile" element={
