@@ -24,6 +24,8 @@ import { UserSettings } from './components/Pages/UserSettings';
 import { GMEProgramSearch } from './components/Pages/GMEProgramSearch';
 import { GMEProgramDetail } from './components/Pages/GMEProgramDetail';
 
+import { Analytics } from './components/Pages/Analytics';
+
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();

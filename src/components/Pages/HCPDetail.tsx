@@ -89,7 +89,7 @@ export function HCPDetail() {
 
   return (
     <Layout breadcrumbs={[
-      { label: 'Search', href: '/search' },
+      { label: 'HCP Search', href: '/search' },
       { label: 'Provider Details' }
     ]}>
       <div className="space-y-6">

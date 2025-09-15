@@ -40,6 +40,22 @@ interface Provider {
 }
 
 export function Search() {
+import { Layout } from '../Layout/Layout';
+import { 
+  Search as SearchIcon, 
+  Filter, 
+  User, 
+  MapPin, 
+  Stethoscope,
+  Phone,
+  Mail,
+  Eye,
+  Edit,
+  ChevronDown,
+  X
+} from 'lucide-react';
+
+export function Search() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
     specialty: '',
@@ -1815,7 +1831,7 @@ export function Search() {
     }
   };
   return (
-    <Layout breadcrumbs={[{ label: 'Search Providers' }]}>
+    <Layout breadcrumbs={[{ label: 'HCP Search' }]}>
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">

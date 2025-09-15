@@ -58,8 +58,8 @@ export function SearchResults() {
 
   return (
     <Layout breadcrumbs={[
-      { label: 'Search', href: '/search' },
-      { label: 'Results' }
+      { label: 'HCP Search', href: '/search' },
+      { label: 'Search Results' }
     ]}>
       <div className="space-y-6">
         {/* Header */}

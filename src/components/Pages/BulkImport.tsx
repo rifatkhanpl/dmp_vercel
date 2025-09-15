@@ -112,7 +112,7 @@ Jane,Smith,DO,jane.smith@example.com,555-0124,1234567891,Family Medicine,NY,1234
   };
 
   return (
-    <Layout breadcrumbs={[{ label: 'Bulk Import' }]}>
+    <Layout breadcrumbs={[{ label: 'HCP Import' }]}>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
