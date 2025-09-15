@@ -216,10 +216,12 @@ export function Search() {
 
   const clearFilters = () => {
     setFilters({
+      profession: '',
       specialty: '',
+      subspecialty: '',
       state: '',
       status: '',
-      profession: '',
+      plSpecialist: '',
       managedBy: ''
     });
     setSearchQuery('');
@@ -410,7 +412,7 @@ export function Search() {
                     onChange={(e) => handleFilterChange('profession', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Professions</option>
+                    <option value="">All Professions</option>
                     {professions.map(profession => (
                       <option key={profession} value={profession}>{profession}</option>
                     ))}
@@ -425,13 +427,13 @@ export function Search() {
                     onChange={(e) => handleFilterChange('managedBy', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">PL Specialists</option>
+                    <option value="">All PL Specialists</option>
                     {users.map(user => (
                       <option key={user} value={user}>{user}</option>
                     ))}
                   </select>
                 </div>
-                <div className="md:col-span-4 flex justify-end">
+                <div className="md:col-span-5 flex justify-end">
                   <button
                     onClick={clearFilters}
                     className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-800"
@@ -440,7 +442,7 @@ export function Search() {
                     <span>Clear Filters</span>
                   </button>
                 </div>
-                    <option value="">States</option>
+              </div>
             )}
           </div>
         </div>
@@ -487,7 +489,7 @@ export function Search() {
                       <div className="border-t border-gray-100"></div>
                       <button
                         onClick={() => {
-                          handleBulkAction('deactivate');
+                          setActiveDropdown(null);
                           handleBulkAction('deactivate');
                         }}
                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -666,7 +668,7 @@ export function Search() {
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete Provider
-                    <option value="">Statuses</option>
+                          </button>
                         </div>
                       </div>
                     )}
