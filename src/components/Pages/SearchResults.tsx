@@ -22,7 +22,10 @@ import {
 
 export function SearchResults() {
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
+  FileText,
+  Users,
+  Ban,
+  Trash2
   const query = searchParams.get('q') || '';
   const managedBy = searchParams.get('managedBy') || '';
 
