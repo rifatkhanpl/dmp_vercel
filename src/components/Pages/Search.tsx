@@ -46,7 +46,8 @@ export function Search() {
     specialty: '',
     state: '',
     status: '',
-    credentials: ''
+    credentials: '',
+    managedBy: ''
   });
   const [sortBy, setSortBy] = useState('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -182,8 +183,9 @@ export function Search() {
     const matchesState = !filters.state || provider.location.includes(filters.state);
     const matchesStatus = !filters.status || provider.status === filters.status;
     const matchesCredentials = !filters.credentials || provider.credentials === filters.credentials;
+    const matchesManagedBy = !filters.managedBy || provider.managedBy === filters.managedBy;
     
-    return matchesSearch && matchesSpecialty && matchesState && matchesStatus && matchesCredentials;
+    return matchesSearch && matchesSpecialty && matchesState && matchesStatus && matchesCredentials && matchesManagedBy;
   }).sort((a, b) => {
     let aValue = a[sortBy as keyof Provider] as string;
     let bValue = b[sortBy as keyof Provider] as string;
@@ -207,7 +209,8 @@ export function Search() {
       specialty: '',
       state: '',
       status: '',
-      credentials: ''
+      credentials: '',
+      managedBy: ''
     });
     setSearchQuery('');
   };
@@ -256,6 +259,7 @@ export function Search() {
   const states = [...new Set(baseProviders.map(p => p.location.split(', ')[1]))];
   const statuses = ['active', 'pending', 'approved'];
   const credentials = [...new Set(baseProviders.map(p => p.credentials))];
+  const users = [...new Set(baseProviders.map(p => p.managedBy).filter(Boolean))];
 
   const activeFilterCount = Object.values(filters).filter(v => v).length;
 
@@ -341,7 +345,7 @@ export function Search() {
             </div>
 
             {showFilters && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Specialty
@@ -399,6 +403,21 @@ export function Search() {
                     <option value="">All Credentials</option>
                     {credentials.map(credential => (
                       <option key={credential} value={credential}>{credential}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Managed By
+                  </label>
+                  <select
+                    value={filters.managedBy}
+                    onChange={(e) => handleFilterChange('managedBy', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All Users</option>
+                    {users.map(user => (
+                      <option key={user} value={user}>{user}</option>
                     ))}
                   </select>
                 </div>
