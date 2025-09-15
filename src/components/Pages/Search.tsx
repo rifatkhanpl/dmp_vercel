@@ -30,6 +30,7 @@ interface Provider {
   npi?: string;
   status: 'active' | 'pending' | 'approved';
   credentials: string;
+  profession: string;
   managedBy?: string;
 }
 
@@ -46,7 +47,7 @@ export function Search() {
     specialty: '',
     state: '',
     status: '',
-    credentials: '',
+    profession: '',
     managedBy: ''
   });
   const [sortBy, setSortBy] = useState('name');
@@ -64,6 +65,7 @@ export function Search() {
       npi: '1234567890',
       status: 'active',
       credentials: 'MD',
+      profession: 'Physician',
       managedBy: 'Emily Rodriguez'
     },
     {
@@ -76,6 +78,7 @@ export function Search() {
       npi: '2345678901',
       status: 'active',
       credentials: 'DO',
+      profession: 'Physician',
       managedBy: 'David Thompson'
     },
     {
@@ -88,6 +91,7 @@ export function Search() {
       npi: '3456789012',
       status: 'pending',
       credentials: 'MD',
+      profession: 'Physician',
       managedBy: 'Emily Rodriguez'
     },
     {
@@ -100,6 +104,7 @@ export function Search() {
       npi: '4567890123',
       status: 'approved',
       credentials: 'MD',
+      profession: 'Physician',
       managedBy: 'David Thompson'
     },
     {
@@ -112,6 +117,7 @@ export function Search() {
       npi: '5678901234',
       status: 'active',
       credentials: 'DO',
+      profession: 'Physician',
       managedBy: 'Emily Rodriguez'
     },
     {
@@ -124,6 +130,7 @@ export function Search() {
       npi: '6789012345',
       status: 'approved',
       credentials: 'MD',
+      profession: 'Physician',
       managedBy: 'David Thompson'
     },
     {
@@ -136,6 +143,7 @@ export function Search() {
       npi: '7890123456',
       status: 'approved',
       credentials: 'DPT',
+      profession: 'Physical Therapist',
       managedBy: 'David Thompson'
     },
     {
@@ -148,6 +156,7 @@ export function Search() {
       npi: '8901234567',
       status: 'approved',
       credentials: 'PsyD',
+      profession: 'Psychologist',
       managedBy: 'Emily Rodriguez'
     }
   ];
@@ -182,10 +191,10 @@ export function Search() {
     const matchesSpecialty = !filters.specialty || provider.specialty === filters.specialty;
     const matchesState = !filters.state || provider.location.includes(filters.state);
     const matchesStatus = !filters.status || provider.status === filters.status;
-    const matchesCredentials = !filters.credentials || provider.credentials === filters.credentials;
+    const matchesProfession = !filters.profession || provider.profession === filters.profession;
     const matchesManagedBy = !filters.managedBy || provider.managedBy === filters.managedBy;
     
-    return matchesSearch && matchesSpecialty && matchesState && matchesStatus && matchesCredentials && matchesManagedBy;
+    return matchesSearch && matchesSpecialty && matchesState && matchesStatus && matchesProfession && matchesManagedBy;
   }).sort((a, b) => {
     let aValue = a[sortBy as keyof Provider] as string;
     let bValue = b[sortBy as keyof Provider] as string;
@@ -209,7 +218,7 @@ export function Search() {
       specialty: '',
       state: '',
       status: '',
-      credentials: '',
+      profession: '',
       managedBy: ''
     });
     setSearchQuery('');
@@ -258,7 +267,7 @@ export function Search() {
   const specialties = [...new Set(baseProviders.map(p => p.specialty))];
   const states = [...new Set(baseProviders.map(p => p.location.split(', ')[1]))];
   const statuses = ['active', 'pending', 'approved'];
-  const credentials = [...new Set(baseProviders.map(p => p.credentials))];
+  const professions = [...new Set(baseProviders.map(p => p.profession))];
   const users = [...new Set(baseProviders.map(p => p.managedBy).filter(Boolean))];
 
   const activeFilterCount = Object.values(filters).filter(v => v).length;
@@ -393,16 +402,16 @@ export function Search() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Credentials
+                    Profession
                   </label>
                   <select
-                    value={filters.credentials}
-                    onChange={(e) => handleFilterChange('credentials', e.target.value)}
+                    value={filters.profession}
+                    onChange={(e) => handleFilterChange('profession', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">All Credentials</option>
-                    {credentials.map(credential => (
-                      <option key={credential} value={credential}>{credential}</option>
+                    <option value="">All Professions</option>
+                    {professions.map(profession => (
+                      <option key={profession} value={profession}>{profession}</option>
                     ))}
                   </select>
                 </div>
