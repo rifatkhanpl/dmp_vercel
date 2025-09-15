@@ -25,6 +25,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const isDevelopment = window.location.hostname === 'localhost' || 
                        window.location.hostname.includes('bolt.new') ||
                        window.location.hostname.includes('127.0.0.1') ||
+                       window.location.hostname.includes('dmp.pl-udbs.com') ||
                        window.location.port === '5173' ||
                        import.meta.env.DEV;
 
