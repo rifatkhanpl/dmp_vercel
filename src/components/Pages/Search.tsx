@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Layout } from '../Layout/Layout';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { DataTable } from '../ui/DataTable';
 import { useDebounce } from '../../hooks/useDebounce';
 import { SecurityUtils } from '../../utils/security';
-import { useMemoryMonitor, useCleanup } from '../../hooks/useMemoryMonitor';
 import { useLocation } from 'react-router-dom';
 import { 
   Search as SearchIcon,
@@ -43,15 +41,7 @@ export function Search() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const managedBy = searchParams.get('managedBy');
-  const { addCleanup } = useCleanup();
 
-  // Memory monitoring for large datasets
-  useMemoryMonitor({
-    threshold: 80,
-    onThresholdExceeded: () => {
-      console.warn('High memory usage in Search component');
-    }
-  });
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [showFilters, setShowFilters] = useState(false);
@@ -289,117 +279,6 @@ export function Search() {
   const users = [...new Set(baseProviders.map(p => p.managedBy).filter(Boolean))];
 
   const activeFilterCount = Object.values(filters).filter(v => v).length;
-
-  // Cleanup large data structures
-  useEffect(() => {
-    addCleanup(() => {
-      setSelectedProviders([]);
-      // Clear any large cached data
-    });
-  }, [addCleanup]);
-
-  // Define table columns for DataTable component
-  const tableColumns = [
-    {
-      key: 'name',
-      label: 'Provider Name',
-      width: 250,
-      sortable: true,
-      filterable: true,
-      render: (value: string, row: Provider) => (
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
-            <User className="h-4 w-4 text-blue-600" />
-          </div>
-          <div>
-            <div className="font-medium text-gray-900">{value}</div>
-            <div className="text-sm text-gray-500">{row.credentials}</div>
-          </div>
-        </div>
-      )
-    },
-    {
-      key: 'specialty',
-      label: 'Specialty',
-      width: 200,
-      sortable: true,
-      filterable: true,
-      render: (value: string) => (
-        <div className="flex items-center space-x-2">
-          <Stethoscope className="h-4 w-4 text-gray-400" />
-          <span>{value}</span>
-        </div>
-      )
-    },
-    {
-      key: 'location',
-      label: 'Location',
-      width: 180,
-      sortable: true,
-      filterable: true,
-      render: (value: string) => (
-        <div className="flex items-center space-x-2">
-          <MapPin className="h-4 w-4 text-gray-400" />
-          <span>{value}</span>
-        </div>
-      )
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      width: 120,
-      sortable: true,
-      render: (value: string) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(value)}`}>
-          {value}
-        </span>
-      )
-    },
-    {
-      key: 'email',
-      label: 'Contact',
-      width: 200,
-      render: (value: string, row: Provider) => (
-        <div className="space-y-1">
-          <div className="flex items-center space-x-2 text-sm">
-            <Mail className="h-3 w-3 text-gray-400" />
-            <span className="truncate">{value}</span>
-          </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <Phone className="h-3 w-3 text-gray-400" />
-            <span>{row.phone}</span>
-          </div>
-        </div>
-      )
-    }
-  ];
-
-  // Define table actions
-  const tableActions = [
-    {
-      label: 'View Details',
-      icon: Eye,
-      onClick: (row: Provider) => window.location.href = `/hcp-detail?id=${row.id}`,
-      variant: 'primary' as const
-    },
-    {
-      label: 'Edit Provider',
-      icon: Edit,
-      onClick: (row: Provider) => console.log('Edit provider:', row.id),
-      variant: 'secondary' as const
-    },
-    {
-      label: 'Delete Provider',
-      icon: Trash2,
-      onClick: (row: Provider) => {
-        if (confirm(`Are you sure you want to delete ${row.name}?`)) {
-          console.log('Delete provider:', row.id);
-        }
-      },
-      variant: 'danger' as const,
-      disabled: (row: Provider) => row.status === 'active'
-    }
-  ];
 
   const breadcrumbs = managedBy 
     ? [
@@ -646,20 +525,94 @@ export function Search() {
           )}
 
           {/* Results */}
-        {/* Enhanced Data Table */}
-        <DataTable
-          data={filteredProviders}
-          columns={tableColumns}
-          actions={tableActions}
-          onRowClick={(row) => window.location.href = `/hcp-detail?id=${row.id}`}
-          searchable={true}
-          filterable={true}
-          exportable={true}
-          virtualScrolling={filteredProviders.length > 100}
-          height={600}
-          ariaLabel={managedBy ? `Providers managed by ${managedBy}` : 'Healthcare provider search results'}
-          emptyMessage={managedBy ? `No providers found for ${managedBy}` : 'No providers found matching your search criteria'}
-        />
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Providers ({filteredProviders.length})
+              </h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Provider
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Specialty
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Location
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredProviders.map((provider) => (
+                    <tr key={provider.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                              <User className="h-5 w-5 text-blue-600" />
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {provider.name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {provider.credentials}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-2">
+                          <Stethoscope className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm text-gray-900">{provider.specialty}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-2">
+                          <MapPin className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm text-gray-900">{provider.location}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(provider.status)}`}>
+                          {provider.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex items-center justify-end space-x-2">
+                          <a
+                            href={`/hcp-detail?id=${provider.id}`}
+                            className="text-blue-600 hover:text-blue-900"
+                            title="View Details"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </a>
+                          <button
+                            onClick={() => console.log('Edit provider:', provider.id)}
+                            className="text-green-600 hover:text-green-900"
+                            title="Edit Provider"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </Layout>
     </ErrorBoundary>

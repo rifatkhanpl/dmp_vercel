@@ -2,11 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { BookmarkProvider } from './contexts/BookmarkContext';
-import { AppStateProvider } from './contexts/AppStateContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Toast } from './components/ui/Toast';
-import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
-import { useMemoryMonitor } from './hooks/useMemoryMonitor';
 
 // Import components
 import { LandingPage } from './components/Pages/LandingPage';
@@ -35,48 +32,6 @@ import { DuplicateReview } from './components/Pages/DuplicateReview';
 import { DataExport } from './components/Pages/DataExport';
 
 import { Analytics } from './components/Pages/Analytics';
-
-// Global keyboard shortcuts component
-function GlobalShortcuts() {
-  const shortcuts = [
-    {
-      key: 'k',
-      ctrlKey: true,
-      action: () => {
-        const searchInput = document.querySelector('input[placeholder*="Search"]') as HTMLInputElement;
-        searchInput?.focus();
-      },
-      description: 'Focus search'
-    },
-    {
-      key: 'd',
-      ctrlKey: true,
-      action: () => window.location.href = '/dashboard',
-      description: 'Go to dashboard'
-    },
-    {
-      key: 'n',
-      ctrlKey: true,
-      action: () => window.location.href = '/hcp-registration',
-      description: 'New provider registration'
-    }
-  ];
-
-  return <KeyboardShortcuts shortcuts={shortcuts} />;
-}
-
-// Memory monitoring component
-function MemoryMonitor() {
-  useMemoryMonitor({
-    threshold: 85,
-    interval: 10000,
-    onThresholdExceeded: (stats) => {
-      console.warn('High memory usage detected:', stats);
-    }
-  });
-  
-  return null;
-}
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -112,11 +67,8 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
-        <AppStateProvider>
           <AuthProvider>
             <BookmarkProvider>
-              <GlobalShortcuts />
-              <MemoryMonitor />
             <Toast />
             <div className="App">
               <ErrorBoundary fallback={
@@ -264,7 +216,6 @@ function App() {
             </div>
             </BookmarkProvider>
           </AuthProvider>
-        </AppStateProvider>
       </Router>
     </ErrorBoundary>
   );
