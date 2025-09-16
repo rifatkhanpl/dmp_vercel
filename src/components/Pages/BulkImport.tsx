@@ -417,7 +417,6 @@ Jane,Smith,DO,jane.smith@example.com,555-0124,1234567891,Family Medicine,NY,1234
                 </button>
               )}
             </div>
-
             {/* Mode Toggle */}
             {(mode === 'file' || mode === 'ai') && (
               <div className="bg-white rounded-lg shadow-sm p-2 flex items-center space-x-2">
