@@ -51,9 +51,9 @@ export function Search() {
     profession: '',
     specialty: '',
     subspecialty: '',
+    state: '',
     status: '',
     plSpecialist: '',
-    state: '',
     managedBy: ''
   });
   const [sortBy, setSortBy] = useState('name');
@@ -225,9 +225,9 @@ export function Search() {
       profession: '',
       specialty: '',
       subspecialty: '',
+      state: '',
       status: '',
       plSpecialist: '',
-      state: '',
       managedBy: ''
     });
     setSearchQuery('');
@@ -528,33 +528,14 @@ export function Search() {
           {/* Results */}
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Providers ({filteredProviders.length})
-                </h2>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={selectedProviders.length === filteredProviders.length && filteredProviders.length > 0}
-                    onChange={handleSelectAll}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label className="ml-2 text-sm text-gray-700">Select All</label>
-                </div>
-              </div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Providers ({filteredProviders.length})
+              </h2>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <input
-                        type="checkbox"
-                        checked={selectedProviders.length === filteredProviders.length && filteredProviders.length > 0}
-                        onChange={handleSelectAll}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      />
-                    </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Provider
                     </th>
@@ -575,14 +556,6 @@ export function Search() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredProviders.map((provider) => (
                     <tr key={provider.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="checkbox"
-                          checked={selectedProviders.includes(provider.id)}
-                          onChange={() => handleProviderSelect(provider.id)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
