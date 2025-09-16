@@ -2,9 +2,18 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { AppStateProvider } from './contexts/AppStateContext';
+import { AppStateProvider } from './contexts/AppStateContext';
+import { AppStateProvider } from './contexts/AppStateContext';
+import { AppStateProvider } from './contexts/AppStateContext';
 import { BookmarkProvider } from './contexts/BookmarkContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Toast } from './components/ui/Toast';
+import { NotificationCenter } from './components/ui/NotificationCenter';
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
+import { NotificationCenter } from './components/ui/NotificationCenter';
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
+import { NotificationCenter } from './components/ui/NotificationCenter';
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 import { NotificationCenter } from './components/ui/NotificationCenter';
 import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 
