@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Layout } from '../Layout/Layout';
+import { ErrorBoundary } from '../ErrorBoundary';
+import { useDebounce } from '../../hooks/useDebounce';
+import { SecurityUtils } from '../../utils/security';
 import { useLocation } from 'react-router-dom';
 import { 
   Search as SearchIcon,
@@ -40,6 +43,7 @@ export function Search() {
   const managedBy = searchParams.get('managedBy');
 
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -180,14 +184,15 @@ export function Search() {
     ? allProviders.filter(provider => provider.managedBy === managedBy)
     : allProviders;
 
-  // Apply search and filter logic
+  // Apply search and filter logic with debounced search
   const filteredProviders = baseProviders.filter(provider => {
-    const matchesSearch = 
-      provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      provider.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      provider.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      provider.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (provider.npi && provider.npi.includes(searchQuery));
+    const sanitizedQuery = SecurityUtils.sanitizeText(debouncedSearchQuery).toLowerCase();
+    const matchesSearch = !sanitizedQuery || 
+      provider.name.toLowerCase().includes(sanitizedQuery) ||
+      provider.specialty.toLowerCase().includes(sanitizedQuery) ||
+      provider.location.toLowerCase().includes(sanitizedQuery) ||
+      provider.email.toLowerCase().includes(sanitizedQuery) ||
+      (provider.npi && provider.npi.includes(sanitizedQuery));
     
     const matchesSpecialty = !filters.specialty || provider.specialty === filters.specialty;
     const matchesState = !filters.state || provider.location.includes(filters.state);
@@ -286,399 +291,404 @@ export function Search() {
       ];
 
   return (
-    <Layout breadcrumbs={breadcrumbs}>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {managedBy ? `Providers managed by ${managedBy}` : 'Healthcare Provider Search'}
-          </h1>
-          <p className="text-gray-600">
-            {managedBy 
-              ? `View and manage all providers assigned to ${managedBy}`
-              : 'Search and manage healthcare provider records in the system'
-            }
-          </p>
-        </div>
+    <ErrorBoundary>
+      <Layout breadcrumbs={breadcrumbs}>
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              {managedBy ? `Providers managed by ${managedBy}` : 'Healthcare Provider Search'}
+            </h1>
+            <p className="text-gray-600">
+              {managedBy 
+                ? `View and manage all providers assigned to ${managedBy}`
+                : 'Search and manage healthcare provider records in the system'
+              }
+            </p>
+          </div>
 
-        {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="space-y-4">
-            <div className="flex space-x-4">
-              <div className="flex-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <SearchIcon className="h-5 w-5 text-gray-400" />
+          {/* Search and Filters */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="space-y-4">
+              <div className="flex space-x-4">
+                <div className="flex-1 relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <SearchIcon className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search providers by name, specialty, location, email, or NPI..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    aria-label="Search healthcare providers"
+                    maxLength={100}
+                  />
                 </div>
-                <input
-                  type="text"
-                  placeholder="Search providers by name, specialty, location, email, or NPI..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-2 px-4 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-              >
-                <Filter className="h-4 w-4" />
-                <span>Filters</span>
-                {activeFilterCount > 0 && (
-                  <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </button>
-              <div className="flex items-center space-x-2">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="name">Sort by Name</option>
-                  <option value="specialty">Sort by Specialty</option>
-                  <option value="location">Sort by Location</option>
-                  <option value="status">Sort by Status</option>
-                </select>
                 <button
-                  onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-                  className="p-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center space-x-2 px-4 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  aria-label="Toggle search filters"
                 >
-                  <ChevronDown className={`h-4 w-4 transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                  <Filter className="h-4 w-4" />
+                  <span>Filters</span>
+                  {activeFilterCount > 0 && (
+                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                      {activeFilterCount}
+                    </span>
+                  )}
                 </button>
-              </div>
-              <button
-                onClick={() => console.log('Exporting all results')}
-                className="flex items-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                <Download className="h-4 w-4" />
-                <span>Export</span>
-              </button>
-            </div>
-
-            {showFilters && (
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Specialty
-                  </label>
+                <div className="flex items-center space-x-2">
                   <select
-                    value={filters.specialty}
-                    onChange={(e) => handleFilterChange('specialty', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">All Specialties</option>
-                    {specialties.map(specialty => (
-                      <option key={specialty} value={specialty}>{specialty}</option>
-                    ))}
+                    <option value="name">Sort by Name</option>
+                    <option value="specialty">Sort by Specialty</option>
+                    <option value="location">Sort by Location</option>
+                    <option value="status">Sort by Status</option>
                   </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    State
-                  </label>
-                  <select
-                    value={filters.state}
-                    onChange={(e) => handleFilterChange('state', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">All States</option>
-                    {states.map(state => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status
-                  </label>
-                  <select
-                    value={filters.status}
-                    onChange={(e) => handleFilterChange('status', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">All Statuses</option>
-                    {statuses.map(status => (
-                      <option key={status} value={status} className="capitalize">{status}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Profession
-                  </label>
-                  <select
-                    value={filters.profession}
-                    onChange={(e) => handleFilterChange('profession', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">All Professions</option>
-                    {professions.map(profession => (
-                      <option key={profession} value={profession}>{profession}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Managed By
-                  </label>
-                  <select
-                    value={filters.managedBy}
-                    onChange={(e) => handleFilterChange('managedBy', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">All PL Specialists</option>
-                    {users.map(user => (
-                      <option key={user} value={user}>{user}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="md:col-span-5 flex justify-end">
                   <button
-                    onClick={clearFilters}
-                    className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-800"
+                    onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+                    className="p-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                   >
-                    <X className="h-4 w-4" />
-                    <span>Clear Filters</span>
+                    <ChevronDown className={`h-4 w-4 transform ${sortDirection === 'desc' ? 'rotate-180' : ''}`} />
                   </button>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Bulk Actions */}
-        {selectedProviders.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-blue-900">
-                {selectedProviders.length} provider{selectedProviders.length !== 1 ? 's' : ''} selected
-              </span>
-              <div className="relative">
                 <button
-                  onClick={() => setActiveDropdown(activeDropdown === 'bulk' ? null : 'bulk')}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  onClick={() => console.log('Exporting all results')}
+                  className="flex items-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
-                  <span>Bulk Actions</span>
-                  <ChevronDown className="h-4 w-4" />
+                  <Download className="h-4 w-4" />
+                  <span>Export</span>
                 </button>
-                
-                {activeDropdown === 'bulk' && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
-                    <div className="py-1">
-                      <button
-                        onClick={() => {
-                          setActiveDropdown(null);
-                          handleBulkAction('export');
-                        }}
-                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Export Selected
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveDropdown(null);
-                          handleBulkAction('reassign');
-                        }}
-                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        <Users className="h-4 w-4 mr-2" />
-                        Reassign to User
-                      </button>
-                      <div className="border-t border-gray-100"></div>
-                      <button
-                        onClick={() => {
-                          setActiveDropdown(null);
-                          handleBulkAction('deactivate');
-                        }}
-                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        <Ban className="h-4 w-4 mr-2" />
-                        Deactivate Selected
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveDropdown(null);
-                          handleBulkAction('delete');
-                        }}
-                        className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete Selected
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
-            </div>
-          </div>
-        )}
 
-        {/* Results */}
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
-                {managedBy ? 'Search Results' : 'Search Results'} ({filteredProviders.length})
-              </h2>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={selectedProviders.length === filteredProviders.length && filteredProviders.length > 0}
-                  onChange={handleSelectAll}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label className="text-sm text-gray-600">Select All</label>
-              </div>
-            </div>
-          </div>
-          <div className="divide-y divide-gray-200">
-            {filteredProviders.map((provider) => (
-              <div key={provider.id} className="p-6 hover:bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedProviders.includes(provider.id)}
-                      onChange={() => handleProviderSelect(provider.id)}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                      <User className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="text-lg font-medium text-gray-900">
-                          {provider.name}
-                        </h3>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(provider.status)}`}>
-                          {provider.status}
-                        </span>
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Stethoscope className="h-4 w-4 mr-2" />
-                          {provider.specialty}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <MapPin className="h-4 w-4 mr-2" />
-                          {provider.location}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Mail className="h-4 w-4 mr-2" />
-                          {provider.email}
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Phone className="h-4 w-4 mr-2" />
-                          {provider.phone}
-                        </div>
-                        {provider.npi && (
-                          <div className="flex items-center text-sm text-gray-600">
-                            <FileText className="h-4 w-4 mr-2" />
-                            NPI: {provider.npi}
-                          </div>
-                        )}
-                        {provider.subspecialty && (
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Stethoscope className="h-4 w-4 mr-2" />
-                            Subspecialty: {provider.subspecialty}
-                          </div>
-                        )}
-                        {provider.plSpecialist && (
-                          <div className="flex items-center text-sm text-gray-600">
-                            <User className="h-4 w-4 mr-2" />
-                            PL Specialist: {provider.plSpecialist}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="relative">
-                    <button
-                      onClick={() => setActiveDropdown(activeDropdown === provider.id ? null : provider.id)}
-                      className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-md"
+              {showFilters && (
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Specialty
+                    </label>
+                    <select
+                      value={filters.specialty}
+                      onChange={(e) => handleFilterChange('specialty', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <span>Actions</span>
-                      <ChevronDown className="h-4 w-4" />
+                      <option value="">All Specialties</option>
+                      {specialties.map(specialty => (
+                        <option key={specialty} value={specialty}>{specialty}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      State
+                    </label>
+                    <select
+                      value={filters.state}
+                      onChange={(e) => handleFilterChange('state', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">All States</option>
+                      {states.map(state => (
+                        <option key={state} value={state}>{state}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Status
+                    </label>
+                    <select
+                      value={filters.status}
+                      onChange={(e) => handleFilterChange('status', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">All Statuses</option>
+                      {statuses.map(status => (
+                        <option key={status} value={status} className="capitalize">{status}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Profession
+                    </label>
+                    <select
+                      value={filters.profession}
+                      onChange={(e) => handleFilterChange('profession', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">All Professions</option>
+                      {professions.map(profession => (
+                        <option key={profession} value={profession}>{profession}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Managed By
+                    </label>
+                    <select
+                      value={filters.managedBy}
+                      onChange={(e) => handleFilterChange('managedBy', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">All PL Specialists</option>
+                      {users.map(user => (
+                        <option key={user} value={user}>{user}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="md:col-span-5 flex justify-end">
+                    <button
+                      onClick={clearFilters}
+                      className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-800"
+                    >
+                      <X className="h-4 w-4" />
+                      <span>Clear Filters</span>
                     </button>
-                    
-                    {activeDropdown === provider.id && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
-                        <div className="py-1">
-                          <a
-                            href={`/hcp-detail?id=${provider.id}`}
-                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            onClick={() => setActiveDropdown(null)}
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            View Details
-                          </a>
-                          <button
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              // Handle edit action
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Edit className="h-4 w-4 mr-2" />
-                            Edit Provider
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              // Handle reassign action
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Users className="h-4 w-4 mr-2" />
-                            Reassign to User
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              // Handle export action
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Download className="h-4 w-4 mr-2" />
-                            Export Data
-                          </button>
-                          <div className="border-t border-gray-100"></div>
-                          <button
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              if (confirm('Are you sure you want to deactivate this provider?')) {
-                                // Handle deactivate action
-                              }
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Ban className="h-4 w-4 mr-2" />
-                            Deactivate
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveDropdown(null);
-                              if (confirm('Are you sure you want to delete this provider? This action cannot be undone.')) {
-                                // Handle delete action
-                              }
-                            }}
-                            className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete Provider
-                          </button>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
+              )}
+            </div>
+          </div>
+
+          {/* Bulk Actions */}
+          {selectedProviders.length > 0 && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-blue-900">
+                  {selectedProviders.length} provider{selectedProviders.length !== 1 ? 's' : ''} selected
+                </span>
+                <div className="relative">
+                  <button
+                    onClick={() => setActiveDropdown(activeDropdown === 'bulk' ? null : 'bulk')}
+                    className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    <span>Bulk Actions</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                  
+                  {activeDropdown === 'bulk' && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                      <div className="py-1">
+                        <button
+                          onClick={() => {
+                            setActiveDropdown(null);
+                            handleBulkAction('export');
+                          }}
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Export Selected
+                        </button>
+                        <button
+                          onClick={() => {
+                            setActiveDropdown(null);
+                            handleBulkAction('reassign');
+                          }}
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <Users className="h-4 w-4 mr-2" />
+                          Reassign to User
+                        </button>
+                        <div className="border-t border-gray-100"></div>
+                        <button
+                          onClick={() => {
+                            setActiveDropdown(null);
+                            handleBulkAction('deactivate');
+                          }}
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          <Ban className="h-4 w-4 mr-2" />
+                          Deactivate Selected
+                        </button>
+                        <button
+                          onClick={() => {
+                            setActiveDropdown(null);
+                            handleBulkAction('delete');
+                          }}
+                          className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete Selected
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            ))}
+            </div>
+          )}
+
+          {/* Results */}
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {managedBy ? 'Search Results' : 'Search Results'} ({filteredProviders.length})
+                </h2>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedProviders.length === filteredProviders.length && filteredProviders.length > 0}
+                    onChange={handleSelectAll}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label className="text-sm text-gray-600">Select All</label>
+                </div>
+              </div>
+            </div>
+            <div className="divide-y divide-gray-200">
+              {filteredProviders.map((provider) => (
+                <div key={provider.id} className="p-6 hover:bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedProviders.includes(provider.id)}
+                        onChange={() => handleProviderSelect(provider.id)}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
+                        <User className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <h3 className="text-lg font-medium text-gray-900">
+                            {provider.name}
+                          </h3>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(provider.status)}`}>
+                            {provider.status}
+                          </span>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Stethoscope className="h-4 w-4 mr-2" />
+                            {provider.specialty}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <MapPin className="h-4 w-4 mr-2" />
+                            {provider.location}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Mail className="h-4 w-4 mr-2" />
+                            {provider.email}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Phone className="h-4 w-4 mr-2" />
+                            {provider.phone}
+                          </div>
+                          {provider.npi && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <FileText className="h-4 w-4 mr-2" />
+                              NPI: {provider.npi}
+                            </div>
+                          )}
+                          {provider.subspecialty && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Stethoscope className="h-4 w-4 mr-2" />
+                              Subspecialty: {provider.subspecialty}
+                            </div>
+                          )}
+                          {provider.plSpecialist && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <User className="h-4 w-4 mr-2" />
+                              PL Specialist: {provider.plSpecialist}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <button
+                        onClick={() => setActiveDropdown(activeDropdown === provider.id ? null : provider.id)}
+                        className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-md"
+                      >
+                        <span>Actions</span>
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                      
+                      {activeDropdown === provider.id && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                          <div className="py-1">
+                            <a
+                              href={`/hcp-detail?id=${provider.id}`}
+                              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              onClick={() => setActiveDropdown(null)}
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              View Details
+                            </a>
+                            <button
+                              onClick={() => {
+                                setActiveDropdown(null);
+                                // Handle edit action
+                              }}
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit Provider
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveDropdown(null);
+                                // Handle reassign action
+                              }}
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              <Users className="h-4 w-4 mr-2" />
+                              Reassign to User
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveDropdown(null);
+                                // Handle export action
+                              }}
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Export Data
+                            </button>
+                            <div className="border-t border-gray-100"></div>
+                            <button
+                              onClick={() => {
+                                setActiveDropdown(null);
+                                if (confirm('Are you sure you want to deactivate this provider?')) {
+                                  // Handle deactivate action
+                                }
+                              }}
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              <Ban className="h-4 w-4 mr-2" />
+                              Deactivate
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveDropdown(null);
+                                if (confirm('Are you sure you want to delete this provider? This action cannot be undone.')) {
+                                  // Handle delete action
+                                }
+                              }}
+                              className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Provider
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    </Layout>
+      </Layout>
+    </ErrorBoundary>
   );
 }

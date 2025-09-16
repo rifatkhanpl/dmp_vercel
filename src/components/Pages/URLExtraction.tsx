@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Layout } from '../Layout/Layout';
 import { DMPService } from '../../services/dmpService';
+import { ErrorBoundary } from '../ErrorBoundary';
+import { SecurityUtils } from '../../utils/security';
+import { errorService } from '../../services/errorService';
+import { useAsyncOperation } from '../../hooks/useAsyncOperation';
+import { LoadingOverlay } from '../ui/LoadingSpinner';
 import { ImportJob } from '../../types/dmp';
 import { 
   Globe,
@@ -17,12 +22,67 @@ import {
 
 export function URLExtraction() {
   const [url, setUrl] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
   const [importJob, setImportJob] = useState<ImportJob | null>(null);
   const [extractedData, setExtractedData] = useState<any[]>([]);
   const [selectedRecords, setSelectedRecords] = useState<Set<number>>(new Set());
   const [showQAReview, setShowQAReview] = useState(false);
 
+  // Enhanced async operation with proper error handling
+  const { loading: isProcessing, execute: processUrlAsync } = useAsyncOperation(
+    async () => {
+      if (!url.trim()) throw new Error('URL is required');
+      
+      // Validate URL security
+      const validation = SecurityUtils.validateExtractionUrl(url);
+      if (!validation.isValid) {
+        throw new Error(validation.error || 'Invalid URL');
+      }
+      
+      return await DMPService.processURLExtraction(url);
+    },
+    {
+      onSuccess: (job) => {
+        setImportJob(job);
+        // Mock extracted data for QA review
+        const mockData = [
+          {
+            name: 'Dr. Sarah Johnson, MD',
+            specialty: 'Internal Medicine',
+            pgyYear: 'PGY-2',
+            email: 'sarah.johnson@hospital.edu',
+            phone: '(555) 123-4567',
+            confidence: 0.95,
+            sourceSnippet: 'Sarah Johnson, MD - Internal Medicine Resident, PGY-2'
+          },
+          {
+            name: 'Dr. Michael Chen, DO',
+            specialty: 'Emergency Medicine',
+            pgyYear: 'PGY-3',
+            email: 'michael.chen@hospital.edu',
+            confidence: 0.88,
+            sourceSnippet: 'Michael Chen, DO - Emergency Medicine, Third Year Resident'
+          },
+          {
+            name: 'Dr. Emily Rodriguez, MD',
+            specialty: 'Pediatrics',
+            pgyYear: 'PGY-1',
+            confidence: 0.92,
+            sourceSnippet: 'Emily Rodriguez, MD - Pediatrics Intern (PGY-1)'
+          }
+        ];
+        
+        setExtractedData(mockData);
+        setSelectedRecords(new Set(mockData.map((_, index) => index)));
+        setShowQAReview(true);
+        
+        errorService.showSuccess(`Extracted ${mockData.length} records for review`);
+      },
+      onError: (error) => {
+        errorService.showError(`URL extraction failed: ${error}`);
+      },
+      timeout: 60000 // 60 second timeout
+    }
+  );
   const allowedDomains = [
     'medicine.ucla.edu',
     'hopkinsmedicine.org',
@@ -36,70 +96,7 @@ export function URLExtraction() {
 
   const handleUrlSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) return;
-
-    // Validate URL format
-    try {
-      new URL(url);
-    } catch {
-      alert('Please enter a valid URL');
-      return;
-    }
-
-    // Check domain compliance
-    const domain = new URL(url).hostname;
-    const isAllowed = allowedDomains.some(allowed => domain.includes(allowed)) || domain.endsWith('.edu');
-    
-    if (!isAllowed) {
-      alert('URL extraction is restricted to authorized educational institution websites only.');
-      return;
-    }
-
-    setIsProcessing(true);
-    setImportJob(null);
-    setExtractedData([]);
-
-    try {
-      const job = await DMPService.processURLExtraction(url);
-      setImportJob(job);
-      
-      // Mock extracted data for QA review
-      const mockData = [
-        {
-          name: 'Dr. Sarah Johnson, MD',
-          specialty: 'Internal Medicine',
-          pgyYear: 'PGY-2',
-          email: 'sarah.johnson@hospital.edu',
-          phone: '(555) 123-4567',
-          confidence: 0.95,
-          sourceSnippet: 'Sarah Johnson, MD - Internal Medicine Resident, PGY-2'
-        },
-        {
-          name: 'Dr. Michael Chen, DO',
-          specialty: 'Emergency Medicine',
-          pgyYear: 'PGY-3',
-          email: 'michael.chen@hospital.edu',
-          confidence: 0.88,
-          sourceSnippet: 'Michael Chen, DO - Emergency Medicine, Third Year Resident'
-        },
-        {
-          name: 'Dr. Emily Rodriguez, MD',
-          specialty: 'Pediatrics',
-          pgyYear: 'PGY-1',
-          confidence: 0.92,
-          sourceSnippet: 'Emily Rodriguez, MD - Pediatrics Intern (PGY-1)'
-        }
-      ];
-      
-      setExtractedData(mockData);
-      setSelectedRecords(new Set(mockData.map((_, index) => index)));
-      setShowQAReview(true);
-      
-    } catch (error) {
-      console.error('Error processing URL:', error);
-    } finally {
-      setIsProcessing(false);
-    }
+    await processUrlAsync();
   };
 
   const handleRecordSelect = (index: number) => {
@@ -121,11 +118,23 @@ export function URLExtraction() {
   };
 
   const handleImportSelected = async () => {
+    if (selectedRecords.size === 0) {
+      errorService.showError('Please select at least one record to import');
+      return;
+    }
+    
     const selectedData = extractedData.filter((_, index) => selectedRecords.has(index));
     
-    // TODO: Process selected records
-    console.log('Importing selected records:', selectedData);
-    alert(`Successfully imported ${selectedData.length} records to the database!`);
+    try {
+      // TODO: Process selected records with proper validation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      errorService.showSuccess(`Successfully imported ${selectedData.length} records to the database!`);
+    } catch (error) {
+      const errorMessage = errorService.handleApiError(error, 'Record import');
+      errorService.showError(errorMessage);
+      return;
+    }
     
     // Reset form
     setUrl('');
@@ -155,6 +164,8 @@ export function URLExtraction() {
   };
 
   return (
+    <ErrorBoundary>
+      <LoadingOverlay isLoading={isProcessing} text="Extracting data from URL...">
     <Layout breadcrumbs={[
       { label: 'DMP Dashboard', href: '/dmp' },
       { label: 'URL Extraction' }
@@ -205,11 +216,14 @@ export function URLExtraction() {
                   placeholder="https://medicine.university.edu/residency/internal-medicine/residents"
                   className="flex-1 px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   required
+                  aria-label="Enter residency program URL"
+                  maxLength={500}
                 />
                 <button
                   type="submit"
                   disabled={isProcessing || !url.trim()}
                   className="flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Extract data from URL"
                 >
                   {isProcessing ? (
                     <>
@@ -457,5 +471,7 @@ export function URLExtraction() {
         </div>
       </div>
     </Layout>
+      </LoadingOverlay>
+    </ErrorBoundary>
   );
 }
