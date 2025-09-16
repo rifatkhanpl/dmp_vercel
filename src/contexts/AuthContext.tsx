@@ -21,6 +21,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Mock admin user for development
+  const createMockAdmin = (): AuthUser => ({
+    id: 'mock-admin-123',
+    firstName: 'Admin',
+    lastName: 'User',
+    email: 'admin@practicelink.com',
+    role: 'administrator',
+    isEmailVerified: true,
+    createdAt: new Date().toISOString()
+  });
+
   // Check if we're in development environment
   const isDevelopment = window.location.hostname === 'localhost' || 
                        window.location.hostname.includes('bolt.new') ||
@@ -32,7 +43,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     if (isDevelopment) {
       // In development, check for mock user in localStorage
-      const mockUser = localStorage.getItem('mockUser');
+      let mockUser = localStorage.getItem('mockUser');
+      
+      // If no mock user exists, create a default admin for testing
+      if (!mockUser) {
+        const defaultAdmin = createMockAdmin();
+        localStorage.setItem('mockUser', JSON.stringify(defaultAdmin));
+        setUser(defaultAdmin);
+        setIsLoading(false);
+        return;
+      }
+      
       if (mockUser) {
         try {
           setUser(JSON.parse(mockUser));
@@ -128,7 +149,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const getAccessToken = async (): Promise<string | undefined> => {
     if (isDevelopment) {
-      return 'mock-access-token';
+      // Return a mock JWT-like token for development
+      return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtb2NrLWFkbWluLTEyMyIsImVtYWlsIjoiYWRtaW5AcHJhY3RpY2VsaW5rLmNvbSIsInJvbGUiOiJhZG1pbmlzdHJhdG9yIiwiaWF0IjoxNzM3MDQ4MDAwfQ.mock-signature';
     } else {
       try {
         return await getAccessTokenSilently();
