@@ -5,7 +5,8 @@ import { SecurityUtils } from '../../utils/security';
 import { errorService } from '../../services/errorService';
 import { useDebounce } from '../../hooks/useDebounce';
 import { LoadingOverlay } from '../ui/LoadingSpinner';
-import { supabase } from '../../services/supabaseClient';
+import { supabase, getAuthenticatedSupabase } from '../../services/supabaseClient';
+import { useAuth } from '../../contexts/AuthContext';
 import {
   Upload,
   FileText,
@@ -107,6 +108,7 @@ type MainMode = 'file' | 'ai';
 type AIMode = 'text' | 'url';
 
 export function BulkImport() {
+  const { user, getAccessToken } = useAuth();
   // Bookmarking
   const bookmarksCtx = useBookmarks();
   const isBookmarked = !!bookmarksCtx?.bookmarks?.some((b) => b.url === '/bulk-import');
@@ -356,10 +358,25 @@ Jane,Smith,DO,jane.smith@example.com,555-0124,1234567891,Family Medicine,NY,1234
       return;
     }
     
+    // Check if user is authenticated and has admin privileges
+    if (!user) {
+      errorService.showError('You must be logged in to import data');
+      return;
+    }
+    
+    if (user.role !== 'administrator') {
+      errorService.showError('Only administrators can import data to the database');
+      return;
+    }
+    
     const selectedData = parsedData.filter((_, index) => selectedItems.has(index));
     setIsProcessingAI(true);
     
     try {
+      // Get authenticated Supabase client
+      const accessToken = await getAccessToken();
+      const authenticatedSupabase = await getAuthenticatedSupabase(accessToken);
+      
       // Transform parsed data to match database schema
       const recordsToInsert = selectedData.map(resident => ({
         npi: generateTempNPI(), // Generate temporary NPI for now
@@ -386,11 +403,13 @@ Jane,Smith,DO,jane.smith@example.com,555-0124,1234567891,Family Medicine,NY,1234
         status: 'pending',
         pgy_year: resident.pgyYear,
         program_name: inferProgramName(resident),
-        institution: inferInstitution(resident)
+        institution: inferInstitution(resident),
+        entered_by: user.id,
+        entered_at: new Date().toISOString()
       }));
 
       // Insert records into dmp.healthcare_providers table
-      const { data, error } = await supabase
+      const { data, error } = await authenticatedSupabase
         .schema('dmp')
         .from('healthcare_providers')
         .insert(recordsToInsert)
