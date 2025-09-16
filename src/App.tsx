@@ -3,9 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import { AppStateProvider } from './contexts/AppStateContext';
 import { AppStateProvider } from './contexts/AppStateContext';
+import { AppStateProvider } from './contexts/AppStateContext';
 import { BookmarkProvider } from './contexts/BookmarkContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Toast } from './components/ui/Toast';
+import { NotificationCenter } from './components/ui/NotificationCenter';
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 import { NotificationCenter } from './components/ui/NotificationCenter';
 import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 import { NotificationCenter } from './components/ui/NotificationCenter';
@@ -57,7 +60,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Elemen
 }
 
 // Public Route Component (redirect to dashboard if already logged in)
-function PublicRoute({ children }: { children: React.ReactNode }) {
+function PublicRoute({ children }: { children: React.ReactNode }): JSX.Element {
+  const { useAuth } = require('./contexts/AuthContext');
   const { useAuth } = require('./contexts/AuthContext');
   const { isAuthenticated, isLoading } = useAuth();
   
@@ -72,73 +76,74 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function App() {
+function App(): JSX.Element {
   return (
     <ErrorBoundary>
       <Router>
         <AppStateProvider>
         <AppStateProvider>
+        <AppStateProvider>
           <AuthProvider>
             <BookmarkProvider>
               <div>
-                <div>
-                  <div>
-                    <a>
+                <a>
                       Return to Dashboard
                     </a>
                   </div>
-                </div>
-              </div>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/signin" element={
-                  <PublicRoute>
-                    <SignIn />
-                  </PublicRoute>
-                } />
-                <Route path="/signup" element={
-                  <PublicRoute>
-                    <SignUp />
-                  </PublicRoute>
-                } />
-                <Route path="/forgot-password" element={
-                  <PublicRoute>
-                    <ForgotPassword />
-                  </PublicRoute>
-                } />
-                
-                {/* Email Verification Routes */}
-                <Route path="/verify-email" element={<EmailVerification />} />
-                <Route path="/reset-password" element={<PasswordReset />} />
-                
-                {/* Protected Routes */}
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/hcp-registration" element={
-                  <ProtectedRoute>
-                    <HCPRegistration />
-                  </ProtectedRoute>
-                } />
-                <Route path="/search" element={
-                  <ProtectedRoute>
-                    <Search />
-                  </ProtectedRoute>
-                } />
-                <Route path="/analytics" element={
-                  <ProtectedRoute>
-                    <Analytics />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Catch all route */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
+function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
+  const { useAuth } = require('./contexts/AuthContext');
+}
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/signin" element={
+              <PublicRoute>
+                <SignIn />
+              </PublicRoute>
+            } />
+            <Route path="/signup" element={
+              <PublicRoute>
+                <SignUp />
+              </PublicRoute>
+            } />
+            <Route path="/forgot-password" element={
+              <PublicRoute>
+                <ForgotPassword />
+              </PublicRoute>
+            } />
+            
+            {/* Email Verification Routes */}
+            <Route path="/verify-email" element={<EmailVerification />} />
+            <Route path="/reset-password" element={<PasswordReset />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/hcp-registration" element={
+              <ProtectedRoute>
+                <HCPRegistration />
+              </ProtectedRoute>
+            } />
+            <Route path="/search" element={
+              <ProtectedRoute>
+                <Search />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            } />
+            
+            {/* Catch all route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
             </BookmarkProvider>
           </AuthProvider>
+        </AppStateProvider>
         </AppStateProvider>
         </AppStateProvider>
       </Router>
