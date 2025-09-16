@@ -1,209 +1,207 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout } from '../Layout/Layout';
 import { useAuth } from '../../contexts/AuthContext';
+import { BookmarkButton } from '../ui/BookmarkButton';
 import { 
-  Users,
-  UserPlus,
-  Upload,
+  Users, 
+  FileText, 
+  TrendingUp, 
+  AlertTriangle,
+  Plus,
   Search,
   BarChart3,
-  TrendingUp,
-  AlertCircle,
-  CheckCircle,
+  Database,
   Clock,
-  FileText,
-  Activity,
-  Calendar,
-  Mail,
-  Phone,
-  MapPin,
-  Award,
-  Target,
-  Zap
+  CheckCircle,
+  XCircle,
+  Activity
 } from 'lucide-react';
+
+interface DashboardStats {
+  totalProviders: number;
+  pendingApprovals: number;
+  recentImports: number;
+  dataQualityScore: number;
+  recentActivity: Array<{
+    id: string;
+    type: 'registration' | 'import' | 'update' | 'approval';
+    description: string;
+    timestamp: string;
+    user: string;
+  }>;
+}
 
 export function Dashboard() {
   const { user } = useAuth();
-  const [timeRange, setTimeRange] = useState('month');
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data for dashboard
-  const stats = [
-    {
-      title: 'Total Providers',
-      value: '2,847',
-      change: '+12%',
-      changeType: 'positive' as const,
-      icon: Users,
-      description: 'from last month'
-    },
-    {
-      title: 'New This Month',
-      value: '156',
-      change: '+8%',
-      changeType: 'positive' as const,
-      icon: UserPlus,
-      description: 'from last month'
-    },
-    {
-      title: 'Pending Verification',
-      value: '23',
-      change: '-5%',
-      changeType: 'negative' as const,
-      icon: Clock,
-      description: 'from last month'
-    },
-    {
-      title: 'Verified Profiles',
-      value: '2,824',
-      change: '+15%',
-      changeType: 'positive' as const,
-      icon: CheckCircle,
-      description: 'from last month'
-    }
-  ];
+  useEffect(() => {
+    // Simulate data loading
+    setTimeout(() => {
+      setStats({
+        totalProviders: 1247,
+        pendingApprovals: 23,
+        recentImports: 5,
+        dataQualityScore: 94.2,
+        recentActivity: [
+          {
+            id: '1',
+            type: 'registration',
+            description: 'New provider registered: Dr. Sarah Johnson, MD',
+            timestamp: '2 hours ago',
+            user: 'John Doe'
+          },
+          {
+            id: '2',
+            type: 'import',
+            description: 'Bulk import completed: 45 providers from UCLA',
+            timestamp: '4 hours ago',
+            user: 'Jane Smith'
+          },
+          {
+            id: '3',
+            type: 'approval',
+            description: 'Provider approved: Dr. Michael Chen, DO',
+            timestamp: '6 hours ago',
+            user: 'Admin User'
+          },
+          {
+            id: '4',
+            type: 'update',
+            description: 'Provider profile updated: Dr. Emily Rodriguez, MD',
+            timestamp: '1 day ago',
+            user: 'John Doe'
+          }
+        ]
+      });
+      setIsLoading(false);
+    }, 1000);
+  }, []);
 
   const quickActions = [
     {
-      title: 'Register New HCP',
+      title: 'Register New Provider',
       description: 'Add a new healthcare provider to the system',
-      icon: UserPlus,
       href: '/hcp-registration',
-      color: 'blue'
+      icon: Plus,
+      color: 'bg-blue-500 hover:bg-blue-600'
     },
     {
       title: 'Bulk Import',
       description: 'Import multiple providers from CSV or Excel',
-      icon: Upload,
       href: '/bulk-import',
-      color: 'green'
+      icon: FileText,
+      color: 'bg-green-500 hover:bg-green-600'
     },
     {
       title: 'Search Providers',
-      description: 'Find and manage existing provider records',
-      icon: Search,
+      description: 'Search and filter existing providers',
       href: '/search',
-      color: 'purple'
+      icon: Search,
+      color: 'bg-purple-500 hover:bg-purple-600'
     },
     {
-      title: 'View Reports',
-      description: 'Generate analytics and performance reports',
-      icon: BarChart3,
+      title: 'View Analytics',
+      description: 'View detailed analytics and reports',
       href: '/analytics',
-      color: 'orange'
+      icon: BarChart3,
+      color: 'bg-orange-500 hover:bg-orange-600'
     }
   ];
 
-  const recentActivity = [
-    {
-      id: '1',
-      type: 'registration',
-      title: 'New provider registered',
-      description: 'Dr. Sarah Johnson, MD - Internal Medicine',
-      time: '2 hours ago',
-      icon: UserPlus,
-      color: 'blue'
-    },
-    {
-      id: '2',
-      type: 'import',
-      title: 'Bulk import completed',
-      description: '45 providers imported successfully',
-      time: '4 hours ago',
-      icon: Upload,
-      color: 'green'
-    },
-    {
-      id: '3',
-      type: 'update',
-      title: 'Profile updated',
-      description: 'Dr. Michael Chen, DO - Emergency Medicine',
-      time: '6 hours ago',
-      icon: FileText,
-      color: 'purple'
-    },
-    {
-      id: '4',
-      type: 'verification',
-      title: 'Verification completed',
-      description: 'Dr. Emily Rodriguez, MD - Pediatrics',
-      time: '1 day ago',
-      icon: CheckCircle,
-      color: 'green'
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'registration': return <Plus className="h-4 w-4 text-blue-500" />;
+      case 'import': return <FileText className="h-4 w-4 text-green-500" />;
+      case 'approval': return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'update': return <Activity className="h-4 w-4 text-purple-500" />;
+      default: return <Activity className="h-4 w-4 text-gray-500" />;
     }
-  ];
-
-  const getColorClasses = (color: string) => {
-    const colors = {
-      blue: 'bg-blue-500 text-white',
-      green: 'bg-green-500 text-white',
-      purple: 'bg-purple-500 text-white',
-      orange: 'bg-orange-500 text-white',
-      red: 'bg-red-500 text-white'
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
-  };
-
-  const getIconColorClasses = (color: string) => {
-    const colors = {
-      blue: 'text-blue-600 bg-blue-100',
-      green: 'text-green-600 bg-green-100',
-      purple: 'text-purple-600 bg-purple-100',
-      orange: 'text-orange-600 bg-orange-100',
-      red: 'text-red-600 bg-red-100'
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
   };
 
   return (
-    <Layout breadcrumbs={[{ label: 'Dashboard' }]}>
+    <Layout>
       <div className="space-y-6">
         {/* Welcome Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Welcome back, {user?.firstName}!
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Here's what's happening with the HCP-DMP today!
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-500">Role:</p>
-              <p className="font-medium text-gray-900 capitalize">
-                {user?.role === 'administrator' ? 'Administrator' : 'Coordinator'}
-              </p>
-            </div>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Welcome back, {user?.firstName}!
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Here's what's happening with your provider data today.
+            </p>
           </div>
+          <BookmarkButton
+            title="Dashboard"
+            url="/dashboard"
+            category="Main"
+            icon="Home"
+          />
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-start justify-between h-full">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                    <div className="flex items-center mt-2">
-                      <span className={`text-sm font-medium ${
-                        stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {stat.change}
-                      </span>
-                      <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
-                    </div>
-                  </div>
-                  <div className={`p-3 rounded-full ${getIconColorClasses('blue')} flex-shrink-0 ml-4`}>
-                    <Icon className="h-6 w-6" />
-                  </div>
+        {/* Key Metrics */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white rounded-lg shadow-sm p-6 animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Users className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Total Providers</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.totalProviders.toLocaleString()}</p>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center">
+                <div className="p-2 bg-yellow-100 rounded-lg">
+                  <Clock className="h-6 w-6 text-yellow-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Pending Approvals</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.pendingApprovals}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <TrendingUp className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Recent Imports</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.recentImports}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Database className="h-6 w-6 text-purple-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Data Quality</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats?.dataQualityScore}%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow-sm p-6">
@@ -212,48 +210,25 @@ export function Dashboard() {
             {quickActions.map((action, index) => {
               const Icon = action.icon;
               return (
-                <a
-                  key={index}
-                  href={action.href}
-                  className="group p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all duration-200"
-                >
-                  <div className="flex items-start space-x-3">
-                    <div className={`p-2 rounded-lg ${getColorClasses(action.color)}`}>
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900 group-hover:text-blue-600">
-                        {action.title}
-                      </h3>
-                      <p className="text-sm text-gray-500 mt-1">{action.description}</p>
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-            <a href="/activity" className="text-sm text-blue-600 hover:text-blue-700">
-              View all activity →
-            </a>
-          </div>
-          <div className="space-y-4">
-            {recentActivity.map((activity) => {
-              const Icon = activity.icon;
-              return (
-                <div key={activity.id} className="flex items-start space-x-3">
-                  <div className={`p-2 rounded-full ${getIconColorClasses(activity.color)}`}>
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                    <p className="text-sm text-gray-600">{activity.description}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                <div key={index} className="relative group">
+                  <a
+                    href={action.href}
+                    className={`block p-4 rounded-lg text-white transition-colors ${action.color}`}
+                  >
+                    <Icon className="h-8 w-8 mb-3" />
+                    <h3 className="font-semibold mb-1">{action.title}</h3>
+                    <p className="text-sm opacity-90">{action.description}</p>
+                  </a>
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <BookmarkButton
+                      title={action.title}
+                      url={action.href}
+                      category="Quick Actions"
+                      icon={action.icon.name}
+                      size="sm"
+                      variant="minimal"
+                      showText={false}
+                    />
                   </div>
                 </div>
               );
@@ -261,13 +236,44 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="text-center py-8">
-          <p className="text-sm text-gray-500">
-            PracticeLink<sup>®</sup> © 2025 PracticeLink. All rights reserved. | 
-            <a href="#" className="text-blue-600 hover:text-blue-700 ml-1">Privacy Policy</a> | 
-            <a href="#" className="text-blue-600 hover:text-blue-700 ml-1">Terms of Service</a>
-          </p>
+        {/* Recent Activity */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
+            <a href="/analytics" className="text-sm text-blue-600 hover:text-blue-700">
+              View all analytics →
+            </a>
+          </div>
+          
+          {isLoading ? (
+            <div className="space-y-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="flex items-start space-x-3 animate-pulse">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {stats?.recentActivity.map((activity) => (
+                <div key={activity.id} className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 mt-1">
+                    {getActivityIcon(activity.type)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-900">{activity.description}</p>
+                    <p className="text-xs text-gray-500">
+                      {activity.timestamp} • by {activity.user}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </Layout>

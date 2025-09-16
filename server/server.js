@@ -1,28 +1,45 @@
 const express = require('express');
 const cors = require('cors');
 const { Resend } = require('resend');
+const { securityMiddleware, authRateLimit, uploadRateLimit, auditLogger, logger } = require('./middleware/security');
+const apiRoutes = require('./routes/api');
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Ensure logs directory exists
+const logsDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true });
+}
+
 // Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Middleware
+// Apply security middleware
+app.use(securityMiddleware);
+
+// Audit logging
+app.use(auditLogger);
+
+// CORS configuration
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
 app.use(express.json());
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
-});
+// API routes
+app.use('/api', apiRoutes);
 
 // Send verification email endpoint
-app.post('/api/send-verification-email', async (req, res) => {
+app.post('/api/send-verification-email', authRateLimit, async (req, res) => {
   try {
     const { email, token, name } = req.body;
 
@@ -40,6 +57,8 @@ app.post('/api/send-verification-email', async (req, res) => {
         message: 'Only @practicelink.com email addresses are allowed'
       });
     }
+
+    logger.info('Verification email requested', { email, name });
 
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${token}`;
 
@@ -100,11 +119,14 @@ app.post('/api/send-verification-email', async (req, res) => {
 
     if (error) {
       console.error('Resend error:', error);
+      logger.error('Verification email failed', { error, email });
       return res.status(500).json({
         success: false,
         message: 'Failed to send verification email'
       });
     }
+
+    logger.info('Verification email sent', { email, emailId: data.id });
 
     res.json({
       success: true,
@@ -114,6 +136,7 @@ app.post('/api/send-verification-email', async (req, res) => {
 
   } catch (error) {
     console.error('Server error:', error);
+    logger.error('Verification email server error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -122,7 +145,7 @@ app.post('/api/send-verification-email', async (req, res) => {
 });
 
 // Send password reset email endpoint
-app.post('/api/send-password-reset-email', async (req, res) => {
+app.post('/api/send-password-reset-email', authRateLimit, async (req, res) => {
   try {
     const { email, resetToken, name } = req.body;
 
@@ -132,6 +155,8 @@ app.post('/api/send-password-reset-email', async (req, res) => {
         message: 'Missing required fields: email, resetToken, and name are required'
       });
     }
+
+    logger.info('Password reset requested', { email, name });
 
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
 
@@ -193,11 +218,14 @@ app.post('/api/send-password-reset-email', async (req, res) => {
 
     if (error) {
       console.error('Resend error:', error);
+      logger.error('Password reset email failed', { error, email });
       return res.status(500).json({
         success: false,
         message: 'Failed to send password reset email'
       });
     }
+
+    logger.info('Password reset email sent', { email, emailId: data.id });
 
     res.json({
       success: true,
@@ -207,6 +235,7 @@ app.post('/api/send-password-reset-email', async (req, res) => {
 
   } catch (error) {
     console.error('Server error:', error);
+    logger.error('Password reset server error', { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -214,6 +243,23 @@ app.post('/api/send-password-reset-email', async (req, res) => {
   }
 });
 
+// Global error handler
+app.use((error, req, res, next) => {
+  logger.error('Unhandled server error', {
+    error: error.message,
+    stack: error.stack,
+    url: req.url,
+    method: req.method,
+    ip: req.ip
+  });
+  
+  res.status(500).json({
+    success: false,
+    message: 'Internal server error'
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  logger.info('Server started', { port, environment: process.env.NODE_ENV || 'development' });
 });
