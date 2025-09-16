@@ -4,9 +4,12 @@ import { AuthProvider } from './contexts/AuthContext';
 import { AppStateProvider } from './contexts/AppStateContext';
 import { AppStateProvider } from './contexts/AppStateContext';
 import { AppStateProvider } from './contexts/AppStateContext';
+import { AppStateProvider } from './contexts/AppStateContext';
 import { BookmarkProvider } from './contexts/BookmarkContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Toast } from './components/ui/Toast';
+import { NotificationCenter } from './components/ui/NotificationCenter';
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 import { NotificationCenter } from './components/ui/NotificationCenter';
 import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 import { NotificationCenter } from './components/ui/NotificationCenter';
@@ -46,6 +49,7 @@ import { Analytics } from './components/Pages/Analytics';
 function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
   const { useAuth } = require('./contexts/AuthContext');
   const { useAuth } = require('./contexts/AuthContext');
+  const { useAuth } = require('./contexts/AuthContext');
   const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
@@ -61,6 +65,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Elemen
 
 // Public Route Component (redirect to dashboard if already logged in)
 function PublicRoute({ children }: { children: React.ReactNode }): JSX.Element {
+  const { useAuth } = require('./contexts/AuthContext');
   const { useAuth } = require('./contexts/AuthContext');
   const { useAuth } = require('./contexts/AuthContext');
   const { isAuthenticated, isLoading } = useAuth();
@@ -83,6 +88,7 @@ function App(): JSX.Element {
         <AppStateProvider>
         <AppStateProvider>
         <AppStateProvider>
+        <AppStateProvider>
           <AuthProvider>
             <BookmarkProvider>
               <div>
@@ -90,10 +96,7 @@ function App(): JSX.Element {
                       Return to Dashboard
                     </a>
                   </div>
-function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
-  const { useAuth } = require('./contexts/AuthContext');
-}
-          <Routes>
+              <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/signin" element={
@@ -143,6 +146,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Elemen
           </Routes>
             </BookmarkProvider>
           </AuthProvider>
+        </AppStateProvider>
         </AppStateProvider>
         </AppStateProvider>
         </AppStateProvider>
