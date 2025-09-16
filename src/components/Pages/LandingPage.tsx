@@ -1,231 +1,239 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { AppStateProvider } from './contexts/AppStateContext';
-import { BookmarkProvider } from './contexts/BookmarkContext';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { Toast } from './components/ui/Toast';
-import { NotificationCenter } from './components/ui/NotificationCenter';
-import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
+import { useAuth } from '../../contexts/AuthContext';
+import { BookmarkButton } from '../ui/BookmarkButton';
+import { 
+  ArrowRight, 
+  Shield, 
+  Database, 
+  Users, 
+  BarChart3,
+  CheckCircle,
+  Zap,
+  Globe
+} from 'lucide-react';
 
-// Import components
-import { LandingPage } from './components/Pages/LandingPage';
-import { SignIn } from './components/Auth/SignIn';
-import { SignUp } from './components/Auth/SignUp';
-import { ForgotPassword } from './components/Auth/ForgotPassword';
-import { EmailVerification } from './components/Auth/EmailVerification';
-import { PasswordReset } from './components/Auth/PasswordReset';
-import { Dashboard } from './components/Pages/Dashboard';
-import { HCPRegistration } from './components/Pages/HCPRegistration';
-import { BulkImport } from './components/Pages/BulkImport';
-import { Search } from './components/Pages/Search';
-import { HCPDetail } from './components/Pages/HCPDetail';
-import { UserManagement } from './components/Pages/UserManagement';
-import { AddUser } from './components/Pages/AddUser';
-import { UserProfile } from './components/Pages/UserProfile';
-import { UserSettings } from './components/Pages/UserSettings';
-import { GMEProgramSearch } from './components/Pages/GMEProgramSearch';
-import { GMEProgramDetail } from './components/Pages/GMEProgramDetail';
-import { DMPDashboard } from './components/Pages/DMPDashboard';
-import { TemplateUpload } from './components/Pages/TemplateUpload';
-import { AIMapping } from './components/Pages/AIMapping';
-import { URLExtraction } from './components/Pages/URLExtraction';
-import { JobConsole } from './components/Pages/JobConsole';
-import { DuplicateReview } from './components/Pages/DuplicateReview';
-import { DataExport } from './components/Pages/DataExport';
+export function LandingPage() {
+  const { isAuthenticated } = useAuth();
 
-import { Analytics } from './components/Pages/Analytics';
+  const features = [
+    {
+      icon: Shield,
+      title: 'Secure Data Management',
+      description: 'Enterprise-grade security with role-based access control and audit trails'
+    },
+    {
+      icon: Database,
+      title: 'Comprehensive Provider Database',
+      description: 'Complete healthcare provider information with validation and verification'
+    },
+    {
+      icon: Users,
+      title: 'Team Collaboration',
+      description: 'Multi-user support with role-based permissions and workflow management'
+    },
+    {
+      icon: BarChart3,
+      title: 'Advanced Analytics',
+      description: 'Detailed insights and reporting on provider data and import performance'
+    },
+    {
+      icon: Zap,
+      title: 'AI-Powered Import',
+      description: 'Intelligent data mapping and extraction from various sources'
+    },
+    {
+      icon: Globe,
+      title: 'Web Extraction',
+      description: 'Automated data extraction from institutional websites and directories'
+    }
+  ];
 
-// Protected Route Component
-function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
-  const { useAuth } = require('./contexts/AuthContext');
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/signin" replace />;
-  }
-  
-  return <>{children}</>;
-}
+  const stats = [
+    { label: 'Providers Managed', value: '1,200+' },
+    { label: 'Data Accuracy', value: '99.8%' },
+    { label: 'Import Success Rate', value: '94.2%' },
+    { label: 'Processing Speed', value: '< 2 min' }
+  ];
 
-// Public Route Component (redirect to dashboard if already logged in)
-function PublicRoute({ children }: { children: React.ReactNode }): JSX.Element {
-  const { useAuth } = require('./contexts/AuthContext');
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
-  
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
-  
-  return <>{children}</>;
-}
-
-function App(): JSX.Element {
   return (
-    <ErrorBoundary>
-      <Router>
-        <AppStateProvider>
-          <AuthProvider>
-            <BookmarkProvider>
-            <Toast />
-            <div className="App">
-              <ErrorBoundary fallback={
-                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                  <div className="text-center">
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">Navigation Error</h2>
-                    <p className="text-gray-600 mb-4">Unable to load the requested page.</p>
-                    <a href="/dashboard" className="text-blue-600 hover:text-blue-700">
-                      Return to Dashboard
-                    </a>
-                  </div>
-                </div>
-              }>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/signin" element={
-              <PublicRoute>
-                <SignIn />
-              </PublicRoute>
-            } />
-            <Route path="/signup" element={
-              <PublicRoute>
-                <SignUp />
-              </PublicRoute>
-            } />
-            <Route path="/forgot-password" element={
-              <PublicRoute>
-                <ForgotPassword />
-              </PublicRoute>
-            } />
-            
-            {/* Email Verification Routes */}
-            <Route path="/verify-email" element={<EmailVerification />} />
-            <Route path="/reset-password" element={<PasswordReset />} />
-            
-            {/* Protected Routes */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/hcp-registration" element={
-              <ProtectedRoute>
-                <HCPRegistration />
-              </ProtectedRoute>
-            } />
-            <Route path="/bulk-import" element={
-              <ProtectedRoute>
-                <BulkImport />
-              </ProtectedRoute>
-            } />
-            <Route path="/search" element={
-              <ProtectedRoute>
-                <Search />
-              </ProtectedRoute>
-            } />
-            <Route path="/hcp-detail" element={
-              <ProtectedRoute>
-                <HCPDetail />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-management" element={
-              <ProtectedRoute>
-                <UserManagement />
-              </ProtectedRoute>
-            } />
-            <Route path="/add-user" element={
-              <ProtectedRoute>
-                <AddUser />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-profile" element={
-              <ProtectedRoute>
-                <UserProfile />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-settings" element={
-              <ProtectedRoute>
-                <UserSettings />
-              </ProtectedRoute>
-            } />
-            <Route path="/gme-program-search" element={
-              <ProtectedRoute>
-                <GMEProgramSearch />
-              </ProtectedRoute>
-            } />
-            <Route path="/gme-program-detail" element={
-              <ProtectedRoute>
-                <GMEProgramDetail />
-              </ProtectedRoute>
-            } />
-            <Route path="/analytics" element={
-              <ProtectedRoute>
-                <Analytics />
-              </ProtectedRoute>
-            } />
-            <Route path="/institution-programs" element={
-              <ProtectedRoute>
-                <GMEProgramSearch />
-              </ProtectedRoute>
-            } />
-            
-            {/* DMP Routes */}
-            <Route path="/dmp" element={
-              <ProtectedRoute>
-                <DMPDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/template-upload" element={
-              <ProtectedRoute>
-                <TemplateUpload />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/ai-mapping" element={
-              <ProtectedRoute>
-                <AIMapping />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/url-extraction" element={
-              <ProtectedRoute>
-                <URLExtraction />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/jobs" element={
-              <ProtectedRoute>
-                <JobConsole />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/duplicates" element={
-              <ProtectedRoute>
-                <DuplicateReview />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/export" element={
-              <ProtectedRoute>
-                <DataExport />
-              </ProtectedRoute>
-            } />
-            
-            {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-              </ErrorBoundary>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-blue-600">PracticeLink</h1>
+              <span className="ml-2 text-sm text-gray-500">Data Management Portal</span>
             </div>
-            </BookmarkProvider>
-          </AuthProvider>
-        </AppStateProvider>
-      </Router>
-    </ErrorBoundary>
+            <div className="flex items-center space-x-4">
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-3">
+                  <BookmarkButton
+                    title="Home"
+                    url="/"
+                    category="Main"
+                    icon="Home"
+                    variant="pill"
+                  />
+                  <a
+                    href="/dashboard"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    Go to Dashboard
+                  </a>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <a
+                    href="/signin"
+                    className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md transition-colors"
+                  >
+                    Sign In
+                  </a>
+                  <a
+                    href="/signin"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    Get Started
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            Healthcare Provider
+            <span className="text-blue-600"> Data Management</span>
+          </h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Streamline your provider relations workflow with our comprehensive data collection, 
+            validation, and management platform designed for healthcare organizations.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href={isAuthenticated ? "/dashboard" : "/signin"}
+              className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {isAuthenticated ? "Go to Dashboard" : "Get Started"}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </a>
+            <a
+              href="/analytics"
+              className="inline-flex items-center px-8 py-4 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              View Demo
+              <BarChart3 className="ml-2 h-5 w-5" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl font-bold text-blue-600 mb-2">{stat.value}</div>
+                <div className="text-gray-600">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Powerful Features for Provider Management
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Everything you need to efficiently manage healthcare provider data, 
+              from registration to analytics.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <div key={index} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+                  <div className="p-2 bg-blue-100 rounded-lg w-fit mb-4">
+                    <Icon className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-blue-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Ready to streamline your provider data management?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            Join healthcare organizations already using PracticeLink to manage their provider networks efficiently.
+          </p>
+          <a
+            href={isAuthenticated ? "/dashboard" : "/signin"}
+            className="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            {isAuthenticated ? "Access Dashboard" : "Start Free Trial"}
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </a>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="col-span-1 md:col-span-2">
+              <h3 className="text-xl font-bold mb-4">PracticeLink</h3>
+              <p className="text-gray-400 mb-4">
+                Comprehensive healthcare provider data management platform for modern healthcare organizations.
+              </p>
+              <div className="flex space-x-4">
+                <CheckCircle className="h-5 w-5 text-green-400" />
+                <span className="text-sm text-gray-400">HIPAA Compliant</span>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Platform</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="/dashboard" className="hover:text-white">Dashboard</a></li>
+                <li><a href="/search" className="hover:text-white">Provider Search</a></li>
+                <li><a href="/analytics" className="hover:text-white">Analytics</a></li>
+                <li><a href="/bulk-import" className="hover:text-white">Bulk Import</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="#" className="hover:text-white">Documentation</a></li>
+                <li><a href="#" className="hover:text-white">Help Center</a></li>
+                <li><a href="#" className="hover:text-white">Contact Support</a></li>
+                <li><a href="#" className="hover:text-white">System Status</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+            <p>&copy; 2025 PracticeLink. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }
-
-export default App;

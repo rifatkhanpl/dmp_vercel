@@ -1,231 +1,323 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { AppStateProvider } from './contexts/AppStateContext';
-import { BookmarkProvider } from './contexts/BookmarkContext';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { Toast } from './components/ui/Toast';
-import { NotificationCenter } from './components/ui/NotificationCenter';
-import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
+import React, { useState } from 'react';
+import { Layout } from '../Layout/Layout';
+import { BookmarkButton } from '../ui/BookmarkButton';
+import { FormField } from '../ui/FormField';
+import { useFormValidation } from '../../hooks/useFormValidation';
+import { ResidentFellowSchema } from '../../schemas/dmpSchemas';
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Stethoscope,
+  FileText,
+  Calendar,
+  Save,
+  X,
+  Plus
+} from 'lucide-react';
 
-// Import components
-import { LandingPage } from './components/Pages/LandingPage';
-import { SignIn } from './components/Auth/SignIn';
-import { SignUp } from './components/Auth/SignUp';
-import { ForgotPassword } from './components/Auth/ForgotPassword';
-import { EmailVerification } from './components/Auth/EmailVerification';
-import { PasswordReset } from './components/Auth/PasswordReset';
-import { Dashboard } from './components/Pages/Dashboard';
-import { HCPRegistration } from './components/Pages/HCPRegistration';
-import { BulkImport } from './components/Pages/BulkImport';
-import { Search } from './components/Pages/Search';
-import { HCPDetail } from './components/Pages/HCPDetail';
-import { UserManagement } from './components/Pages/UserManagement';
-import { AddUser } from './components/Pages/AddUser';
-import { UserProfile } from './components/Pages/UserProfile';
-import { UserSettings } from './components/Pages/UserSettings';
-import { GMEProgramSearch } from './components/Pages/GMEProgramSearch';
-import { GMEProgramDetail } from './components/Pages/GMEProgramDetail';
-import { DMPDashboard } from './components/Pages/DMPDashboard';
-import { TemplateUpload } from './components/Pages/TemplateUpload';
-import { AIMapping } from './components/Pages/AIMapping';
-import { URLExtraction } from './components/Pages/URLExtraction';
-import { JobConsole } from './components/Pages/JobConsole';
-import { DuplicateReview } from './components/Pages/DuplicateReview';
-import { DataExport } from './components/Pages/DataExport';
+export function HCPRegistration() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-import { Analytics } from './components/Pages/Analytics';
+  const { data, errors, updateField, handleSubmit, isValid, isDirty } = useFormValidation({
+    schema: ResidentFellowSchema.partial(),
+    onSubmit: async (formData) => {
+      setIsSubmitting(true);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('Submitting:', formData);
+      setIsSubmitting(false);
+    }
+  });
 
-// Protected Route Component
-function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
-  const { useAuth } = require('./contexts/AuthContext');
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/signin" replace />;
-  }
-  
-  return <>{children}</>;
-}
-
-// Public Route Component (redirect to dashboard if already logged in)
-function PublicRoute({ children }: { children: React.ReactNode }): JSX.Element {
-  const { useAuth } = require('./contexts/AuthContext');
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
-  
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
-  
-  return <>{children}</>;
-}
-
-function App(): JSX.Element {
   return (
-    <ErrorBoundary>
-      <Router>
-        <AppStateProvider>
-          <AuthProvider>
-            <BookmarkProvider>
-            <Toast />
-            <div className="App">
-              <ErrorBoundary fallback={
-                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                  <div className="text-center">
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">Navigation Error</h2>
-                    <p className="text-gray-600 mb-4">Unable to load the requested page.</p>
-                    <a href="/dashboard" className="text-blue-600 hover:text-blue-700">
-                      Return to Dashboard
-                    </a>
-                  </div>
-                </div>
-              }>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/signin" element={
-              <PublicRoute>
-                <SignIn />
-              </PublicRoute>
-            } />
-            <Route path="/signup" element={
-              <PublicRoute>
-                <SignUp />
-              </PublicRoute>
-            } />
-            <Route path="/forgot-password" element={
-              <PublicRoute>
-                <ForgotPassword />
-              </PublicRoute>
-            } />
-            
-            {/* Email Verification Routes */}
-            <Route path="/verify-email" element={<EmailVerification />} />
-            <Route path="/reset-password" element={<PasswordReset />} />
-            
-            {/* Protected Routes */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/hcp-registration" element={
-              <ProtectedRoute>
-                <HCPRegistration />
-              </ProtectedRoute>
-            } />
-            <Route path="/bulk-import" element={
-              <ProtectedRoute>
-                <BulkImport />
-              </ProtectedRoute>
-            } />
-            <Route path="/search" element={
-              <ProtectedRoute>
-                <Search />
-              </ProtectedRoute>
-            } />
-            <Route path="/hcp-detail" element={
-              <ProtectedRoute>
-                <HCPDetail />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-management" element={
-              <ProtectedRoute>
-                <UserManagement />
-              </ProtectedRoute>
-            } />
-            <Route path="/add-user" element={
-              <ProtectedRoute>
-                <AddUser />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-profile" element={
-              <ProtectedRoute>
-                <UserProfile />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-settings" element={
-              <ProtectedRoute>
-                <UserSettings />
-              </ProtectedRoute>
-            } />
-            <Route path="/gme-program-search" element={
-              <ProtectedRoute>
-                <GMEProgramSearch />
-              </ProtectedRoute>
-            } />
-            <Route path="/gme-program-detail" element={
-              <ProtectedRoute>
-                <GMEProgramDetail />
-              </ProtectedRoute>
-            } />
-            <Route path="/analytics" element={
-              <ProtectedRoute>
-                <Analytics />
-              </ProtectedRoute>
-            } />
-            <Route path="/institution-programs" element={
-              <ProtectedRoute>
-                <GMEProgramSearch />
-              </ProtectedRoute>
-            } />
-            
-            {/* DMP Routes */}
-            <Route path="/dmp" element={
-              <ProtectedRoute>
-                <DMPDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/template-upload" element={
-              <ProtectedRoute>
-                <TemplateUpload />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/ai-mapping" element={
-              <ProtectedRoute>
-                <AIMapping />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/url-extraction" element={
-              <ProtectedRoute>
-                <URLExtraction />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/jobs" element={
-              <ProtectedRoute>
-                <JobConsole />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/duplicates" element={
-              <ProtectedRoute>
-                <DuplicateReview />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/export" element={
-              <ProtectedRoute>
-                <DataExport />
-              </ProtectedRoute>
-            } />
-            
-            {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-              </ErrorBoundary>
+    <Layout breadcrumbs={[{ label: 'HCP Registration' }]}>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Healthcare Provider Registration</h1>
+            <p className="text-gray-600 mt-1">Register a new healthcare provider in the system</p>
+          </div>
+          <BookmarkButton
+            title="HCP Registration"
+            url="/hcp-registration"
+            category="Data Entry"
+            icon="UserPlus"
+          />
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Personal Information */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center space-x-2 mb-6">
+              <User className="h-5 w-5 text-blue-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Personal Information</h2>
             </div>
-            </BookmarkProvider>
-          </AuthProvider>
-        </AppStateProvider>
-      </Router>
-    </ErrorBoundary>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <FormField
+                label="NPI Number"
+                name="npi"
+                type="text"
+                value={data.npi || ''}
+                onChange={(value) => updateField('npi', value)}
+                error={errors.npi}
+                placeholder="1234567890"
+                required
+                maxLength={10}
+              />
+              
+              <FormField
+                label="First Name"
+                name="firstName"
+                type="text"
+                value={data.firstName || ''}
+                onChange={(value) => updateField('firstName', value)}
+                error={errors.firstName}
+                placeholder="John"
+                required
+              />
+              
+              <FormField
+                label="Last Name"
+                name="lastName"
+                type="text"
+                value={data.lastName || ''}
+                onChange={(value) => updateField('lastName', value)}
+                error={errors.lastName}
+                placeholder="Doe"
+                required
+              />
+              
+              <FormField
+                label="Middle Name"
+                name="middleName"
+                type="text"
+                value={data.middleName || ''}
+                onChange={(value) => updateField('middleName', value)}
+                error={errors.middleName}
+                placeholder="Michael"
+              />
+              
+              <FormField
+                label="Credentials"
+                name="credentials"
+                type="text"
+                value={data.credentials || ''}
+                onChange={(value) => updateField('credentials', value)}
+                error={errors.credentials}
+                placeholder="MD"
+                required
+              />
+              
+              <FormField
+                label="Gender"
+                name="gender"
+                type="select"
+                value={data.gender || ''}
+                onChange={(value) => updateField('gender', value)}
+                error={errors.gender}
+                options={[
+                  { value: '', label: 'Select Gender' },
+                  { value: 'M', label: 'Male' },
+                  { value: 'F', label: 'Female' },
+                  { value: 'Other', label: 'Other' }
+                ]}
+              />
+            </div>
+          </div>
+
+          {/* Contact Information */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center space-x-2 mb-6">
+              <Mail className="h-5 w-5 text-blue-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Contact Information</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                label="Email"
+                name="email"
+                type="email"
+                value={data.email || ''}
+                onChange={(value) => updateField('email', value)}
+                error={errors.email}
+                placeholder="john.doe@hospital.edu"
+              />
+              
+              <FormField
+                label="Phone"
+                name="phone"
+                type="tel"
+                value={data.phone || ''}
+                onChange={(value) => updateField('phone', value)}
+                error={errors.phone}
+                placeholder="(555) 123-4567"
+              />
+            </div>
+          </div>
+
+          {/* Practice Address */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center space-x-2 mb-6">
+              <MapPin className="h-5 w-5 text-blue-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Practice Address</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-2">
+                <FormField
+                  label="Address Line 1"
+                  name="practiceAddress1"
+                  type="text"
+                  value={data.practiceAddress1 || ''}
+                  onChange={(value) => updateField('practiceAddress1', value)}
+                  error={errors.practiceAddress1}
+                  placeholder="123 Medical Center Dr"
+                  required
+                />
+              </div>
+              
+              <FormField
+                label="City"
+                name="practiceCity"
+                type="text"
+                value={data.practiceCity || ''}
+                onChange={(value) => updateField('practiceCity', value)}
+                error={errors.practiceCity}
+                placeholder="Los Angeles"
+                required
+              />
+              
+              <FormField
+                label="State"
+                name="practiceState"
+                type="text"
+                value={data.practiceState || ''}
+                onChange={(value) => updateField('practiceState', value)}
+                error={errors.practiceState}
+                placeholder="CA"
+                required
+                maxLength={2}
+              />
+              
+              <FormField
+                label="ZIP Code"
+                name="practiceZip"
+                type="text"
+                value={data.practiceZip || ''}
+                onChange={(value) => updateField('practiceZip', value)}
+                error={errors.practiceZip}
+                placeholder="90210"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Professional Information */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center space-x-2 mb-6">
+              <Stethoscope className="h-5 w-5 text-blue-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Professional Information</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                label="Primary Specialty"
+                name="primarySpecialty"
+                type="text"
+                value={data.primarySpecialty || ''}
+                onChange={(value) => updateField('primarySpecialty', value)}
+                error={errors.primarySpecialty}
+                placeholder="Internal Medicine"
+                required
+              />
+              
+              <FormField
+                label="Taxonomy Code"
+                name="taxonomyCode"
+                type="text"
+                value={data.taxonomyCode || ''}
+                onChange={(value) => updateField('taxonomyCode', value)}
+                error={errors.taxonomyCode}
+                placeholder="207R00000X"
+              />
+            </div>
+          </div>
+
+          {/* License Information */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center space-x-2 mb-6">
+              <FileText className="h-5 w-5 text-blue-600" />
+              <h2 className="text-lg font-semibold text-gray-900">License Information</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                label="License State"
+                name="licenseState"
+                type="text"
+                value={data.licenseState || ''}
+                onChange={(value) => updateField('licenseState', value)}
+                error={errors.licenseState}
+                placeholder="CA"
+                required
+                maxLength={2}
+              />
+              
+              <FormField
+                label="License Number"
+                name="licenseNumber"
+                type="text"
+                value={data.licenseNumber || ''}
+                onChange={(value) => updateField('licenseNumber', value)}
+                error={errors.licenseNumber}
+                placeholder="A12345"
+                required
+              />
+              
+              <FormField
+                label="License Issue Date"
+                name="licenseIssueDate"
+                type="date"
+                value={data.licenseIssueDate || ''}
+                onChange={(value) => updateField('licenseIssueDate', value)}
+                error={errors.licenseIssueDate}
+              />
+              
+              <FormField
+                label="License Expiration Date"
+                name="licenseExpireDate"
+                type="date"
+                value={data.licenseExpireDate || ''}
+                onChange={(value) => updateField('licenseExpireDate', value)}
+                error={errors.licenseExpireDate}
+              />
+            </div>
+          </div>
+
+          {/* Form Actions */}
+          <div className="flex justify-end space-x-4 pt-6">
+            <button
+              type="button"
+              className="flex items-center space-x-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+            >
+              <X className="h-4 w-4" />
+              <span>Cancel</span>
+            </button>
+            <button
+              type="submit"
+              disabled={!isValid || isSubmitting}
+              className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Save className="h-4 w-4" />
+              <span>{isSubmitting ? 'Registering...' : 'Register Provider'}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </Layout>
   );
 }
-
-export default App;

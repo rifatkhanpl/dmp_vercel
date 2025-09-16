@@ -1,87 +1,105 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { AppStateProvider } from './contexts/AppStateContext';
-import { BookmarkProvider } from './contexts/BookmarkContext';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { Toast } from './components/ui/Toast';
-import { NotificationCenter } from './components/ui/NotificationCenter';
-import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
+import { useAuth } from '../../contexts/AuthContext';
+import { useBookmarks } from '../../contexts/BookmarkContext';
+import { BookmarkButton } from '../ui/BookmarkButton';
+import { 
+  Home, 
+  Users, 
+  Search, 
+  BarChart3, 
+  Settings,
+  UserPlus,
+  FileText,
+  X,
+  Bookmark,
+  ExternalLink
+} from 'lucide-react';
 
-// Import components
-import { LandingPage } from './components/Pages/LandingPage';
-import { SignIn } from './components/Auth/SignIn';
-import { SignUp } from './components/Auth/SignUp';
-import { ForgotPassword } from './components/Auth/ForgotPassword';
-import { EmailVerification } from './components/Auth/EmailVerification';
-import { PasswordReset } from './components/Auth/PasswordReset';
-import { Dashboard } from './components/Pages/Dashboard';
-import { HCPRegistration } from './components/Pages/HCPRegistration';
-import { BulkImport } from './components/Pages/BulkImport';
-import { Search } from './components/Pages/Search';
-import { HCPDetail } from './components/Pages/HCPDetail';
-import { UserManagement } from './components/Pages/UserManagement';
-import { AddUser } from './components/Pages/AddUser';
-import { UserProfile } from './components/Pages/UserProfile';
-import { UserSettings } from './components/Pages/UserSettings';
-import { GMEProgramSearch } from './components/Pages/GMEProgramSearch';
-import { GMEProgramDetail } from './components/Pages/GMEProgramDetail';
-import { DMPDashboard } from './components/Pages/DMPDashboard';
-import { TemplateUpload } from './components/Pages/TemplateUpload';
-import { AIMapping } from './components/Pages/AIMapping';
-import { URLExtraction } from './components/Pages/URLExtraction';
-import { JobConsole } from './components/Pages/JobConsole';
-import { DuplicateReview } from './components/Pages/DuplicateReview';
-import { DataExport } from './components/Pages/DataExport';
-
-import { Analytics } from './components/Pages/Analytics';
-
-// Protected Route Component
-function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
-  const { useAuth } = require('./contexts/AuthContext');
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/signin" replace />;
-  }
-  
-  return <>{children}</>;
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-// Public Route Component (redirect to dashboard if already logged in)
-function PublicRoute({ children }: { children: React.ReactNode }): JSX.Element {
-  const { useAuth } = require('./contexts/AuthContext');
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
-  
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
-  
-  return <>{children}</>;
-}
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const { user } = useAuth();
+  const { bookmarks } = useBookmarks();
 
-function App(): JSX.Element {
+  const navigationSections = [
+    {
+      id: 'main',
+      title: 'Main Navigation',
+      items: [
+        { name: 'Dashboard', href: '/dashboard', icon: Home, description: 'Main dashboard overview' },
+        { name: 'Analytics', href: '/analytics', icon: BarChart3, description: 'View analytics and reports' },
+        { name: 'Provider Search', href: '/search', icon: Search, description: 'Search healthcare providers' },
+        { name: 'HCP Registration', href: '/hcp-registration', icon: UserPlus, description: 'Register new providers' }
+      ]
+    },
+    {
+      id: 'account',
+      title: 'Account',
+      items: [
+        { name: 'My Profile', href: '/user-profile', icon: Users, description: 'View and edit profile' },
+        { name: 'Settings', href: '/user-settings', icon: Settings, description: 'Account settings' }
+      ]
+    }
+  ];
+
+  // Add bookmarks section if user has bookmarks
+  if (bookmarks.length > 0) {
+    navigationSections.push({
+      id: 'bookmarks',
+      title: 'Bookmarks',
+      items: bookmarks.slice(0, 8).map(bookmark => ({
+        name: bookmark.title,
+        href: bookmark.url,
+        icon: Bookmark,
+        description: `Bookmarked: ${bookmark.category}`
+      }))
+    });
+  }
+
+  const currentPath = window.location.pathname;
+
   return (
-    <ErrorBoundary>
-      <Router>
-        <AppStateProvider>
-          <AuthProvider>
-            <BookmarkProvider>
-            <Toast />
-            <div className="App">
-              <ErrorBoundary fallback={
-                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                  <div className="text-center">
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">Navigation Error</h2>
-                    <p className="text-gray-600 mb-4">Unable to load the requested page.</p>
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-gray-600 bg-opacity-50 z-20 lg:hidden"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={`
+        fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 lg:hidden">
+          <h2 className="text-lg font-semibold text-gray-900">Navigation</h2>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+            aria-label="Close sidebar"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <nav className="mt-5 px-2 space-y-8 lg:mt-8" aria-label="Main navigation">
+          {navigationSections.map((section) => (
+            <div key={section.id}>
+              <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                {section.title}
+              </h3>
+              <div className="mt-2 space-y-1">
+                {section.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = currentPath === item.href;
+                  
+                  return (
                     <div key={item.name} className="relative group">
                       <a
                         href={item.href}
@@ -115,147 +133,29 @@ function App(): JSX.Element {
                         </div>
                       )}
                     </div>
-                  </div>
-                </div>
-              }>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/signin" element={
-              <PublicRoute>
-                <SignIn />
-              </PublicRoute>
-            } />
-            <Route path="/signup" element={
-              <PublicRoute>
-                <SignUp />
-              </PublicRoute>
-            } />
-            <Route path="/forgot-password" element={
-              <PublicRoute>
-                <ForgotPassword />
-              </PublicRoute>
-            } />
-            
-            {/* Email Verification Routes */}
-            <Route path="/verify-email" element={<EmailVerification />} />
-            <Route path="/reset-password" element={<PasswordReset />} />
-            
-            {/* Protected Routes */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/hcp-registration" element={
-              <ProtectedRoute>
-                <HCPRegistration />
-              </ProtectedRoute>
-            } />
-            <Route path="/bulk-import" element={
-              <ProtectedRoute>
-                <BulkImport />
-              </ProtectedRoute>
-            } />
-            <Route path="/search" element={
-              <ProtectedRoute>
-                <Search />
-              </ProtectedRoute>
-            } />
-            <Route path="/hcp-detail" element={
-              <ProtectedRoute>
-                <HCPDetail />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-management" element={
-              <ProtectedRoute>
-                <UserManagement />
-              </ProtectedRoute>
-            } />
-            <Route path="/add-user" element={
-              <ProtectedRoute>
-                <AddUser />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-profile" element={
-              <ProtectedRoute>
-                <UserProfile />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-settings" element={
-              <ProtectedRoute>
-                <UserSettings />
-              </ProtectedRoute>
-            } />
-            <Route path="/gme-program-search" element={
-              <ProtectedRoute>
-                <GMEProgramSearch />
-              </ProtectedRoute>
-            } />
-            <Route path="/gme-program-detail" element={
-              <ProtectedRoute>
-                <GMEProgramDetail />
-              </ProtectedRoute>
-            } />
-            <Route path="/analytics" element={
-              <ProtectedRoute>
-                <Analytics />
-              </ProtectedRoute>
-            } />
-            <Route path="/institution-programs" element={
-              <ProtectedRoute>
-                <GMEProgramSearch />
-              </ProtectedRoute>
-            } />
-            
-            {/* DMP Routes */}
-            <Route path="/dmp" element={
-              <ProtectedRoute>
-                <DMPDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/template-upload" element={
-              <ProtectedRoute>
-                <TemplateUpload />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/ai-mapping" element={
-              <ProtectedRoute>
-                <AIMapping />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/url-extraction" element={
-              <ProtectedRoute>
-                <URLExtraction />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/jobs" element={
-              <ProtectedRoute>
-                <JobConsole />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/duplicates" element={
-              <ProtectedRoute>
-                <DuplicateReview />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/export" element={
-              <ProtectedRoute>
-                <DataExport />
-              </ProtectedRoute>
-            } />
-            
-            {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-              </ErrorBoundary>
+                  );
+                })}
+              </div>
             </div>
-            </BookmarkProvider>
-          </AuthProvider>
-        </AppStateProvider>
-      </Router>
-    </ErrorBoundary>
+          ))}
+
+          {/* Show more bookmarks link */}
+          {bookmarks.length > 8 && (
+            <div className="px-3">
+              <button
+                onClick={() => {
+                  // This would open the bookmark manager
+                  console.log('Open bookmark manager');
+                }}
+                className="text-xs text-blue-600 hover:text-blue-700 flex items-center space-x-1"
+              >
+                <span>View all {bookmarks.length} bookmarks</span>
+                <ExternalLink className="h-3 w-3" />
+              </button>
+            </div>
+          )}
+        </nav>
+      </div>
+    </>
   );
 }
-
-export default App;

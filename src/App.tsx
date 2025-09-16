@@ -2,9 +2,12 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { AppStateProvider } from './contexts/AppStateContext';
+import { AppStateProvider } from './contexts/AppStateContext';
 import { BookmarkProvider } from './contexts/BookmarkContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Toast } from './components/ui/Toast';
+import { NotificationCenter } from './components/ui/NotificationCenter';
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 import { NotificationCenter } from './components/ui/NotificationCenter';
 import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 
@@ -39,6 +42,7 @@ import { Analytics } from './components/Pages/Analytics';
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
   const { useAuth } = require('./contexts/AuthContext');
+  const { useAuth } = require('./contexts/AuthContext');
   const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
@@ -53,7 +57,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Elemen
 }
 
 // Public Route Component (redirect to dashboard if already logged in)
-function PublicRoute({ children }: { children: React.ReactNode }): JSX.Element {
+function PublicRoute({ children }: { children: React.ReactNode }) {
   const { useAuth } = require('./contexts/AuthContext');
   const { isAuthenticated, isLoading } = useAuth();
   
@@ -68,26 +72,18 @@ function PublicRoute({ children }: { children: React.ReactNode }): JSX.Element {
   return <>{children}</>;
 }
 
-function App(): JSX.Element {
+function App() {
   return (
     <ErrorBoundary>
       <Router>
         <AppStateProvider>
+        <AppStateProvider>
           <AuthProvider>
             <BookmarkProvider>
-            <Toast />
-            <div className="App">
-              <ErrorBoundary fallback={
-                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                  <div className="text-center">
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">Navigation Error</h2>
-                    <p className="text-gray-600 mb-4">Unable to load the requested page.</p>
-                    <a href="/dashboard" className="text-blue-600 hover:text-blue-700">
                       Return to Dashboard
                     </a>
                   </div>
-                </div>
-              }>
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
@@ -122,96 +118,14 @@ function App(): JSX.Element {
                 <HCPRegistration />
               </ProtectedRoute>
             } />
-            <Route path="/bulk-import" element={
-              <ProtectedRoute>
-                <BulkImport />
-              </ProtectedRoute>
-            } />
             <Route path="/search" element={
               <ProtectedRoute>
                 <Search />
               </ProtectedRoute>
             } />
-            <Route path="/hcp-detail" element={
-              <ProtectedRoute>
-                <HCPDetail />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-management" element={
-              <ProtectedRoute>
-                <UserManagement />
-              </ProtectedRoute>
-            } />
-            <Route path="/add-user" element={
-              <ProtectedRoute>
-                <AddUser />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-profile" element={
-              <ProtectedRoute>
-                <UserProfile />
-              </ProtectedRoute>
-            } />
-            <Route path="/user-settings" element={
-              <ProtectedRoute>
-                <UserSettings />
-              </ProtectedRoute>
-            } />
-            <Route path="/gme-program-search" element={
-              <ProtectedRoute>
-                <GMEProgramSearch />
-              </ProtectedRoute>
-            } />
-            <Route path="/gme-program-detail" element={
-              <ProtectedRoute>
-                <GMEProgramDetail />
-              </ProtectedRoute>
-            } />
             <Route path="/analytics" element={
               <ProtectedRoute>
                 <Analytics />
-              </ProtectedRoute>
-            } />
-            <Route path="/institution-programs" element={
-              <ProtectedRoute>
-                <GMEProgramSearch />
-              </ProtectedRoute>
-            } />
-            
-            {/* DMP Routes */}
-            <Route path="/dmp" element={
-              <ProtectedRoute>
-                <DMPDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/template-upload" element={
-              <ProtectedRoute>
-                <TemplateUpload />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/ai-mapping" element={
-              <ProtectedRoute>
-                <AIMapping />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/url-extraction" element={
-              <ProtectedRoute>
-                <URLExtraction />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/jobs" element={
-              <ProtectedRoute>
-                <JobConsole />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/duplicates" element={
-              <ProtectedRoute>
-                <DuplicateReview />
-              </ProtectedRoute>
-            } />
-            <Route path="/dmp/export" element={
-              <ProtectedRoute>
-                <DataExport />
               </ProtectedRoute>
             } />
             
@@ -222,7 +136,6 @@ function App(): JSX.Element {
             </div>
             </BookmarkProvider>
           </AuthProvider>
-        </AppStateProvider>
       </Router>
     </ErrorBoundary>
   );
