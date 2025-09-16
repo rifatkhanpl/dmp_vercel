@@ -391,7 +391,8 @@ Jane,Smith,DO,jane.smith@example.com,555-0124,1234567891,Family Medicine,NY,1234
 
       // Insert records into dmp.healthcare_providers table
       const { data, error } = await supabase
-        .from('dmp.healthcare_providers')
+        .schema('dmp')
+        .from('healthcare_providers')
         .insert(recordsToInsert)
         .select();
 
