@@ -249,6 +249,7 @@ function App(): JSX.Element {
             </div>
             </BookmarkProvider>
           </AuthProvider>
+        </AppStateProvider>
       </Router>
       
       {/* Bookmark Manager Modal */}

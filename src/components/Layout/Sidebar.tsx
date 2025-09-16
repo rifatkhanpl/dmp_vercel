@@ -252,6 +252,7 @@ function App(): JSX.Element {
             </div>
             </BookmarkProvider>
           </AuthProvider>
+        </AppStateProvider>
       </Router>
     </ErrorBoundary>
   );
