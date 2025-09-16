@@ -75,6 +75,7 @@ function App(): JSX.Element {
         <AppStateProvider>
           <AuthProvider>
             <BookmarkProvider>
+              <NotificationCenter
                         showText={false}
                       />
             <Toast />
@@ -224,6 +225,7 @@ function App(): JSX.Element {
             </div>
             </BookmarkProvider>
           </AuthProvider>
+        </AppStateProvider>
       </Router>
     </ErrorBoundary>
   );

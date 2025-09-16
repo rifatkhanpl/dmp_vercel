@@ -118,15 +118,17 @@ function App(): JSX.Element {
               </ProtectedRoute>
             } />
             <Route path="/hcp-registration" element={
-              <div className="flex items-center space-x-2">
-                <BookmarkButton
-                  title="My Profile"
-                  url="/user-profile"
-                  category="Account"
-                  icon="User"
-                  variant="pill"
-                />
-                <HCPRegistration />
+              <ProtectedRoute>
+                <div className="flex items-center space-x-2">
+                  <BookmarkButton
+                    title="My Profile"
+                    url="/user-profile"
+                    category="Account"
+                    icon="User"
+                    variant="pill"
+                  />
+                  <HCPRegistration />
+                </div>
               </ProtectedRoute>
             } />
             <Route path="/bulk-import" element={
@@ -229,6 +231,7 @@ function App(): JSX.Element {
             </div>
             </BookmarkProvider>
           </AuthProvider>
+        </AppStateProvider>
       </Router>
     </ErrorBoundary>
   );
