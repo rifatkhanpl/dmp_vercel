@@ -74,6 +74,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           href: '/search',
           icon: Search,
           description: 'Find and manage providers'
+        },
+        {
+          name: 'DMP Console',
+          href: '/dmp',
+          icon: Brain,
+          description: 'Data Management Platform'
         }
       ]
     },
