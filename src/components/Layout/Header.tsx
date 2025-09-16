@@ -85,11 +85,14 @@ function App(): JSX.Element {
         <AppStateProvider>
           <AuthProvider>
             <BookmarkProvider>
+              <div>
+                <a>
                       Return to Dashboard
                     </a>
                   </div>
 function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
   const { useAuth } = require('./contexts/AuthContext');
+}
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
@@ -138,10 +141,11 @@ function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Elemen
             {/* Catch all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-              </ErrorBoundary>
-            </div>
             </BookmarkProvider>
           </AuthProvider>
+        </AppStateProvider>
+        </AppStateProvider>
+        </AppStateProvider>
       </Router>
     </ErrorBoundary>
   );
