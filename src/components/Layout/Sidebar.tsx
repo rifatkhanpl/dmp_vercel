@@ -1,217 +1,260 @@
-import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useBookmarks } from '../../contexts/BookmarkContext';
-import { 
-  Home,
-  Users,
-  UserPlus,
-  Upload,
-  Search,
-  BarChart3,
-  Settings,
-  User,
-  Shield,
-  GraduationCap,
-  Building,
-  X,
-  ChevronDown,
-  ChevronRight,
-  Bookmark,
-  Brain
-} from 'lucide-react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { AppStateProvider } from './contexts/AppStateContext';
+import { BookmarkProvider } from './contexts/BookmarkContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { Toast } from './components/ui/Toast';
+import { NotificationCenter } from './components/ui/NotificationCenter';
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
+// Import components
+import { LandingPage } from './components/Pages/LandingPage';
+import { SignIn } from './components/Auth/SignIn';
+import { SignUp } from './components/Auth/SignUp';
+import { ForgotPassword } from './components/Auth/ForgotPassword';
+import { EmailVerification } from './components/Auth/EmailVerification';
+import { PasswordReset } from './components/Auth/PasswordReset';
+import { Dashboard } from './components/Pages/Dashboard';
+import { HCPRegistration } from './components/Pages/HCPRegistration';
+import { BulkImport } from './components/Pages/BulkImport';
+import { Search } from './components/Pages/Search';
+import { HCPDetail } from './components/Pages/HCPDetail';
+import { UserManagement } from './components/Pages/UserManagement';
+import { AddUser } from './components/Pages/AddUser';
+import { UserProfile } from './components/Pages/UserProfile';
+import { UserSettings } from './components/Pages/UserSettings';
+import { GMEProgramSearch } from './components/Pages/GMEProgramSearch';
+import { GMEProgramDetail } from './components/Pages/GMEProgramDetail';
+import { DMPDashboard } from './components/Pages/DMPDashboard';
+import { TemplateUpload } from './components/Pages/TemplateUpload';
+import { AIMapping } from './components/Pages/AIMapping';
+import { URLExtraction } from './components/Pages/URLExtraction';
+import { JobConsole } from './components/Pages/JobConsole';
+import { DuplicateReview } from './components/Pages/DuplicateReview';
+import { DataExport } from './components/Pages/DataExport';
+
+import { Analytics } from './components/Pages/Analytics';
+
+// Protected Route Component
+function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
+  const { useAuth } = require('./contexts/AuthContext');
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" replace />;
+  }
+  
+  return <>{children}</>;
 }
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const { user } = useAuth();
-  const { bookmarks } = useBookmarks();
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['main', 'analytics', 'admin', 'user']));
-
-  const toggleSection = (sectionId: string) => {
-    const newExpanded = new Set(expandedSections);
-    if (newExpanded.has(sectionId)) {
-      newExpanded.delete(sectionId);
-    } else {
-      newExpanded.add(sectionId);
-    }
-    setExpandedSections(newExpanded);
-  };
-
-  const navigationItems = [
-    {
-      id: 'main',
-      title: 'Main Navigation',
-      items: [
-        {
-          name: 'Dashboard',
-          href: '/dashboard',
-          icon: Home,
-          description: 'Overview and quick actions'
-        },
-        {
-          name: 'GME Program Search',
-          href: '/gme-program-search',
-          icon: GraduationCap,
-          description: 'Search graduate medical education programs'
-        },
-        {
-          name: 'HCP Import',
-          href: '/bulk-import',
-          icon: Upload,
-          description: 'Import multiple providers'
-        },
-        {
-          name: 'HCP Registration',
-          href: '/hcp-registration',
-          icon: UserPlus,
-          description: 'Register new healthcare providers'
-        },
-        {
-          name: 'HCP Search',
-          href: '/search',
-          icon: Search,
-          description: 'Find and manage providers'
-        },
-        {
-          name: 'DMP Console',
-          href: '/dmp',
-          icon: Brain,
-          description: 'Data Management Platform'
-        }
-      ]
-    },
-    {
-      id: 'analytics',
-      title: 'Analytics & Reports',
-      items: [
-        {
-          name: 'Analytics Dashboard',
-          href: '/analytics',
-          icon: BarChart3,
-          description: 'Data insights and metrics'
-        }
-      ]
-    }
-  ];
-
-  // Add admin section if user is administrator
-  if (user?.role === 'administrator') {
-    navigationItems.push({
-      id: 'admin',
-      title: 'Administration',
-      items: [
-        {
-          name: 'User Management',
-          href: '/user-management',
-          icon: Users,
-          description: 'Manage user accounts and permissions'
-        }
-      ]
-    });
+// Public Route Component (redirect to dashboard if already logged in)
+function PublicRoute({ children }: { children: React.ReactNode }): JSX.Element {
+  const { useAuth } = require('./contexts/AuthContext');
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
-
-  // Add user section
-  navigationItems.push({
-    id: 'user',
-    title: 'User Account',
-    items: [
-      {
-        name: 'My Profile',
-        href: '/user-profile',
-        icon: User,
-        description: 'View and edit your profile'
-      },
-      {
-        name: 'Settings',
-        href: '/user-settings',
-        icon: Settings,
-        description: 'Account settings and preferences'
-      }
-    ]
-  });
-
-  // Add bookmarks section if there are any
-  if (bookmarks.length > 0) {
-    navigationItems.unshift({
-      id: 'bookmarks',
-      title: 'Bookmarks',
-      items: bookmarks.map(bookmark => ({
-        name: bookmark.title,
-        href: bookmark.url,
-        icon: Bookmark,
-        description: bookmark.category || 'Bookmarked page'
-      }))
-    });
+  
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
   }
+  
+  return <>{children}</>;
+}
 
+function App(): JSX.Element {
   return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40 lg:hidden"
-          onClick={onClose}
-        />
-      )}
-
-      {/* Sidebar */}
-      <div className={`
-        fixed top-16 left-0 z-50 w-64 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out overflow-y-auto lg:translate-x-0
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 lg:hidden">
-          <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <nav className="p-4 space-y-6">
-          {navigationItems.map((section) => (
-            <div key={section.id}>
-              <div className="flex items-center justify-between w-full text-left text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                <span>{section.title}</span>
-              </div>
-              
-              <div className="space-y-1">
-                {section.items.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = window.location.pathname === item.href;
-                  
-                  return (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      onClick={onClose}
-                      className={`
-                        group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
-                        ${isActive 
-                          ? 'bg-blue-100 text-blue-700' 
-                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                        }
-                      `}
-                      title={item.description}
-                    >
-                      <Icon className={`
-                        mr-3 h-5 w-5 flex-shrink-0
-                        ${isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-500'}
-                      `} />
-                      <span className="truncate">{item.name}</span>
-                    </a>
-                  );
-                })}
-              </div>
+    <ErrorBoundary>
+      <Router>
+        <AppStateProvider>
+          <AuthProvider>
+            <BookmarkProvider>
+            <Toast />
+            <div className="App">
+              <ErrorBoundary fallback={
+                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                  <div className="text-center">
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">Navigation Error</h2>
+                    <p className="text-gray-600 mb-4">Unable to load the requested page.</p>
+                    <div key={item.name} className="relative group">
+                      <a
+                        href={item.href}
+                        onClick={onClose}
+                        className={`
+                          group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors w-full
+                          ${isActive 
+                            ? 'bg-blue-100 text-blue-700' 
+                            : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                          }
+                        `}
+                        title={item.description}
+                      >
+                        <Icon className={`
+                          mr-3 h-5 w-5 flex-shrink-0
+                          ${isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-500'}
+                        `} />
+                        <span className="truncate flex-1">{item.name}</span>
+                      </a>
+                      {section.id !== 'bookmarks' && (
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <BookmarkButton
+                            title={item.name}
+                            url={item.href}
+                            category={section.title}
+                            icon={item.icon.name}
+                            size="sm"
+                            variant="minimal"
+                            showText={false}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              }>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/signin" element={
+              <PublicRoute>
+                <SignIn />
+              </PublicRoute>
+            } />
+            <Route path="/signup" element={
+              <PublicRoute>
+                <SignUp />
+              </PublicRoute>
+            } />
+            <Route path="/forgot-password" element={
+              <PublicRoute>
+                <ForgotPassword />
+              </PublicRoute>
+            } />
+            
+            {/* Email Verification Routes */}
+            <Route path="/verify-email" element={<EmailVerification />} />
+            <Route path="/reset-password" element={<PasswordReset />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/hcp-registration" element={
+              <ProtectedRoute>
+                <HCPRegistration />
+              </ProtectedRoute>
+            } />
+            <Route path="/bulk-import" element={
+              <ProtectedRoute>
+                <BulkImport />
+              </ProtectedRoute>
+            } />
+            <Route path="/search" element={
+              <ProtectedRoute>
+                <Search />
+              </ProtectedRoute>
+            } />
+            <Route path="/hcp-detail" element={
+              <ProtectedRoute>
+                <HCPDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-management" element={
+              <ProtectedRoute>
+                <UserManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/add-user" element={
+              <ProtectedRoute>
+                <AddUser />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-profile" element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-settings" element={
+              <ProtectedRoute>
+                <UserSettings />
+              </ProtectedRoute>
+            } />
+            <Route path="/gme-program-search" element={
+              <ProtectedRoute>
+                <GMEProgramSearch />
+              </ProtectedRoute>
+            } />
+            <Route path="/gme-program-detail" element={
+              <ProtectedRoute>
+                <GMEProgramDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            } />
+            <Route path="/institution-programs" element={
+              <ProtectedRoute>
+                <GMEProgramSearch />
+              </ProtectedRoute>
+            } />
+            
+            {/* DMP Routes */}
+            <Route path="/dmp" element={
+              <ProtectedRoute>
+                <DMPDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/template-upload" element={
+              <ProtectedRoute>
+                <TemplateUpload />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/ai-mapping" element={
+              <ProtectedRoute>
+                <AIMapping />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/url-extraction" element={
+              <ProtectedRoute>
+                <URLExtraction />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/jobs" element={
+              <ProtectedRoute>
+                <JobConsole />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/duplicates" element={
+              <ProtectedRoute>
+                <DuplicateReview />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/export" element={
+              <ProtectedRoute>
+                <DataExport />
+              </ProtectedRoute>
+            } />
+            
+            {/* Catch all route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+              </ErrorBoundary>
             </div>
-          ))}
-        </nav>
-
-      </div>
-    </>
+            </BookmarkProvider>
+          </AuthProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }
+
+export default App;

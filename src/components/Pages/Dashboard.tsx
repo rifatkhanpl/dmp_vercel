@@ -1,275 +1,224 @@
-import React, { useState } from 'react';
-import { Layout } from '../Layout/Layout';
-import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Users,
-  UserPlus,
-  Upload,
-  Search,
-  BarChart3,
-  TrendingUp,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  FileText,
-  Activity,
-  Calendar,
-  Mail,
-  Phone,
-  MapPin,
-  Award,
-  Target,
-  Zap
-} from 'lucide-react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { BookmarkProvider } from './contexts/BookmarkContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { Toast } from './components/ui/Toast';
 
-export function Dashboard() {
-  const { user } = useAuth();
-  const [timeRange, setTimeRange] = useState('month');
+// Import components
+import { LandingPage } from './components/Pages/LandingPage';
+import { SignIn } from './components/Auth/SignIn';
+import { SignUp } from './components/Auth/SignUp';
+import { ForgotPassword } from './components/Auth/ForgotPassword';
+import { EmailVerification } from './components/Auth/EmailVerification';
+import { PasswordReset } from './components/Auth/PasswordReset';
+import { Dashboard } from './components/Pages/Dashboard';
+import { HCPRegistration } from './components/Pages/HCPRegistration';
+import { BulkImport } from './components/Pages/BulkImport';
+import { Search } from './components/Pages/Search';
+import { HCPDetail } from './components/Pages/HCPDetail';
+import { UserManagement } from './components/Pages/UserManagement';
+import { AddUser } from './components/Pages/AddUser';
+import { UserProfile } from './components/Pages/UserProfile';
+import { UserSettings } from './components/Pages/UserSettings';
+import { GMEProgramSearch } from './components/Pages/GMEProgramSearch';
+import { GMEProgramDetail } from './components/Pages/GMEProgramDetail';
+import { DMPDashboard } from './components/Pages/DMPDashboard';
+import { TemplateUpload } from './components/Pages/TemplateUpload';
+import { AIMapping } from './components/Pages/AIMapping';
+import { URLExtraction } from './components/Pages/URLExtraction';
+import { JobConsole } from './components/Pages/JobConsole';
+import { DuplicateReview } from './components/Pages/DuplicateReview';
+import { DataExport } from './components/Pages/DataExport';
 
-  // Mock data for dashboard
-  const stats = [
-    {
-      title: 'Total Providers',
-      value: '2,847',
-      change: '+12%',
-      changeType: 'positive' as const,
-      icon: Users,
-      description: 'from last month'
-    },
-    {
-      title: 'New This Month',
-      value: '156',
-      change: '+8%',
-      changeType: 'positive' as const,
-      icon: UserPlus,
-      description: 'from last month'
-    },
-    {
-      title: 'Pending Verification',
-      value: '23',
-      change: '-5%',
-      changeType: 'negative' as const,
-      icon: Clock,
-      description: 'from last month'
-    },
-    {
-      title: 'Verified Profiles',
-      value: '2,824',
-      change: '+15%',
-      changeType: 'positive' as const,
-      icon: CheckCircle,
-      description: 'from last month'
-    }
-  ];
+import { Analytics } from './components/Pages/Analytics';
 
-  const quickActions = [
-    {
-      title: 'Register New HCP',
-      description: 'Add a new healthcare provider to the system',
-      icon: UserPlus,
-      href: '/hcp-registration',
-      color: 'blue'
-    },
-    {
-      title: 'Bulk Import',
-      description: 'Import multiple providers from CSV or Excel',
-      icon: Upload,
-      href: '/bulk-import',
-      color: 'green'
-    },
-    {
-      title: 'Search Providers',
-      description: 'Find and manage existing provider records',
-      icon: Search,
-      href: '/search',
-      color: 'purple'
-    },
-    {
-      title: 'View Reports',
-      description: 'Generate analytics and performance reports',
-      icon: BarChart3,
-      href: '/analytics',
-      color: 'orange'
-    }
-  ];
+// Protected Route Component
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" replace />;
+  }
+  
+  return <>{children}</>;
+}
 
-  const recentActivity = [
-    {
-      id: '1',
-      type: 'registration',
-      title: 'New provider registered',
-      description: 'Dr. Sarah Johnson, MD - Internal Medicine',
-      time: '2 hours ago',
-      icon: UserPlus,
-      color: 'blue'
-    },
-    {
-      id: '2',
-      type: 'import',
-      title: 'Bulk import completed',
-      description: '45 providers imported successfully',
-      time: '4 hours ago',
-      icon: Upload,
-      color: 'green'
-    },
-    {
-      id: '3',
-      type: 'update',
-      title: 'Profile updated',
-      description: 'Dr. Michael Chen, DO - Emergency Medicine',
-      time: '6 hours ago',
-      icon: FileText,
-      color: 'purple'
-    },
-    {
-      id: '4',
-      type: 'verification',
-      title: 'Verification completed',
-      description: 'Dr. Emily Rodriguez, MD - Pediatrics',
-      time: '1 day ago',
-      icon: CheckCircle,
-      color: 'green'
-    }
-  ];
+// Public Route Component (redirect to dashboard if already logged in)
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return <>{children}</>;
+}
 
-  const getColorClasses = (color: string) => {
-    const colors = {
-      blue: 'bg-blue-500 text-white',
-      green: 'bg-green-500 text-white',
-      purple: 'bg-purple-500 text-white',
-      orange: 'bg-orange-500 text-white',
-      red: 'bg-red-500 text-white'
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
-  };
-
-  const getIconColorClasses = (color: string) => {
-    const colors = {
-      blue: 'text-blue-600 bg-blue-100',
-      green: 'text-green-600 bg-green-100',
-      purple: 'text-purple-600 bg-purple-100',
-      orange: 'text-orange-600 bg-orange-100',
-      red: 'text-red-600 bg-red-100'
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
-  };
-
+function App() {
   return (
-    <Layout breadcrumbs={[{ label: 'Dashboard' }]}>
-      <div className="space-y-6">
-        {/* Welcome Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Welcome back, {user?.firstName}!
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Here's what's happening with the HCP-DMP today!
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-500">Role:</p>
-              <p className="font-medium text-gray-900 capitalize">
-                {user?.role === 'administrator' ? 'Administrator' : 'Coordinator'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-start justify-between h-full">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                    <div className="flex items-center mt-2">
-                      <span className={`text-sm font-medium ${
-                        stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {stat.change}
-                      </span>
-                      <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
-                    </div>
-                  </div>
-                  <div className={`p-3 rounded-full ${getIconColorClasses('blue')} flex-shrink-0 ml-4`}>
-                    <Icon className="h-6 w-6" />
+    <ErrorBoundary>
+      <Router>
+          <AuthProvider>
+            <BookmarkProvider>
+            <Toast />
+            <div className="App">
+              <ErrorBoundary fallback={
+                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                  <div className="text-center">
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">Navigation Error</h2>
+                    <p className="text-gray-600 mb-4">Unable to load the requested page.</p>
+                    <a href="/dashboard" className="text-blue-600 hover:text-blue-700">
+                      Return to Dashboard
+                    </a>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {quickActions.map((action, index) => {
-              const Icon = action.icon;
-              return (
-                <a
-                  key={index}
-                  href={action.href}
-                  className="group p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all duration-200"
-                >
-                  <div className="flex items-start space-x-3">
-                    <div className={`p-2 rounded-lg ${getColorClasses(action.color)}`}>
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900 group-hover:text-blue-600">
-                        {action.title}
-                      </h3>
-                      <p className="text-sm text-gray-500 mt-1">{action.description}</p>
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-            <a href="/activity" className="text-sm text-blue-600 hover:text-blue-700">
-              View all activity →
-            </a>
-          </div>
-          <div className="space-y-4">
-            {recentActivity.map((activity) => {
-              const Icon = activity.icon;
-              return (
-                <div key={activity.id} className="flex items-start space-x-3">
-                  <div className={`p-2 rounded-full ${getIconColorClasses(activity.color)}`}>
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                    <p className="text-sm text-gray-600">{activity.description}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center py-8">
-          <p className="text-sm text-gray-500">
-            PracticeLink<sup>®</sup> © 2025 PracticeLink. All rights reserved. | 
-            <a href="#" className="text-blue-600 hover:text-blue-700 ml-1">Privacy Policy</a> | 
-            <a href="#" className="text-blue-600 hover:text-blue-700 ml-1">Terms of Service</a>
-          </p>
-        </div>
-      </div>
-    </Layout>
+              }>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/signin" element={
+              <PublicRoute>
+                <SignIn />
+              </PublicRoute>
+            } />
+            <Route path="/signup" element={
+              <PublicRoute>
+                <SignUp />
+              </PublicRoute>
+            } />
+            <Route path="/forgot-password" element={
+              <PublicRoute>
+                <ForgotPassword />
+              </PublicRoute>
+            } />
+            
+            {/* Email Verification Routes */}
+            <Route path="/verify-email" element={<EmailVerification />} />
+            <Route path="/reset-password" element={<PasswordReset />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/hcp-registration" element={
+              <ProtectedRoute>
+                <HCPRegistration />
+              </ProtectedRoute>
+            } />
+            <Route path="/bulk-import" element={
+              <ProtectedRoute>
+                <BulkImport />
+              </ProtectedRoute>
+            } />
+            <Route path="/search" element={
+              <ProtectedRoute>
+                <Search />
+              </ProtectedRoute>
+            } />
+            <Route path="/hcp-detail" element={
+              <ProtectedRoute>
+                <HCPDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-management" element={
+              <ProtectedRoute>
+                <UserManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/add-user" element={
+              <ProtectedRoute>
+                <AddUser />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-profile" element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-settings" element={
+              <ProtectedRoute>
+                <UserSettings />
+              </ProtectedRoute>
+            } />
+            <Route path="/gme-program-search" element={
+              <ProtectedRoute>
+                <GMEProgramSearch />
+              </ProtectedRoute>
+            } />
+            <Route path="/gme-program-detail" element={
+              <ProtectedRoute>
+                <GMEProgramDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            } />
+            <Route path="/institution-programs" element={
+              <ProtectedRoute>
+                <GMEProgramSearch />
+              </ProtectedRoute>
+            } />
+            
+            {/* DMP Routes */}
+            <Route path="/dmp" element={
+              <ProtectedRoute>
+                <DMPDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/template-upload" element={
+              <ProtectedRoute>
+                <TemplateUpload />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/ai-mapping" element={
+              <ProtectedRoute>
+                <AIMapping />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/url-extraction" element={
+              <ProtectedRoute>
+                <URLExtraction />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/jobs" element={
+              <ProtectedRoute>
+                <JobConsole />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/duplicates" element={
+              <ProtectedRoute>
+                <DuplicateReview />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/export" element={
+              <ProtectedRoute>
+                <DataExport />
+              </ProtectedRoute>
+            } />
+            
+            {/* Catch all route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+              </ErrorBoundary>
+            </div>
+            </BookmarkProvider>
+          </AuthProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }
+
+export default App;

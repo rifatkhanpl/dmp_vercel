@@ -1,117 +1,230 @@
 import React from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { Header } from '../Layout/Header';
-import { Footer } from '../Layout/Footer';
-import { 
-  ArrowRight,
-  Users,
-  Brain,
-  Database,
-  Shield,
-  CheckCircle,
-  Star
-} from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { AppStateProvider } from './contexts/AppStateContext';
+import { BookmarkProvider } from './contexts/BookmarkContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { Toast } from './components/ui/Toast';
+import { NotificationCenter } from './components/ui/NotificationCenter';
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 
-export function LandingPage() {
-  const { user } = useAuth();
+// Import components
+import { LandingPage } from './components/Pages/LandingPage';
+import { SignIn } from './components/Auth/SignIn';
+import { SignUp } from './components/Auth/SignUp';
+import { ForgotPassword } from './components/Auth/ForgotPassword';
+import { EmailVerification } from './components/Auth/EmailVerification';
+import { PasswordReset } from './components/Auth/PasswordReset';
+import { Dashboard } from './components/Pages/Dashboard';
+import { HCPRegistration } from './components/Pages/HCPRegistration';
+import { BulkImport } from './components/Pages/BulkImport';
+import { Search } from './components/Pages/Search';
+import { HCPDetail } from './components/Pages/HCPDetail';
+import { UserManagement } from './components/Pages/UserManagement';
+import { AddUser } from './components/Pages/AddUser';
+import { UserProfile } from './components/Pages/UserProfile';
+import { UserSettings } from './components/Pages/UserSettings';
+import { GMEProgramSearch } from './components/Pages/GMEProgramSearch';
+import { GMEProgramDetail } from './components/Pages/GMEProgramDetail';
+import { DMPDashboard } from './components/Pages/DMPDashboard';
+import { TemplateUpload } from './components/Pages/TemplateUpload';
+import { AIMapping } from './components/Pages/AIMapping';
+import { URLExtraction } from './components/Pages/URLExtraction';
+import { JobConsole } from './components/Pages/JobConsole';
+import { DuplicateReview } from './components/Pages/DuplicateReview';
+import { DataExport } from './components/Pages/DataExport';
 
-  const features = [
-    {
-      icon: Users,
-      title: 'Talent Management & Recruitment',
-      description: 'Comprehensive system for managing healthcare provider data, credentials, and placements.',
-      color: 'blue'
-    },
-    {
-      icon: Brain,
-      title: 'Career Advancement & Management',
-      description: 'Advanced AI tools to automatically extract and process provider information from various sources.',
-      color: 'purple'
-    },
-    {
-      icon: Database,
-      title: 'Secure Data Collection',
-      description: 'Enterprise-grade security for sensitive healthcare provider information and compliance.',
-      color: 'green'
-    }
-  ];
+import { Analytics } from './components/Pages/Analytics';
 
-  const stats = [
-    { label: 'Physician/APP HCP Members', value: '500,000+' },
-    { label: 'Employer/Organization HCO Members', value: '1,200+' },
-    { label: 'Physician/APP Careers Advanced', value: '100,000\'s' }
-  ];
+// Protected Route Component
+function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
+  const { useAuth } = require('./contexts/AuthContext');
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" replace />;
+  }
+  
+  return <>{children}</>;
+}
 
-  const getColorClasses = (color: string) => {
-    const colors = {
-      blue: 'text-blue-600',
-      purple: 'text-purple-600',
-      green: 'text-green-600',
-      red: 'text-red-600'
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
-  };
+// Public Route Component (redirect to dashboard if already logged in)
+function PublicRoute({ children }: { children: React.ReactNode }): JSX.Element {
+  const { useAuth } = require('./contexts/AuthContext');
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return <>{children}</>;
+}
 
+function App(): JSX.Element {
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <div className="pt-16">
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center">
-            <h1 className="text-6xl font-bold text-gray-900 mb-6">
-              Data Management <span className="text-blue-600">Portal</span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-              Powered by People | Assisted by AI™
-            </p>
-            <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-              We are working to make healthcare better.
-            </p>
+    <ErrorBoundary>
+      <Router>
+        <AppStateProvider>
+          <AuthProvider>
+            <BookmarkProvider>
+            <Toast />
+            <div className="App">
+              <ErrorBoundary fallback={
+                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                  <div className="text-center">
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">Navigation Error</h2>
+                    <p className="text-gray-600 mb-4">Unable to load the requested page.</p>
+                    <a href="/dashboard" className="text-blue-600 hover:text-blue-700">
+                      Return to Dashboard
+                    </a>
+                  </div>
+                </div>
+              }>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/signin" element={
+              <PublicRoute>
+                <SignIn />
+              </PublicRoute>
+            } />
+            <Route path="/signup" element={
+              <PublicRoute>
+                <SignUp />
+              </PublicRoute>
+            } />
+            <Route path="/forgot-password" element={
+              <PublicRoute>
+                <ForgotPassword />
+              </PublicRoute>
+            } />
             
-            {user ? (
-              <div className="flex justify-center space-x-4">
-                <a
-                  href="/dashboard"
-                  className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
-                >
-                  Get Started
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </a>
-              </div>
-            ) : (
-              <div className="flex justify-center">
-                <a
-                  href="/signin"
-                  className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
-                >
-                  Get Started
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </a>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Section */}
-      <div className="bg-gray-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-4xl font-bold text-blue-400 mb-2">{stat.value}</div>
-                <div className="text-gray-300">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Features Section */}
-      </div>
-      <Footer />
-    </div>
+            {/* Email Verification Routes */}
+            <Route path="/verify-email" element={<EmailVerification />} />
+            <Route path="/reset-password" element={<PasswordReset />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/hcp-registration" element={
+              <ProtectedRoute>
+                <HCPRegistration />
+              </ProtectedRoute>
+            } />
+            <Route path="/bulk-import" element={
+              <ProtectedRoute>
+                <BulkImport />
+              </ProtectedRoute>
+            } />
+            <Route path="/search" element={
+              <ProtectedRoute>
+                <Search />
+              </ProtectedRoute>
+            } />
+            <Route path="/hcp-detail" element={
+              <ProtectedRoute>
+                <HCPDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-management" element={
+              <ProtectedRoute>
+                <UserManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/add-user" element={
+              <ProtectedRoute>
+                <AddUser />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-profile" element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-settings" element={
+              <ProtectedRoute>
+                <UserSettings />
+              </ProtectedRoute>
+            } />
+            <Route path="/gme-program-search" element={
+              <ProtectedRoute>
+                <GMEProgramSearch />
+              </ProtectedRoute>
+            } />
+            <Route path="/gme-program-detail" element={
+              <ProtectedRoute>
+                <GMEProgramDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            } />
+            <Route path="/institution-programs" element={
+              <ProtectedRoute>
+                <GMEProgramSearch />
+              </ProtectedRoute>
+            } />
+            
+            {/* DMP Routes */}
+            <Route path="/dmp" element={
+              <ProtectedRoute>
+                <DMPDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/template-upload" element={
+              <ProtectedRoute>
+                <TemplateUpload />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/ai-mapping" element={
+              <ProtectedRoute>
+                <AIMapping />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/url-extraction" element={
+              <ProtectedRoute>
+                <URLExtraction />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/jobs" element={
+              <ProtectedRoute>
+                <JobConsole />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/duplicates" element={
+              <ProtectedRoute>
+                <DuplicateReview />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/export" element={
+              <ProtectedRoute>
+                <DataExport />
+              </ProtectedRoute>
+            } />
+            
+            {/* Catch all route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+              </ErrorBoundary>
+            </div>
+            </BookmarkProvider>
+          </AuthProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }
+
+export default App;

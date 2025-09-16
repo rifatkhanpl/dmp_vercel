@@ -1,9 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { AppStateProvider } from './contexts/AppStateContext';
 import { BookmarkProvider } from './contexts/BookmarkContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Toast } from './components/ui/Toast';
+import { NotificationCenter } from './components/ui/NotificationCenter';
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 
 // Import components
 import { LandingPage } from './components/Pages/LandingPage';
@@ -34,7 +37,8 @@ import { DataExport } from './components/Pages/DataExport';
 import { Analytics } from './components/Pages/Analytics';
 
 // Protected Route Component
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
+  const { useAuth } = require('./contexts/AuthContext');
   const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
@@ -49,7 +53,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 // Public Route Component (redirect to dashboard if already logged in)
-function PublicRoute({ children }: { children: React.ReactNode }) {
+function PublicRoute({ children }: { children: React.ReactNode }): JSX.Element {
+  const { useAuth } = require('./contexts/AuthContext');
   const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
@@ -63,10 +68,11 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function App() {
+function App(): JSX.Element {
   return (
     <ErrorBoundary>
       <Router>
+        <AppStateProvider>
           <AuthProvider>
             <BookmarkProvider>
             <Toast />

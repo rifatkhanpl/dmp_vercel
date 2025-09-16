@@ -1,166 +1,230 @@
-import React, { useState } from 'react';
-import { Layout } from '../Layout/Layout';
-import { 
-  BarChart3,
-  TrendingUp,
-  Users,
-  UserPlus,
-  Activity,
-  Calendar,
-  Download,
-  Filter,
-  RefreshCw
-} from 'lucide-react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { AppStateProvider } from './contexts/AppStateContext';
+import { BookmarkProvider } from './contexts/BookmarkContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { Toast } from './components/ui/Toast';
+import { NotificationCenter } from './components/ui/NotificationCenter';
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 
-export function Analytics() {
-  const [timeRange, setTimeRange] = useState('month');
-  const [isLoading, setIsLoading] = useState(false);
+// Import components
+import { LandingPage } from './components/Pages/LandingPage';
+import { SignIn } from './components/Auth/SignIn';
+import { SignUp } from './components/Auth/SignUp';
+import { ForgotPassword } from './components/Auth/ForgotPassword';
+import { EmailVerification } from './components/Auth/EmailVerification';
+import { PasswordReset } from './components/Auth/PasswordReset';
+import { Dashboard } from './components/Pages/Dashboard';
+import { HCPRegistration } from './components/Pages/HCPRegistration';
+import { BulkImport } from './components/Pages/BulkImport';
+import { Search } from './components/Pages/Search';
+import { HCPDetail } from './components/Pages/HCPDetail';
+import { UserManagement } from './components/Pages/UserManagement';
+import { AddUser } from './components/Pages/AddUser';
+import { UserProfile } from './components/Pages/UserProfile';
+import { UserSettings } from './components/Pages/UserSettings';
+import { GMEProgramSearch } from './components/Pages/GMEProgramSearch';
+import { GMEProgramDetail } from './components/Pages/GMEProgramDetail';
+import { DMPDashboard } from './components/Pages/DMPDashboard';
+import { TemplateUpload } from './components/Pages/TemplateUpload';
+import { AIMapping } from './components/Pages/AIMapping';
+import { URLExtraction } from './components/Pages/URLExtraction';
+import { JobConsole } from './components/Pages/JobConsole';
+import { DuplicateReview } from './components/Pages/DuplicateReview';
+import { DataExport } from './components/Pages/DataExport';
 
-  const handleRefresh = () => {
-    setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1000);
-  };
+import { Analytics } from './components/Pages/Analytics';
 
-  const handleExport = () => {
-    // Mock export functionality
-    console.log('Exporting analytics data...');
-  };
+// Protected Route Component
+function ProtectedRoute({ children }: { children: React.ReactNode }): JSX.Element {
+  const { useAuth } = require('./contexts/AuthContext');
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" replace />;
+  }
+  
+  return <>{children}</>;
+}
 
+// Public Route Component (redirect to dashboard if already logged in)
+function PublicRoute({ children }: { children: React.ReactNode }): JSX.Element {
+  const { useAuth } = require('./contexts/AuthContext');
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return <>{children}</>;
+}
+
+function App(): JSX.Element {
   return (
-    <Layout breadcrumbs={[{ label: 'Analytics' }]}>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
-              <p className="text-gray-600 mt-1">
-                Data insights and performance metrics for the HCP management system
-              </p>
+    <ErrorBoundary>
+      <Router>
+        <AppStateProvider>
+          <AuthProvider>
+            <BookmarkProvider>
+            <Toast />
+            <div className="App">
+              <ErrorBoundary fallback={
+                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                  <div className="text-center">
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">Navigation Error</h2>
+                    <p className="text-gray-600 mb-4">Unable to load the requested page.</p>
+                    <a href="/dashboard" className="text-blue-600 hover:text-blue-700">
+                      Return to Dashboard
+                    </a>
+                  </div>
+                </div>
+              }>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/signin" element={
+              <PublicRoute>
+                <SignIn />
+              </PublicRoute>
+            } />
+            <Route path="/signup" element={
+              <PublicRoute>
+                <SignUp />
+              </PublicRoute>
+            } />
+            <Route path="/forgot-password" element={
+              <PublicRoute>
+                <ForgotPassword />
+              </PublicRoute>
+            } />
+            
+            {/* Email Verification Routes */}
+            <Route path="/verify-email" element={<EmailVerification />} />
+            <Route path="/reset-password" element={<PasswordReset />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/hcp-registration" element={
+              <ProtectedRoute>
+                <HCPRegistration />
+              </ProtectedRoute>
+            } />
+            <Route path="/bulk-import" element={
+              <ProtectedRoute>
+                <BulkImport />
+              </ProtectedRoute>
+            } />
+            <Route path="/search" element={
+              <ProtectedRoute>
+                <Search />
+              </ProtectedRoute>
+            } />
+            <Route path="/hcp-detail" element={
+              <ProtectedRoute>
+                <HCPDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-management" element={
+              <ProtectedRoute>
+                <UserManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/add-user" element={
+              <ProtectedRoute>
+                <AddUser />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-profile" element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-settings" element={
+              <ProtectedRoute>
+                <UserSettings />
+              </ProtectedRoute>
+            } />
+            <Route path="/gme-program-search" element={
+              <ProtectedRoute>
+                <GMEProgramSearch />
+              </ProtectedRoute>
+            } />
+            <Route path="/gme-program-detail" element={
+              <ProtectedRoute>
+                <GMEProgramDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            } />
+            <Route path="/institution-programs" element={
+              <ProtectedRoute>
+                <GMEProgramSearch />
+              </ProtectedRoute>
+            } />
+            
+            {/* DMP Routes */}
+            <Route path="/dmp" element={
+              <ProtectedRoute>
+                <DMPDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/template-upload" element={
+              <ProtectedRoute>
+                <TemplateUpload />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/ai-mapping" element={
+              <ProtectedRoute>
+                <AIMapping />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/url-extraction" element={
+              <ProtectedRoute>
+                <URLExtraction />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/jobs" element={
+              <ProtectedRoute>
+                <JobConsole />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/duplicates" element={
+              <ProtectedRoute>
+                <DuplicateReview />
+              </ProtectedRoute>
+            } />
+            <Route path="/dmp/export" element={
+              <ProtectedRoute>
+                <DataExport />
+              </ProtectedRoute>
+            } />
+            
+            {/* Catch all route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+              </ErrorBoundary>
             </div>
-            <div className="flex space-x-3">
-              <select
-                value={timeRange}
-                onChange={(e) => setTimeRange(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="week">Last Week</option>
-                <option value="month">Last Month</option>
-                <option value="quarter">Last Quarter</option>
-                <option value="year">Last Year</option>
-              </select>
-              <button
-                onClick={handleRefresh}
-                disabled={isLoading}
-                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50"
-              >
-                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                <span>Refresh</span>
-              </button>
-              <button
-                onClick={handleExport}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                <Download className="h-4 w-4" />
-                <span>Export</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Providers</p>
-                <p className="text-2xl font-bold text-gray-900">2,847</p>
-                <p className="text-sm text-green-600 mt-1">+12% from last month</p>
-              </div>
-              <Users className="h-8 w-8 text-blue-600" />
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">New Registrations</p>
-                <p className="text-2xl font-bold text-gray-900">156</p>
-                <p className="text-sm text-green-600 mt-1">+8% from last month</p>
-              </div>
-              <UserPlus className="h-8 w-8 text-green-600" />
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Active Users</p>
-                <p className="text-2xl font-bold text-gray-900">24</p>
-                <p className="text-sm text-blue-600 mt-1">System coordinators</p>
-              </div>
-              <Activity className="h-8 w-8 text-purple-600" />
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Data Quality</p>
-                <p className="text-2xl font-bold text-gray-900">98%</p>
-                <p className="text-sm text-green-600 mt-1">Complete profiles</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-orange-600" />
-            </div>
-          </div>
-        </div>
-
-        {/* Charts Placeholder */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Provider Registration Trends</h3>
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-              <div className="text-center">
-                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500">Chart visualization would go here</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Specialty Distribution</h3>
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-              <div className="text-center">
-                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500">Chart visualization would go here</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent System Activity</h3>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <UserPlus className="h-5 w-5 text-blue-600" />
-              <div>
-                <p className="text-sm font-medium text-gray-900">New provider registered</p>
-                <p className="text-xs text-gray-500">Dr. Sarah Johnson, MD - Internal Medicine</p>
-              </div>
-              <span className="text-xs text-gray-500 ml-auto">2 hours ago</span>
-            </div>
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <Activity className="h-5 w-5 text-green-600" />
-              <div>
-                <p className="text-sm font-medium text-gray-900">Bulk import completed</p>
-                <p className="text-xs text-gray-500">45 providers imported successfully</p>
-              </div>
-              <span className="text-xs text-gray-500 ml-auto">4 hours ago</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Layout>
+            </BookmarkProvider>
+          </AuthProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }
+
+export default App;
