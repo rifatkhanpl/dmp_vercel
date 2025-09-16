@@ -107,7 +107,8 @@ export function LandingPage() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            <span className="text-blue-600">Data Management Platform</span>
+            Healthcare Provider
+            <span className="text-blue-600"> Data Management</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Streamline your provider relations workflow with our comprehensive data collection, 
