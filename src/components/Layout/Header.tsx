@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { NotificationCenter } from '../ui/NotificationCenter';
 import { Menu, X, User, LogOut, Home } from 'lucide-react';
 
 interface HeaderProps {
@@ -45,6 +46,7 @@ export function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
 
         {/* Right side - User info or auth links */}
         <div className="flex items-center space-x-4">
+          {isAuthenticated && <NotificationCenter />}
           {isAuthenticated && user ? (
             <div className="relative">
               <button

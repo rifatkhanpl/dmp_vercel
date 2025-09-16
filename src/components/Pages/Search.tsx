@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Layout } from '../Layout/Layout';
 import { ErrorBoundary } from '../ErrorBoundary';
+import { DataTable } from '../ui/DataTable';
 import { useDebounce } from '../../hooks/useDebounce';
 import { SecurityUtils } from '../../utils/security';
+import { useMemoryMonitor, useCleanup } from '../../hooks/useMemoryMonitor';
 import { useLocation } from 'react-router-dom';
 import { 
   Search as SearchIcon,
@@ -41,7 +43,15 @@ export function Search() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const managedBy = searchParams.get('managedBy');
+  const { addCleanup } = useCleanup();
 
+  // Memory monitoring for large datasets
+  useMemoryMonitor({
+    threshold: 80,
+    onThresholdExceeded: () => {
+      console.warn('High memory usage in Search component');
+    }
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [showFilters, setShowFilters] = useState(false);
@@ -279,6 +289,117 @@ export function Search() {
   const users = [...new Set(baseProviders.map(p => p.managedBy).filter(Boolean))];
 
   const activeFilterCount = Object.values(filters).filter(v => v).length;
+
+  // Cleanup large data structures
+  useEffect(() => {
+    addCleanup(() => {
+      setSelectedProviders([]);
+      // Clear any large cached data
+    });
+  }, [addCleanup]);
+
+  // Define table columns for DataTable component
+  const tableColumns = [
+    {
+      key: 'name',
+      label: 'Provider Name',
+      width: 250,
+      sortable: true,
+      filterable: true,
+      render: (value: string, row: Provider) => (
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
+            <User className="h-4 w-4 text-blue-600" />
+          </div>
+          <div>
+            <div className="font-medium text-gray-900">{value}</div>
+            <div className="text-sm text-gray-500">{row.credentials}</div>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'specialty',
+      label: 'Specialty',
+      width: 200,
+      sortable: true,
+      filterable: true,
+      render: (value: string) => (
+        <div className="flex items-center space-x-2">
+          <Stethoscope className="h-4 w-4 text-gray-400" />
+          <span>{value}</span>
+        </div>
+      )
+    },
+    {
+      key: 'location',
+      label: 'Location',
+      width: 180,
+      sortable: true,
+      filterable: true,
+      render: (value: string) => (
+        <div className="flex items-center space-x-2">
+          <MapPin className="h-4 w-4 text-gray-400" />
+          <span>{value}</span>
+        </div>
+      )
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      width: 120,
+      sortable: true,
+      render: (value: string) => (
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(value)}`}>
+          {value}
+        </span>
+      )
+    },
+    {
+      key: 'email',
+      label: 'Contact',
+      width: 200,
+      render: (value: string, row: Provider) => (
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2 text-sm">
+            <Mail className="h-3 w-3 text-gray-400" />
+            <span className="truncate">{value}</span>
+          </div>
+          <div className="flex items-center space-x-2 text-sm text-gray-500">
+            <Phone className="h-3 w-3 text-gray-400" />
+            <span>{row.phone}</span>
+          </div>
+        </div>
+      )
+    }
+  ];
+
+  // Define table actions
+  const tableActions = [
+    {
+      label: 'View Details',
+      icon: Eye,
+      onClick: (row: Provider) => window.location.href = `/hcp-detail?id=${row.id}`,
+      variant: 'primary' as const
+    },
+    {
+      label: 'Edit Provider',
+      icon: Edit,
+      onClick: (row: Provider) => console.log('Edit provider:', row.id),
+      variant: 'secondary' as const
+    },
+    {
+      label: 'Delete Provider',
+      icon: Trash2,
+      onClick: (row: Provider) => {
+        if (confirm(`Are you sure you want to delete ${row.name}?`)) {
+          console.log('Delete provider:', row.id);
+        }
+      },
+      variant: 'danger' as const,
+      disabled: (row: Provider) => row.status === 'active'
+    }
+  ];
 
   const breadcrumbs = managedBy 
     ? [
@@ -525,168 +646,20 @@ export function Search() {
           )}
 
           {/* Results */}
-          <div className="bg-white rounded-lg shadow-sm">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {managedBy ? 'Search Results' : 'Search Results'} ({filteredProviders.length})
-                </h2>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedProviders.length === filteredProviders.length && filteredProviders.length > 0}
-                    onChange={handleSelectAll}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label className="text-sm text-gray-600">Select All</label>
-                </div>
-              </div>
-            </div>
-            <div className="divide-y divide-gray-200">
-              {filteredProviders.map((provider) => (
-                <div key={provider.id} className="p-6 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedProviders.includes(provider.id)}
-                        onChange={() => handleProviderSelect(provider.id)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      />
-                      <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                        <User className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <h3 className="text-lg font-medium text-gray-900">
-                            {provider.name}
-                          </h3>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(provider.status)}`}>
-                            {provider.status}
-                          </span>
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Stethoscope className="h-4 w-4 mr-2" />
-                            {provider.specialty}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <MapPin className="h-4 w-4 mr-2" />
-                            {provider.location}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Mail className="h-4 w-4 mr-2" />
-                            {provider.email}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Phone className="h-4 w-4 mr-2" />
-                            {provider.phone}
-                          </div>
-                          {provider.npi && (
-                            <div className="flex items-center text-sm text-gray-600">
-                              <FileText className="h-4 w-4 mr-2" />
-                              NPI: {provider.npi}
-                            </div>
-                          )}
-                          {provider.subspecialty && (
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Stethoscope className="h-4 w-4 mr-2" />
-                              Subspecialty: {provider.subspecialty}
-                            </div>
-                          )}
-                          {provider.plSpecialist && (
-                            <div className="flex items-center text-sm text-gray-600">
-                              <User className="h-4 w-4 mr-2" />
-                              PL Specialist: {provider.plSpecialist}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="relative">
-                      <button
-                        onClick={() => setActiveDropdown(activeDropdown === provider.id ? null : provider.id)}
-                        className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-md"
-                      >
-                        <span>Actions</span>
-                        <ChevronDown className="h-4 w-4" />
-                      </button>
-                      
-                      {activeDropdown === provider.id && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
-                          <div className="py-1">
-                            <a
-                              href={`/hcp-detail?id=${provider.id}`}
-                              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              onClick={() => setActiveDropdown(null)}
-                            >
-                              <Eye className="h-4 w-4 mr-2" />
-                              View Details
-                            </a>
-                            <button
-                              onClick={() => {
-                                setActiveDropdown(null);
-                                // Handle edit action
-                              }}
-                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            >
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit Provider
-                            </button>
-                            <button
-                              onClick={() => {
-                                setActiveDropdown(null);
-                                // Handle reassign action
-                              }}
-                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            >
-                              <Users className="h-4 w-4 mr-2" />
-                              Reassign to User
-                            </button>
-                            <button
-                              onClick={() => {
-                                setActiveDropdown(null);
-                                // Handle export action
-                              }}
-                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            >
-                              <Download className="h-4 w-4 mr-2" />
-                              Export Data
-                            </button>
-                            <div className="border-t border-gray-100"></div>
-                            <button
-                              onClick={() => {
-                                setActiveDropdown(null);
-                                if (confirm('Are you sure you want to deactivate this provider?')) {
-                                  // Handle deactivate action
-                                }
-                              }}
-                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            >
-                              <Ban className="h-4 w-4 mr-2" />
-                              Deactivate
-                            </button>
-                            <button
-                              onClick={() => {
-                                setActiveDropdown(null);
-                                if (confirm('Are you sure you want to delete this provider? This action cannot be undone.')) {
-                                  // Handle delete action
-                                }
-                              }}
-                              className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete Provider
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        {/* Enhanced Data Table */}
+        <DataTable
+          data={filteredProviders}
+          columns={tableColumns}
+          actions={tableActions}
+          onRowClick={(row) => window.location.href = `/hcp-detail?id=${row.id}`}
+          searchable={true}
+          filterable={true}
+          exportable={true}
+          virtualScrolling={filteredProviders.length > 100}
+          height={600}
+          ariaLabel={managedBy ? `Providers managed by ${managedBy}` : 'Healthcare provider search results'}
+          emptyMessage={managedBy ? `No providers found for ${managedBy}` : 'No providers found matching your search criteria'}
+        />
         </div>
       </Layout>
     </ErrorBoundary>
