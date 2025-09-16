@@ -80,62 +80,67 @@ function App() {
         <AppStateProvider>
           <AuthProvider>
             <BookmarkProvider>
+              <div>
+                <div>
+                  <div>
+                    <a>
                       Return to Dashboard
                     </a>
                   </div>
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/signin" element={
-              <PublicRoute>
-                <SignIn />
-              </PublicRoute>
-            } />
-            <Route path="/signup" element={
-              <PublicRoute>
-                <SignUp />
-              </PublicRoute>
-            } />
-            <Route path="/forgot-password" element={
-              <PublicRoute>
-                <ForgotPassword />
-              </PublicRoute>
-            } />
-            
-            {/* Email Verification Routes */}
-            <Route path="/verify-email" element={<EmailVerification />} />
-            <Route path="/reset-password" element={<PasswordReset />} />
-            
-            {/* Protected Routes */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/hcp-registration" element={
-              <ProtectedRoute>
-                <HCPRegistration />
-              </ProtectedRoute>
-            } />
-            <Route path="/search" element={
-              <ProtectedRoute>
-                <Search />
-              </ProtectedRoute>
-            } />
-            <Route path="/analytics" element={
-              <ProtectedRoute>
-                <Analytics />
-              </ProtectedRoute>
-            } />
-            
-            {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-              </ErrorBoundary>
-            </div>
+                </div>
+              </div>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/signin" element={
+                  <PublicRoute>
+                    <SignIn />
+                  </PublicRoute>
+                } />
+                <Route path="/signup" element={
+                  <PublicRoute>
+                    <SignUp />
+                  </PublicRoute>
+                } />
+                <Route path="/forgot-password" element={
+                  <PublicRoute>
+                    <ForgotPassword />
+                  </PublicRoute>
+                } />
+                
+                {/* Email Verification Routes */}
+                <Route path="/verify-email" element={<EmailVerification />} />
+                <Route path="/reset-password" element={<PasswordReset />} />
+                
+                {/* Protected Routes */}
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/hcp-registration" element={
+                  <ProtectedRoute>
+                    <HCPRegistration />
+                  </ProtectedRoute>
+                } />
+                <Route path="/search" element={
+                  <ProtectedRoute>
+                    <Search />
+                  </ProtectedRoute>
+                } />
+                <Route path="/analytics" element={
+                  <ProtectedRoute>
+                    <Analytics />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Catch all route */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
             </BookmarkProvider>
           </AuthProvider>
+        </AppStateProvider>
+        </AppStateProvider>
       </Router>
     </ErrorBoundary>
   );
