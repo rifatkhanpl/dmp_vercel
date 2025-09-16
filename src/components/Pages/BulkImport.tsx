@@ -20,16 +20,7 @@ import {
   Save,
 } from 'lucide-react';
 
-// If BookmarkContext exists, we'll use it; otherwise we noop gracefully.
-let useBookmarksSafe: undefined | (() => { addBookmark: (title: string, url: string, group?: string) => void; bookmarks: Array<{ url: string }> });
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const mod = require('../../contexts/BookmarkContext');
-  if (mod && typeof mod.useBookmarks === 'function') {
-    useBookmarksSafe = mod.useBookmarks;
-  }
-  // eslint-disable-next-line no-empty
-} catch {}
+import { useBookmarks } from '../../contexts/BookmarkContext';
 
 type IssueType = 'error' | 'warning';
 
@@ -115,8 +106,8 @@ type MainMode = 'file' | 'ai';
 type AIMode = 'text' | 'url';
 
 export function BulkImport() {
-  // Bookmarking (graceful if context missing)
-  const bookmarksCtx = useBookmarksSafe ? useBookmarksSafe() : null;
+  // Bookmarking
+  const bookmarksCtx = useBookmarks();
   const isBookmarked = !!bookmarksCtx?.bookmarks?.some((b) => b.url === '/bulk-import');
   const handleBookmark = () => {
     if (!isBookmarked) {
@@ -426,7 +417,7 @@ Jane,Smith,DO,jane.smith@example.com,555-0124,1234567891,Family Medicine,NY,1234
                 </button>
               )}
             </div>
-
+            {bookmarksCtx && (
             {/* Mode Toggle */}
             {(mode === 'file' || mode === 'ai') && (
               <div className="bg-white rounded-lg shadow-sm p-2 flex items-center space-x-2">
