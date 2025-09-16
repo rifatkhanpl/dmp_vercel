@@ -1,134 +1,128 @@
 import { ResidentFellow, ValidationError, ImportJob, DuplicateCandidate } from '../types/dmp';
+import { ValidationService } from './validationService';
+import { SecurityUtils } from '../utils/security';
+import { errorService } from './errorService';
+import { ResidentFellowSchema } from '../schemas/dmpSchemas';
 
 // Validation rules based on data dictionary
 export class DMPValidator {
   static validateNPI(npi: string): string | null {
-    if (!npi) return 'NPI is required';
-    const cleaned = npi.replace(/\D/g, '');
-    if (cleaned.length !== 10) return 'NPI must be exactly 10 digits';
-    return null;
+    try {
+      const sanitized = SecurityUtils.sanitizeText(npi);
+      if (!sanitized) return 'NPI is required';
+      const cleaned = sanitized.replace(/\D/g, '');
+      if (cleaned.length !== 10) return 'NPI must be exactly 10 digits';
+      
+      // Additional NPI validation (Luhn algorithm could be added here)
+      return null;
+    } catch (error) {
+      errorService.logError(error as Error, { context: 'NPI validation', value: npi });
+      return 'NPI validation failed';
+    }
   }
 
   static validatePhone(phone: string): string | null {
-    if (!phone) return null; // Phone is optional
-    const cleaned = phone.replace(/\D/g, '');
-    if (cleaned.length !== 10) return 'Phone must be 10 digits';
-    return null;
+    try {
+      if (!phone) return null; // Phone is optional
+      const sanitized = SecurityUtils.sanitizeText(phone);
+      const cleaned = sanitized.replace(/\D/g, '');
+      if (cleaned.length !== 10) return 'Phone must be 10 digits';
+      return null;
+    } catch (error) {
+      errorService.logError(error as Error, { context: 'Phone validation', value: phone });
+      return 'Phone validation failed';
+    }
   }
 
   static normalizePhone(phone: string): string {
-    if (!phone) return '';
-    const cleaned = phone.replace(/\D/g, '');
-    if (cleaned.length === 10) {
-      return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+    try {
+      if (!phone) return '';
+      const sanitized = SecurityUtils.sanitizeText(phone);
+      const cleaned = sanitized.replace(/\D/g, '');
+      if (cleaned.length === 10) {
+        return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+      }
+      return sanitized;
+    } catch (error) {
+      errorService.logError(error as Error, { context: 'Phone normalization', value: phone });
+      return phone;
     }
-    return phone;
   }
 
   static validateEmail(email: string): string | null {
-    if (!email) return null; // Email is optional
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return 'Invalid email format';
-    return null;
+    try {
+      if (!email) return null; // Email is optional
+      const sanitized = SecurityUtils.sanitizeText(email);
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(sanitized)) return 'Invalid email format';
+      
+      // Additional email security checks
+      if (sanitized.includes('javascript:') || sanitized.includes('<script')) {
+        return 'Invalid email format';
+      }
+      
+      return null;
+    } catch (error) {
+      errorService.logError(error as Error, { context: 'Email validation', value: email });
+      return 'Email validation failed';
+    }
   }
 
   static validateRequired(value: string, fieldName: string): string | null {
-    if (!value || !value.trim()) return `${fieldName} is required`;
-    return null;
+    try {
+      const sanitized = SecurityUtils.sanitizeText(value || '');
+      if (!sanitized.trim()) return `${fieldName} is required`;
+      return null;
+    } catch (error) {
+      errorService.logError(error as Error, { context: 'Required field validation', field: fieldName });
+      return `${fieldName} validation failed`;
+    }
   }
 
   static validateDate(date: string, fieldName: string): string | null {
-    if (!date) return null; // Most dates are optional
-    const parsed = new Date(date);
-    if (isNaN(parsed.getTime())) return `${fieldName} must be a valid date`;
-    return null;
+    try {
+      if (!date) return null; // Most dates are optional
+      const sanitized = SecurityUtils.sanitizeText(date);
+      const parsed = new Date(sanitized);
+      if (isNaN(parsed.getTime())) return `${fieldName} must be a valid date`;
+      
+      // Check for reasonable date ranges
+      const year = parsed.getFullYear();
+      if (year < 1900 || year > 2100) {
+        return `${fieldName} must be between 1900 and 2100`;
+      }
+      
+      return null;
+    } catch (error) {
+      errorService.logError(error as Error, { context: 'Date validation', field: fieldName });
+      return `${fieldName} validation failed`;
+    }
   }
 
   static validateRecord(record: Partial<ResidentFellow>): ValidationError[] {
-    const errors: ValidationError[] = [];
-    
-    // Required fields
-    const requiredFields = [
-      'npi', 'firstName', 'lastName', 'credentials', 'practiceAddress1',
-      'practiceCity', 'practiceState', 'practiceZip', 'mailingAddress1',
-      'mailingCity', 'mailingState', 'mailingZip', 'primarySpecialty',
-      'licenseState', 'licenseNumber'
-    ];
-
-    requiredFields.forEach(field => {
-      const error = this.validateRequired(record[field as keyof ResidentFellow] as string, field);
-      if (error) {
-        errors.push({
-          row: 0,
-          field,
-          message: error,
-          severity: 'error',
-          value: record[field as keyof ResidentFellow] as string
-        });
-      }
-    });
-
-    // NPI validation
-    if (record.npi) {
-      const npiError = this.validateNPI(record.npi);
-      if (npiError) {
-        errors.push({
-          row: 0,
-          field: 'npi',
-          message: npiError,
-          severity: 'error',
-          value: record.npi
-        });
-      }
+    try {
+      // Use the enhanced validation service
+      const validation = ValidationService.validateRecord(record);
+      const businessRules = ValidationService.validateBusinessRules(record);
+      
+      const allIssues = [...validation.errors, ...businessRules.warnings];
+      
+      return allIssues.map(issue => ({
+        row: 0,
+        field: issue.field,
+        message: issue.message,
+        severity: issue.severity,
+        value: issue.value
+      }));
+    } catch (error) {
+      errorService.logError(error as Error, { context: 'Record validation', record });
+      return [{
+        row: 0,
+        field: 'record',
+        message: 'Validation failed due to system error',
+        severity: 'error' as const
+      }];
     }
-
-    // Phone validation
-    if (record.phone) {
-      const phoneError = this.validatePhone(record.phone);
-      if (phoneError) {
-        errors.push({
-          row: 0,
-          field: 'phone',
-          message: phoneError,
-          severity: 'warning',
-          value: record.phone
-        });
-      }
-    }
-
-    // Email validation
-    if (record.email) {
-      const emailError = this.validateEmail(record.email);
-      if (emailError) {
-        errors.push({
-          row: 0,
-          field: 'email',
-          message: emailError,
-          severity: 'warning',
-          value: record.email
-        });
-      }
-    }
-
-    // Date validations
-    const dateFields = ['dateOfBirth', 'licenseIssueDate', 'licenseExpireDate', 'certificationStartDate', 'trainingStartDate', 'trainingEndDate'];
-    dateFields.forEach(field => {
-      const value = record[field as keyof ResidentFellow] as string;
-      if (value) {
-        const dateError = this.validateDate(value, field);
-        if (dateError) {
-          errors.push({
-            row: 0,
-            field,
-            message: dateError,
-            severity: 'warning',
-            value
-          });
-        }
-      }
-    });
-
-    return errors;
   }
 }
 
@@ -231,6 +225,12 @@ export class DMPDuplicateDetector {
 
 export class DMPService {
   static async processTemplateUpload(file: File): Promise<ImportJob> {
+    // Validate file security first
+    const fileValidation = await ValidationService.validateFileUpload(file);
+    if (!fileValidation.isValid) {
+      throw new Error(fileValidation.error || 'File validation failed');
+    }
+
     const jobId = `job_${Date.now()}`;
     const job: ImportJob = {
       id: jobId,
@@ -247,36 +247,52 @@ export class DMPService {
     };
 
     try {
-      const text = await file.text();
+      // Add timeout and error handling
+      const text = await errorService.withTimeout(file.text(), 30000);
       const lines = text.split('\n').filter(line => line.trim());
+      
+      if (lines.length === 0) {
+        throw new Error('File appears to be empty');
+      }
+      
       const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
       
       job.totalRecords = lines.length - 1; // Exclude header
       
       for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-        const record: Partial<ResidentFellow> = {};
+        try {
+          const values = lines[i].split(',').map(v => SecurityUtils.sanitizeText(v.trim().replace(/"/g, '')));
+          const record: Partial<ResidentFellow> = {};
         
-        headers.forEach((header, index) => {
-          const value = values[index] || '';
-          record[this.mapHeaderToField(header) as keyof ResidentFellow] = value;
-        });
+          headers.forEach((header, index) => {
+            const value = values[index] || '';
+            record[this.mapHeaderToField(header) as keyof ResidentFellow] = value;
+          });
 
-        // Validate record
-        const validationErrors = DMPValidator.validateRecord(record);
-        validationErrors.forEach(error => {
-          error.row = i;
-          job.errors.push(error);
-          if (error.severity === 'error') {
-            job.errorCount++;
-          } else {
-            job.warningCount++;
+          // Validate record with enhanced validation
+          const validationErrors = DMPValidator.validateRecord(record);
+          validationErrors.forEach(error => {
+            error.row = i;
+            job.errors.push(error);
+            if (error.severity === 'error') {
+              job.errorCount++;
+            } else {
+              job.warningCount++;
+            }
+          });
+
+          if (validationErrors.filter(e => e.severity === 'error').length === 0) {
+            job.successCount++;
+            // TODO: Save to database with proper error handling
           }
-        });
-
-        if (validationErrors.filter(e => e.severity === 'error').length === 0) {
-          job.successCount++;
-          // TODO: Save to database
+        } catch (rowError) {
+          job.errors.push({
+            row: i,
+            field: 'row',
+            message: `Failed to process row: ${rowError instanceof Error ? rowError.message : 'Unknown error'}`,
+            severity: 'error'
+          });
+          job.errorCount++;
         }
       }
 
@@ -284,6 +300,7 @@ export class DMPService {
       job.completedAt = new Date().toISOString();
       
     } catch (error) {
+      errorService.logError(error as Error, { context: 'Template upload processing', fileName: file.name });
       job.status = 'failed';
       job.errors.push({
         row: 0,
@@ -305,6 +322,12 @@ export class DMPService {
   }
 
   static async processURLExtraction(url: string): Promise<ImportJob> {
+    // Validate URL security first
+    const urlValidation = SecurityUtils.validateExtractionUrl(url);
+    if (!urlValidation.isValid) {
+      throw new Error(urlValidation.error || 'URL validation failed');
+    }
+
     const jobId = `job_url_${Date.now()}`;
     const job: ImportJob = {
       id: jobId,
@@ -321,24 +344,28 @@ export class DMPService {
     };
 
     try {
-      // Check robots.txt compliance
-      if (!this.isUrlAllowed(url)) {
-        throw new Error('URL extraction not allowed by robots.txt or domain policy');
+      // Enhanced compliance checking
+      const complianceCheck = await this.checkUrlCompliance(url);
+      if (!complianceCheck.isAllowed) {
+        throw new Error(complianceCheck.reason || 'URL extraction not allowed');
       }
 
-      // Use existing edge function for extraction
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-hcp-data`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: 'url',
-          content: url,
-          allowedDegreesOnly: true
+      // Use existing edge function for extraction with timeout and retry
+      const response = await errorService.withTimeout(
+        fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-hcp-data`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'url',
+            content: url,
+            allowedDegreesOnly: true
+          }),
         }),
-      });
+        45000 // 45 second timeout for URL extraction
+      );
 
       const result = await response.json();
       
@@ -386,6 +413,7 @@ export class DMPService {
       job.completedAt = new Date().toISOString();
 
     } catch (error) {
+      errorService.logError(error as Error, { context: 'URL extraction processing', url });
       job.status = 'failed';
       job.errors.push({
         row: 0,
@@ -397,6 +425,44 @@ export class DMPService {
     }
 
     return job;
+  }
+
+  /**
+   * Enhanced URL compliance checking
+   */
+  private static async checkUrlCompliance(url: string): Promise<{ isAllowed: boolean; reason?: string }> {
+    try {
+      const urlObj = new URL(url);
+      
+      // Check robots.txt
+      const robotsUrl = `${urlObj.origin}/robots.txt`;
+      
+      try {
+        const robotsResponse = await errorService.withTimeout(
+          fetch(robotsUrl, { 
+            method: 'GET',
+            headers: { 'User-Agent': 'PracticeLink-DMP/1.0' }
+          }),
+          10000
+        );
+        
+        if (robotsResponse.ok) {
+          const robotsText = await robotsResponse.text();
+          
+          // Basic robots.txt parsing
+          if (robotsText.includes('Disallow: /') && !robotsText.includes('Allow:')) {
+            return { isAllowed: false, reason: 'Site disallows crawling via robots.txt' };
+          }
+        }
+      } catch (robotsError) {
+        // If robots.txt is not accessible, proceed with caution
+        console.warn('Could not check robots.txt:', robotsError);
+      }
+      
+      return { isAllowed: true };
+    } catch (error) {
+      return { isAllowed: false, reason: 'URL compliance check failed' };
+    }
   }
 
   private static mapHeaderToField(header: string): string {
@@ -422,20 +488,6 @@ export class DMPService {
 
     const normalized = header.toLowerCase().trim();
     return mappings[normalized] || header.replace(/\s+/g, '');
-  }
-
-  private static isUrlAllowed(url: string): boolean {
-    // Check against allowlist of educational institutions
-    const allowedDomains = [
-      '.edu',
-      'residency',
-      'fellowship',
-      'gme',
-      'medical',
-      'hospital'
-    ];
-
-    return allowedDomains.some(domain => url.toLowerCase().includes(domain));
   }
 
   private static extractFirstName(fullName: string): string {
