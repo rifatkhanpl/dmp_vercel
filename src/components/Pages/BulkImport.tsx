@@ -358,30 +358,32 @@ Jane,Smith,DO,jane.smith@example.com,555-0124,1234567891,Family Medicine,NY,1234
         </div>
 
         {/* Mode Toggle */}
-        <div className="bg-white rounded-lg shadow-sm p-2 flex items-center space-x-2">
-          <button
-            onClick={() => setMode('file')}
-            className={`w-1/2 inline-flex items-center justify-center px-4 py-3 rounded-md border text-sm font-medium ${
-              mode === 'file'
-                ? 'bg-blue-600 text-white border-blue-700'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-            }`}
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Upload CSV / Excel
-          </button>
-          <button
-            onClick={() => setMode('ai')}
-            className={`w-1/2 inline-flex items-center justify-center px-4 py-3 rounded-md border text-sm font-medium ${
-              mode === 'ai'
-                ? 'bg-purple-600 text-white border-purple-700'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-            }`}
-          >
-            <Brain className="h-4 w-4 mr-2" />
-            Parse Text / URL (AI)
-          </button>
-        </div>
+        {(mode === 'file' || mode === 'ai') && (
+          <div className="bg-white rounded-lg shadow-sm p-2 flex items-center space-x-2">
+            <button
+              onClick={() => setMode('file')}
+              className={`w-1/2 inline-flex items-center justify-center px-4 py-3 rounded-md border text-sm font-medium ${
+                mode === 'file'
+                  ? 'bg-blue-600 text-white border-blue-700'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Upload CSV / Excel
+            </button>
+            <button
+              onClick={() => setMode('ai')}
+              className={`w-1/2 inline-flex items-center justify-center px-4 py-3 rounded-md border text-sm font-medium ${
+                mode === 'ai'
+                  ? 'bg-purple-600 text-white border-purple-700'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              <Brain className="h-4 w-4 mr-2" />
+              Parse Text / URL (AI)
+            </button>
+          </div>
+        )}
 
         {/* TEMPLATE DOWNLOAD (always visible) */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
