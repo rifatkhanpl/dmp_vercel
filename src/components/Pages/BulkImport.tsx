@@ -5,6 +5,7 @@ import { SecurityUtils } from '../../utils/security';
 import { errorService } from '../../services/errorService';
 import { useDebounce } from '../../hooks/useDebounce';
 import { LoadingOverlay } from '../ui/LoadingSpinner';
+import { supabase } from '../../services/supabaseClient';
 import {
   Upload,
   FileText,
@@ -359,22 +360,123 @@ Jane,Smith,DO,jane.smith@example.com,555-0124,1234567891,Family Medicine,NY,1234
     setIsProcessingAI(true);
     
     try {
-      // TODO: Implement actual import logic with validation
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Transform parsed data to match database schema
+      const recordsToInsert = selectedData.map(resident => ({
+        npi: generateTempNPI(), // Generate temporary NPI for now
+        first_name: extractFirstName(resident.name),
+        last_name: extractLastName(resident.name),
+        credentials: extractCredentials(resident.name),
+        primary_specialty: resident.specialty || 'Unknown',
+        email: resident.email,
+        phone: resident.phone,
+        practice_address_1: resident.location || 'Unknown',
+        practice_city: 'Unknown',
+        practice_state: 'CA', // Default for now
+        practice_zip: '00000',
+        mailing_address_1: resident.location || 'Unknown',
+        mailing_city: 'Unknown',
+        mailing_state: 'CA',
+        mailing_zip: '00000',
+        license_state: 'CA', // Default for now
+        license_number: 'TEMP' + Date.now(),
+        source_type: aiMode === 'url' ? 'URL' : 'AI-Map',
+        source_url: aiMode === 'url' ? inputUrl : null,
+        source_artifact: aiMode === 'text' ? 'AI_PARSED_TEXT' : null,
+        source_fetch_date: new Date().toISOString(),
+        status: 'pending',
+        pgy_year: resident.pgyYear,
+        program_name: inferProgramName(resident),
+        institution: inferInstitution(resident)
+      }));
+
+      // Insert records into dmp.healthcare_providers table
+      const { data, error } = await supabase
+        .from('dmp.healthcare_providers')
+        .insert(recordsToInsert)
+        .select();
+
+      if (error) {
+        throw new Error(`Database error: ${error.message}`);
+      }
       
-      errorService.showSuccess(`Successfully imported ${selectedData.length} residents/fellows to the database!`);
+      errorService.showSuccess(`Successfully imported ${data?.length || selectedData.length} residents/fellows to the DMP database!`);
+      
+      // Reset form after successful import
+      if (aiMode === 'text') setInputText('');
+      else setInputUrl('');
+      setParsedData([]);
+      setSelectedItems(new Set());
+      setProcessingStatus('idle');
+      
     } catch (error) {
       const errorMessage = errorService.handleApiError(error, 'AI import');
       errorService.showError(errorMessage);
     } finally {
       setIsProcessingAI(false);
     }
-    
-    if (aiMode === 'text') setInputText('');
-    else setInputUrl('');
-    setParsedData([]);
-    setSelectedItems(new Set());
-    setProcessingStatus('idle');
+  };
+
+  // Helper functions to extract data from parsed names
+  const extractFirstName = (fullName: string): string => {
+    const parts = fullName.replace(/,?\s*(MD|DO|MBBS)\.?/i, '').split(/\s+/);
+    return parts[0] || 'Unknown';
+  };
+
+  const extractLastName = (fullName: string): string => {
+    const parts = fullName.replace(/,?\s*(MD|DO|MBBS)\.?/i, '').split(/\s+/);
+    return parts[parts.length - 1] || 'Unknown';
+  };
+
+  const extractCredentials = (fullName: string): string => {
+    const match = fullName.match(/,?\s*(MD|DO|MBBS)\.?/i);
+    return match ? match[1].toUpperCase() : 'MD';
+  };
+
+  const generateTempNPI = (): string => {
+    // Generate a temporary 10-digit NPI for testing
+    return '9' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
+  };
+
+  const inferProgramName = (resident: ParsedResident): string | null => {
+    if (aiMode === 'url' && inputUrl) {
+      // Try to extract program name from URL
+      const urlParts = inputUrl.split('/');
+      const programPart = urlParts.find(part => 
+        part.includes('medicine') || 
+        part.includes('surgery') || 
+        part.includes('pediatrics') ||
+        part.includes('emergency')
+      );
+      if (programPart) {
+        return programPart.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' Program';
+      }
+    }
+    return resident.specialty ? `${resident.specialty} Program` : null;
+  };
+
+  const inferInstitution = (resident: ParsedResident): string | null => {
+    if (aiMode === 'url' && inputUrl) {
+      try {
+        const url = new URL(inputUrl);
+        const hostname = url.hostname;
+        // Extract institution name from domain
+        if (hostname.includes('ucla')) return 'UCLA Medical Center';
+        if (hostname.includes('stanford')) return 'Stanford University Medical Center';
+        if (hostname.includes('harvard')) return 'Harvard Medical School';
+        if (hostname.includes('yale')) return 'Yale School of Medicine';
+        if (hostname.includes('mayo')) return 'Mayo Clinic';
+        if (hostname.includes('hopkins')) return 'Johns Hopkins Hospital';
+        
+        // Generic extraction
+        const parts = hostname.split('.');
+        if (parts.length >= 2) {
+          return parts[parts.length - 2].charAt(0).toUpperCase() + parts[parts.length - 2].slice(1) + ' Medical Center';
+        }
+      } catch {
+        // Invalid URL, continue
+      }
+    }
+    return null;
   };
 
   const getConfidenceColor = (confidence: number) => {
