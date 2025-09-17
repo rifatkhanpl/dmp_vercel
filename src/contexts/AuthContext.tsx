@@ -1,6 +1,28 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { AuthUser, AuthContextType } from '../types/auth';
+import { User, UserRole } from '../types/user';
+
+export interface AuthUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: UserRole;
+  isEmailVerified: boolean;
+  createdAt: string;
+}
+
+export interface AuthContextType {
+  user: AuthUser | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  login: (role?: 'user' | 'admin') => Promise<void>;
+  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
+  logout: () => void;
+  getAccessToken: () => Promise<string | undefined>;
+  verifyEmail: (token: string) => Promise<{ success: boolean; message: string }>;
+  resendVerification: (email: string) => Promise<{ success: boolean; message: string }>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
