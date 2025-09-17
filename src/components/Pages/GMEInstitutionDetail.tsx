@@ -18,7 +18,8 @@ import {
   FileText,
   Stethoscope,
   TrendingUp,
-  Activity
+  Activity,
+  Edit
 } from 'lucide-react';
 
 export function GMEInstitutionDetail() {
