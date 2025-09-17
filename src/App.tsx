@@ -23,6 +23,8 @@ import { UserProfile } from './components/Pages/UserProfile';
 import { UserSettings } from './components/Pages/UserSettings';
 import { GMEProgramSearch } from './components/Pages/GMEProgramSearch';
 import { GMEProgramDetail } from './components/Pages/GMEProgramDetail';
+import { GMEInstitutionSearch } from './components/Pages/GMEInstitutionSearch';
+import { GMEInstitutionDetail } from './components/Pages/GMEInstitutionDetail';
 import { DMPDashboard } from './components/Pages/DMPDashboard';
 import { TemplateUpload } from './components/Pages/TemplateUpload';
 import { AIMapping } from './components/Pages/AIMapping';
@@ -161,6 +163,16 @@ function App() {
                 <GMEProgramDetail />
               </ProtectedRoute>
             } />
+            <Route path="/gme-institution-search" element={
+              <ProtectedRoute>
+                <GMEInstitutionSearch />
+              </ProtectedRoute>
+            } />
+            <Route path="/gme-institution-detail" element={
+              <ProtectedRoute>
+                <GMEInstitutionDetail />
+              </ProtectedRoute>
+            } />
             <Route path="/analytics" element={
               <ProtectedRoute>
                 <Analytics />
@@ -168,7 +180,7 @@ function App() {
             } />
             <Route path="/institution-programs" element={
               <ProtectedRoute>
-                <GMEProgramSearch />
+                <GMEInstitutionSearch />
               </ProtectedRoute>
             } />
             

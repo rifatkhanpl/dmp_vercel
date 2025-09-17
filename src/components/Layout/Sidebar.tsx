@@ -58,6 +58,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           description: 'Search graduate medical education programs'
         },
         {
+          name: 'GME Institution Search',
+          href: '/gme-institution-search',
+          icon: Building,
+          description: 'Search GME institutions and medical centers'
+        },
+        {
           name: 'HCP Import',
           href: '/bulk-import',
           icon: Upload,
