@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Layout } from '../Layout/Layout';
-import { ImportJob } from '../../types/dmp';
+import { ImportJobService } from '../../services/importJobService';
+import { errorService } from '../../services/errorService';
+import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { 
   BarChart3,
   RefreshCw,
@@ -66,27 +69,11 @@ export function JobConsole() {
       successCount: 0,
       errorCount: 0,
       warningCount: 0,
-      errors: [],
-      createdAt: '2024-01-15T08:45:00Z',
-      createdBy: 'Mike Chen'
-    },
-    {
-      id: 'job_1705123456792',
-      type: 'template',
-      status: 'failed',
-      fileName: 'invalid_format.csv',
-      totalRecords: 0,
-      successCount: 0,
-      errorCount: 1,
-      warningCount: 0,
-      errors: [
-        { row: 0, field: 'file', message: 'File format not recognized', severity: 'error' }
-      ],
-      createdAt: '2024-01-14T16:20:00Z',
-      completedAt: '2024-01-14T16:20:05Z',
-      createdBy: 'Emily Rodriguez'
-    }
-  ]);
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 20;
 
   const [filters, setFilters] = useState({
     type: '',
@@ -96,6 +83,29 @@ export function JobConsole() {
   });
   const [showFilters, setShowFilters] = useState(false);
 
+  // Load jobs from database
+  const loadJobs = async () => {
+    try {
+      setIsLoading(true);
+      
+      const { data, total } = await ImportJobService.getImportJobs({
+        ...filters,
+        limit: pageSize,
+        offset: (currentPage - 1) * pageSize
+      });
+      
+      setJobs(data);
+      setTotalRecords(total);
+    } catch (error) {
+      errorService.showError('Failed to load import jobs');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadJobs();
+  }, [filters, currentPage]);
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
@@ -161,20 +171,25 @@ export function JobConsole() {
   };
 
   const handleDownloadReport = (job: ImportJob) => {
+  const handleDownloadReport = async (job: any) => {
+    try {
+      // Get validation errors for this job
+      const validationErrors = await ImportJobService.getValidationErrors(job.id);
+      
     const report = {
       jobId: job.id,
       type: job.type,
       status: job.status,
-      fileName: job.fileName,
-      sourceUrl: job.sourceUrl,
-      totalRecords: job.totalRecords,
-      successCount: job.successCount,
-      errorCount: job.errorCount,
-      warningCount: job.warningCount,
-      errors: job.errors,
-      createdAt: job.createdAt,
-      completedAt: job.completedAt,
-      createdBy: job.createdBy
+        fileName: job.file_name,
+        sourceUrl: job.source_url,
+        totalRecords: job.total_records,
+        successCount: job.success_count,
+        errorCount: job.error_count,
+        warningCount: job.warning_count,
+        errors: validationErrors,
+        createdAt: job.created_at,
+        completedAt: job.completed_at,
+        createdBy: job.created_by_name
     };
 
     const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
@@ -184,6 +199,11 @@ export function JobConsole() {
     a.download = `job_report_${job.id}.json`;
     a.click();
     window.URL.revokeObjectURL(url);
+      
+      errorService.showSuccess('Job report downloaded successfully');
+    } catch (error) {
+      errorService.showError('Failed to download job report');
+    }
   };
 
   const clearFilters = () => {
@@ -363,11 +383,16 @@ export function JobConsole() {
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">
-              Import Jobs ({filteredJobs.length})
+              Import Jobs ({totalRecords})
             </h2>
           </div>
           
-          <div className="overflow-x-auto">
+          {isLoading ? (
+            <div className="p-12 text-center">
+              <LoadingSpinner size="lg" text="Loading import jobs..." />
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -392,7 +417,7 @@ export function JobConsole() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredJobs.map((job) => (
+                {jobs.map((job) => (
                   <tr key={job.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
@@ -401,7 +426,7 @@ export function JobConsole() {
                         </div>
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            {job.fileName || job.sourceUrl || 'Import Job'}
+                            {job.file_name || job.source_url || 'Import Job'}
                           </div>
                           <div className="text-sm text-gray-500 capitalize">
                             {job.type.replace('-', ' ')} Import
@@ -419,26 +444,26 @@ export function JobConsole() {
                     
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {job.successCount} / {job.totalRecords}
+                        {job.success_count} / {job.total_records}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {job.totalRecords > 0 ? Math.round((job.successCount / job.totalRecords) * 100) : 0}% success
+                        {job.total_records > 0 ? Math.round((job.success_count / job.total_records) * 100) : 0}% success
                       </div>
                     </td>
                     
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex space-x-2">
-                        {job.errorCount > 0 && (
+                        {job.error_count > 0 && (
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            {job.errorCount} errors
+                            {job.error_count} errors
                           </span>
                         )}
-                        {job.warningCount > 0 && (
+                        {job.warning_count > 0 && (
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            {job.warningCount} warnings
+                            {job.warning_count} warnings
                           </span>
                         )}
-                        {job.errorCount === 0 && job.warningCount === 0 && job.status === 'completed' && (
+                        {job.error_count === 0 && job.warning_count === 0 && job.status === 'completed' && (
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                             Clean
                           </span>
@@ -448,10 +473,10 @@ export function JobConsole() {
                     
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {new Date(job.createdAt).toLocaleDateString()}
+                        {new Date(job.created_at).toLocaleDateString()}
                       </div>
                       <div className="text-sm text-gray-500">
-                        by {job.createdBy}
+                        by {job.created_by_name}
                       </div>
                     </td>
                     
@@ -486,6 +511,37 @@ export function JobConsole() {
               </tbody>
             </table>
           </div>
+          )}
+          
+          {/* Pagination */}
+          {Math.ceil(totalRecords / pageSize) > 1 && (
+            <div className="px-6 py-4 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-700">
+                  Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalRecords)} of {totalRecords} results
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <span className="px-3 py-2 text-gray-700">
+                    Page {currentPage} of {Math.ceil(totalRecords / pageSize)}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalRecords / pageSize), prev + 1))}
+                    disabled={currentPage === Math.ceil(totalRecords / pageSize)}
+                    className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Job Details Modal would go here */}

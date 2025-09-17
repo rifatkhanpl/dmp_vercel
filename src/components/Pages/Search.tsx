@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Layout } from '../Layout/Layout';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { useDebounce } from '../../hooks/useDebounce';
 import { SecurityUtils } from '../../utils/security';
+import { HealthcareProviderService } from '../../services/healthcareProviderService';
+import { errorService } from '../../services/errorService';
+import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { useLocation } from 'react-router-dom';
 import { 
   Search as SearchIcon,
@@ -41,6 +45,8 @@ export function Search() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const managedBy = searchParams.get('managedBy');
+  const program = searchParams.get('program');
+  const institution = searchParams.get('institution');
 
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -57,6 +63,11 @@ export function Search() {
   });
   const [sortBy, setSortBy] = useState('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 50;
 
   // Mock search results data
   const allProviders: Provider[] = [
@@ -148,23 +159,62 @@ export function Search() {
       npi: '7890123456',
       status: 'approved',
       credentials: 'DPT',
-      profession: 'Physical Therapist',
-      managedBy: 'David Thompson'
-    },
-    {
-      id: '8',
-      name: 'Dr. Amanda Foster, PsyD',
-      specialty: 'Psychology',
-      location: 'Portland, OR',
-      email: 'amanda.foster@example.com',
-      phone: '(555) 890-1234',
-      npi: '8901234567',
-      status: 'approved',
-      credentials: 'PsyD',
-      profession: 'Psychologist',
-      managedBy: 'Emily Rodriguez'
+  // Load providers from database
+  const loadProviders = async () => {
+    try {
+      setIsLoading(true);
+      
+      const searchFilters: any = {
+        limit: pageSize,
+        offset: (currentPage - 1) * pageSize
+      };
+      
+      if (debouncedSearchQuery) {
+        searchFilters.search = debouncedSearchQuery;
+      }
+      if (filters.specialty) {
+        searchFilters.specialty = filters.specialty;
+      }
+      if (filters.state) {
+        searchFilters.state = filters.state;
+      }
+      if (filters.status) {
+        searchFilters.status = filters.status;
+      }
+      if (managedBy) {
+        // Convert managedBy name to user ID - this would need a user lookup
+        // For now, we'll filter client-side
+      }
+      
+      const { data, total } = await HealthcareProviderService.getProviders(searchFilters);
+      
+      // Transform database records to component format
+      const transformedProviders: Provider[] = data.map(record => ({
+        id: record.id,
+        name: `${record.first_name} ${record.last_name}, ${record.credentials}`,
+        specialty: record.primary_specialty,
+        location: `${record.practice_city}, ${record.practice_state}`,
+        email: record.email || '',
+        phone: record.phone || '',
+        npi: record.npi,
+        status: record.status as 'active' | 'pending' | 'approved',
+        credentials: record.credentials,
+        profession: 'Physician', // Default for now
+        managedBy: record.entered_by_user ? `${record.entered_by_user.first_name} ${record.entered_by_user.last_name}` : undefined
+      }));
+      
+      setProviders(transformedProviders);
+      setTotalRecords(total);
+    } catch (error) {
+      errorService.showError('Failed to load providers');
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
+
+  useEffect(() => {
+    loadProviders();
+  }, [debouncedSearchQuery, filters, currentPage]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -179,37 +229,12 @@ export function Search() {
     }
   };
 
-  // Filter providers by managedBy if specified, then apply other filters
-  const baseProviders = managedBy 
-    ? allProviders.filter(provider => provider.managedBy === managedBy)
-    : allProviders;
-
-  // Apply search and filter logic with debounced search
-  const filteredProviders = baseProviders.filter(provider => {
-    const sanitizedQuery = SecurityUtils.sanitizeText(debouncedSearchQuery).toLowerCase();
-    const matchesSearch = !sanitizedQuery || 
-      provider.name.toLowerCase().includes(sanitizedQuery) ||
-      provider.specialty.toLowerCase().includes(sanitizedQuery) ||
-      provider.location.toLowerCase().includes(sanitizedQuery) ||
-      provider.email.toLowerCase().includes(sanitizedQuery) ||
-      (provider.npi && provider.npi.includes(sanitizedQuery));
-    
-    const matchesSpecialty = !filters.specialty || provider.specialty === filters.specialty;
-    const matchesState = !filters.state || provider.location.includes(filters.state);
-    const matchesStatus = !filters.status || provider.status === filters.status;
-    const matchesProfession = !filters.profession || provider.profession === filters.profession;
-    const matchesManagedBy = !filters.managedBy || provider.managedBy === filters.managedBy;
-    
-    return matchesSearch && matchesSpecialty && matchesState && matchesStatus && matchesProfession && matchesManagedBy;
-  }).sort((a, b) => {
-    let aValue = a[sortBy as keyof Provider] as string;
-    let bValue = b[sortBy as keyof Provider] as string;
-    
-    if (sortDirection === 'asc') {
-      return aValue.localeCompare(bValue);
-    } else {
-      return bValue.localeCompare(aValue);
-    }
+  // Apply client-side filtering for managedBy and program filters
+  const filteredProviders = providers.filter(provider => {
+    if (managedBy && provider.managedBy !== managedBy) return false;
+    if (program && !provider.name.toLowerCase().includes(program.toLowerCase())) return false;
+    if (institution && !provider.name.toLowerCase().includes(institution.toLowerCase())) return false;
+    return true;
   });
 
   const handleFilterChange = (key: string, value: string) => {
@@ -271,12 +296,12 @@ export function Search() {
     }
   };
 
-  // Get unique values for filter options from base providers
-  const specialties = [...new Set(baseProviders.map(p => p.specialty))];
-  const states = [...new Set(baseProviders.map(p => p.location.split(', ')[1]))];
+  // Get unique values for filter options
+  const specialties = [...new Set(providers.map(p => p.specialty))];
+  const states = [...new Set(providers.map(p => p.location.split(', ')[1]))];
   const statuses = ['active', 'pending', 'approved'];
-  const professions = [...new Set(baseProviders.map(p => p.profession))];
-  const users = [...new Set(baseProviders.map(p => p.managedBy).filter(Boolean))];
+  const professions = [...new Set(providers.map(p => p.profession))];
+  const users = [...new Set(providers.map(p => p.managedBy).filter(Boolean))];
 
   const activeFilterCount = Object.values(filters).filter(v => v).length;
 
@@ -529,7 +554,7 @@ export function Search() {
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">
-                  {managedBy ? 'Search Results' : 'Search Results'} ({filteredProviders.length})
+                  Search Results ({totalRecords.toLocaleString()})
                 </h2>
                 <div className="flex items-center space-x-2">
                   <input
@@ -542,8 +567,13 @@ export function Search() {
                 </div>
               </div>
             </div>
-            <div className="divide-y divide-gray-200">
-              {filteredProviders.map((provider) => (
+            {isLoading ? (
+              <div className="p-12 text-center">
+                <LoadingSpinner size="lg" text="Loading providers..." />
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200">
+                {filteredProviders.map((provider) => (
                 <div key={provider.id} className="p-6 hover:bg-gray-50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
@@ -684,8 +714,39 @@ export function Search() {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Pagination */}
+            {Math.ceil(totalRecords / pageSize) > 1 && (
+              <div className="px-6 py-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-gray-700">
+                    Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalRecords)} of {totalRecords} results
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Previous
+                    </button>
+                    <span className="px-3 py-2 text-gray-700">
+                      Page {currentPage} of {Math.ceil(totalRecords / pageSize)}
+                    </span>
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalRecords / pageSize), prev + 1))}
+                      disabled={currentPage === Math.ceil(totalRecords / pageSize)}
+                      className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </Layout>
