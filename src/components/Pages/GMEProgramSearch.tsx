@@ -25,7 +25,8 @@ import {
   Ban,
   Trash2,
   Award,
-  DollarSign
+  DollarSign,
+  Stethoscope
 } from 'lucide-react';
 
 interface GMEProgram {
