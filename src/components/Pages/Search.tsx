@@ -159,6 +159,11 @@ export function Search() {
       npi: '7890123456',
       status: 'approved',
       credentials: 'DPT',
+      profession: 'Physical Therapist',
+      managedBy: 'Emily Rodriguez'
+    }
+  ];
+
   // Load providers from database
   const loadProviders = async () => {
     try {
