@@ -254,7 +254,7 @@ export function Analytics() {
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Institutions</p>
+                    <p className="text-sm font-medium text-gray-600">Processed Institutions</p>
                     <p className="text-2xl font-bold text-gray-900">{institutionStats.total.toLocaleString()}</p>
                     <p className="text-sm text-green-600 mt-1">+{institutionStats.pending} pending</p>
                   </div>
@@ -364,7 +364,7 @@ export function Analytics() {
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Institutions</p>
+                    <p className="text-sm font-medium text-gray-600">Processed Institutions</p>
                     <p className="text-2xl font-bold text-gray-900">{institutionStats.total}</p>
                     <p className="text-sm text-green-600 mt-1">+12 this month</p>
                   </div>
