@@ -98,6 +98,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           href: '/analytics',
           icon: BarChart3,
           description: 'Data insights and metrics'
+        },
+        {
+          name: 'Production Metrics',
+          href: '/metrics-dashboard',
+          icon: TrendingUp,
+          description: 'User performance and productivity metrics'
         }
       ]
     }

@@ -34,6 +34,8 @@ import { DuplicateReview } from './components/Pages/DuplicateReview';
 import { DataExport } from './components/Pages/DataExport';
 
 import { Analytics } from './components/Pages/Analytics';
+import { MetricsDashboard } from './components/Pages/MetricsDashboard';
+import { MetricsSearch } from './components/Pages/MetricsSearch';
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -176,6 +178,16 @@ function App() {
             <Route path="/analytics" element={
               <ProtectedRoute>
                 <Analytics />
+              </ProtectedRoute>
+            } />
+            <Route path="/metrics-dashboard" element={
+              <ProtectedRoute>
+                <MetricsDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/metrics-search" element={
+              <ProtectedRoute>
+                <MetricsSearch />
               </ProtectedRoute>
             } />
             <Route path="/institution-programs" element={
