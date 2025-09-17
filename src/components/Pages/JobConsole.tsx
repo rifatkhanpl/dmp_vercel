@@ -69,7 +69,11 @@ export function JobConsole() {
       successCount: 0,
       errorCount: 0,
       warningCount: 0,
-  const [jobs, setJobs] = useState<any[]>([]);
+      errors: [],
+      createdAt: '2024-01-15T11:00:00Z',
+      createdBy: 'Mike Wilson'
+    }
+  ]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -170,7 +174,6 @@ export function JobConsole() {
     alert('Job retry initiated');
   };
 
-  const handleDownloadReport = (job: ImportJob) => {
   const handleDownloadReport = async (job: any) => {
     try {
       // Get validation errors for this job
