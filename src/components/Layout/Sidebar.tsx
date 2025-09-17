@@ -17,7 +17,8 @@ import {
   ChevronDown,
   ChevronRight,
   Bookmark,
-  Brain
+  Brain,
+  TrendingUp
 } from 'lucide-react';
 
 interface SidebarProps {
