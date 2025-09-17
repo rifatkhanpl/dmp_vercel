@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Layout } from '../Layout/Layout';
 import { useAuth } from '../../contexts/AuthContext';
+import { HealthcareProviderService } from '../../services/healthcareProviderService';
+import { ImportJobService } from '../../services/importJobService';
+import { errorService } from '../../services/errorService';
 import { 
   Users,
   UserPlus,
@@ -25,12 +29,65 @@ import {
 export function Dashboard() {
   const { user } = useAuth();
   const [timeRange, setTimeRange] = useState('month');
+  const [stats, setStats] = useState({
+    totalProviders: 0,
+    newThisMonth: 0,
+    pendingVerification: 0,
+    verifiedProfiles: 0
+  });
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data for dashboard
-  const stats = [
+  // Load dashboard data
+  const loadDashboardData = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Get provider statistics
+      const { total: totalProviders } = await HealthcareProviderService.getProviders({ limit: 1 });
+      const { total: pendingCount } = await HealthcareProviderService.getProviders({ status: 'pending', limit: 1 });
+      const { total: approvedCount } = await HealthcareProviderService.getProviders({ status: 'approved', limit: 1 });
+      
+      // Get recent import jobs for activity
+      const { data: recentJobs } = await ImportJobService.getImportJobs({ limit: 10 });
+      
+      setStats({
+        totalProviders,
+        newThisMonth: Math.floor(totalProviders * 0.1), // Estimate
+        pendingVerification: pendingCount,
+        verifiedProfiles: approvedCount
+      });
+      
+      // Transform jobs to activity format
+      const activity = recentJobs.map(job => ({
+        id: job.id,
+        type: job.type === 'template' ? 'import' : job.type === 'url' ? 'extraction' : 'mapping',
+        title: job.status === 'completed' ? 'Import completed' : 
+               job.status === 'failed' ? 'Import failed' : 'Import in progress',
+        description: job.file_name || job.source_url || 'Import job',
+        time: new Date(job.created_at).toLocaleString(),
+        icon: job.type === 'template' ? Upload : job.type === 'url' ? Globe : Brain,
+        color: job.status === 'completed' ? 'green' : 
+               job.status === 'failed' ? 'red' : 'blue'
+      }));
+      
+      setRecentActivity(activity);
+      
+    } catch (error) {
+      errorService.showError('Failed to load dashboard data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [timeRange]);
+
+  const dashboardStats = [
     {
       title: 'Total Providers',
-      value: '2,847',
+      value: stats.totalProviders.toLocaleString(),
       change: '+12%',
       changeType: 'positive' as const,
       icon: Users,
@@ -38,7 +95,7 @@ export function Dashboard() {
     },
     {
       title: 'New This Month',
-      value: '156',
+      value: stats.newThisMonth.toLocaleString(),
       change: '+8%',
       changeType: 'positive' as const,
       icon: UserPlus,
@@ -46,15 +103,15 @@ export function Dashboard() {
     },
     {
       title: 'Pending Verification',
-      value: '23',
+      value: stats.pendingVerification.toLocaleString(),
       change: '-5%',
       changeType: 'negative' as const,
       icon: Clock,
-      description: 'from last month'
+      description: 'from last week'
     },
     {
       title: 'Verified Profiles',
-      value: '2,824',
+      value: stats.verifiedProfiles.toLocaleString(),
       change: '+15%',
       changeType: 'positive' as const,
       icon: CheckCircle,
@@ -90,45 +147,6 @@ export function Dashboard() {
       icon: BarChart3,
       href: '/analytics',
       color: 'orange'
-    }
-  ];
-
-  const recentActivity = [
-    {
-      id: '1',
-      type: 'registration',
-      title: 'New provider registered',
-      description: 'Dr. Sarah Johnson, MD - Internal Medicine',
-      time: '2 hours ago',
-      icon: UserPlus,
-      color: 'blue'
-    },
-    {
-      id: '2',
-      type: 'import',
-      title: 'Bulk import completed',
-      description: '45 providers imported successfully',
-      time: '4 hours ago',
-      icon: Upload,
-      color: 'green'
-    },
-    {
-      id: '3',
-      type: 'update',
-      title: 'Profile updated',
-      description: 'Dr. Michael Chen, DO - Emergency Medicine',
-      time: '6 hours ago',
-      icon: FileText,
-      color: 'purple'
-    },
-    {
-      id: '4',
-      type: 'verification',
-      title: 'Verification completed',
-      description: 'Dr. Emily Rodriguez, MD - Pediatrics',
-      time: '1 day ago',
-      icon: CheckCircle,
-      color: 'green'
     }
   ];
 
@@ -179,7 +197,7 @@ export function Dashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
+          {dashboardStats.map((stat, index) => {
             const Icon = stat.icon;
             return (
               <div key={index} className="bg-white rounded-lg shadow-sm p-6">
@@ -238,10 +256,13 @@ export function Dashboard() {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-            <a href="/activity" className="text-sm text-blue-600 hover:text-blue-700">
+            <a href="/dmp/jobs" className="text-sm text-blue-600 hover:text-blue-700">
               View all activity →
             </a>
           </div>
+          {isLoading ? (
+            <LoadingSpinner text="Loading recent activity..." />
+          ) : (
           <div className="space-y-4">
             {recentActivity.map((activity) => {
               const Icon = activity.icon;
@@ -259,6 +280,7 @@ export function Dashboard() {
               );
             })}
           </div>
+          )}
         </div>
 
         {/* Footer */}
