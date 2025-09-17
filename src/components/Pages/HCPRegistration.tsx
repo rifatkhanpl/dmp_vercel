@@ -3,7 +3,7 @@ import { Layout } from '../Layout/Layout';
 import { useAuth } from '../../contexts/AuthContext';
 import { HealthcareProviderService } from '../../services/healthcareProviderService';
 import { errorService } from '../../services/errorService';
-import { ResidentFellowSchema } from '../schemas/dmpSchemas';
+import { ResidentFellowSchema } from '../../schemas/dmpSchemas';
 import { 
   User, 
   Mail, 
