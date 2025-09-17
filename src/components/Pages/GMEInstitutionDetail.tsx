@@ -19,7 +19,6 @@ import {
   FileText,
   Stethoscope,
   TrendingUp,
-  Activity,
   Edit
 } from 'lucide-react';
 
