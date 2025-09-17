@@ -1,178 +1,393 @@
-# PracticeLink Data Collection Portal
+# PracticeLink Data Management Portal (PL-DMP)
 
-A secure data collection platform for PracticeLink's Provider Relations & Development Team.
+A comprehensive, secure data collection and management platform designed specifically for PracticeLink's Provider Relations & Development Team. The PL-DMP serves as the central hub for managing healthcare provider data, Graduate Medical Education (GME) programs, and institutional relationships within the healthcare ecosystem.
 
-## Features
+## 🎯 Project Overview
 
-- **Secure Authentication**: Role-based access control with email verification
-- **HCP Registration**: Comprehensive healthcare provider registration system
-- **Data Management**: Tools for managing provider data and records
-- **Analytics Dashboard**: Overview of system metrics and activity
-- **Email Verification**: Powered by Resend API for reliable email delivery
+The PracticeLink Data Management Portal is an enterprise-grade web application that streamlines the collection, validation, and management of healthcare provider data. Built with modern web technologies and AI-assisted workflows, it provides a robust foundation for PracticeLink's Universal Data Bank (UDB) initiative.
 
-## Setup
+### Key Objectives
+- **Centralized Data Management**: Single source of truth for healthcare provider information
+- **AI-Enhanced Workflows**: Intelligent data extraction and field mapping capabilities
+- **Compliance & Security**: Enterprise-grade security with full audit trails
+- **Scalable Architecture**: Built to handle large-scale data operations
+- **User-Friendly Interface**: Intuitive design for non-technical users
 
-### Prerequisites
+## 🏗️ System Architecture
 
-- Node.js 18+ 
-- npm or yarn
-- Resend API account (for email functionality)
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript for type safety
+- **Build Tool**: Vite for fast development and optimized builds
+- **Styling**: Tailwind CSS for consistent, responsive design
+- **State Management**: React Context API for authentication and bookmarks
+- **Routing**: React Router DOM v7 for client-side navigation
+- **Icons**: Lucide React for consistent iconography
 
-### Installation
+### Backend Architecture
+- **Database**: Supabase (PostgreSQL) with Row Level Security
+- **Authentication**: Auth0 for production, mock auth for development
+- **Email Service**: Resend API for transactional emails
+- **Edge Functions**: Supabase Edge Functions for AI processing
+- **API Server**: Express.js for email functionality
 
-1. Clone the repository
-2. Install frontend dependencies:
-   ```bash
-   npm install
-   ```
+### AI Integration
+- **OpenAI Integration**: GPT-4 for intelligent data extraction
+- **Field Mapping**: AI-assisted mapping of arbitrary data formats
+- **Content Parsing**: Automatic extraction from web content and URLs
+- **Confidence Scoring**: AI confidence metrics for data quality
 
-3. Install backend dependencies:
-   ```bash
-   cd server
-   npm install
-   cd ..
-   ```
+## 🚀 Core Features
 
-4. Set up environment variables:
-   ```bash
-   # Frontend
-   cp .env.example .env
-   
-   # Backend
-   cp server/.env.example server/.env
-   ```
+### 1. Healthcare Provider Management
+**Individual Registration**
+- Comprehensive provider registration forms
+- Real-time validation with business rules
+- Duplicate detection and prevention
+- Complete audit trail for all changes
 
-5. Configure your Resend API key in `server/.env`:
-   ```
-   RESEND_API_KEY=your_resend_api_key_here
-   FROM_EMAIL=noreply@yourdomain.com
-   ```
+**Bulk Import Capabilities**
+- Template-based CSV/Excel import with strict validation
+- AI-assisted field mapping for arbitrary file formats
+- URL extraction from educational institution websites
+- Batch processing with detailed error reporting
 
-6. Start the backend server:
-   ```bash
-   cd server
-   npm run dev
-   ```
+**Advanced Search & Management**
+- Multi-criteria search across all provider fields
+- Bulk operations for efficient data management
+- Provider assignment to team members
+- Export capabilities with custom field selection
 
-7. In a new terminal, start the frontend:
-   ```bash
-   npm run dev
-   ```
+### 2. Graduate Medical Education (GME) Management
+**Institution Management**
+- Comprehensive institution profiles with contact information
+- Accreditation status tracking and expiration alerts
+- Teaching affiliations and research focus areas
+- Specialty strengths and trauma level designations
 
-## Email Configuration
+**Program Management**
+- Detailed residency and fellowship program tracking
+- Application timeline and match information
+- Salary and benefits tracking
+- Program statistics and outcomes
 
-This application uses [Resend](https://resend.com) for email delivery. To set up email functionality:
+**Relationship Mapping**
+- Link residents/fellows to their training programs
+- Connect programs to parent institutions
+- Track program director and leadership changes
+- Alumni and current trainee management
 
-1. **Create a Resend account** at https://resend.com
-2. **Generate an API key** in your Resend dashboard
-3. **Add your API key** to `server/.env` as `RESEND_API_KEY`
-4. **Verify your sending domain** in Resend (required for production)
-5. **Update FROM_EMAIL** in `server/.env` to use your verified domain
+### 3. Data Management Platform (DMP)
+**Multiple Ingestion Methods**
+- **Template Upload**: Standardized CSV/Excel processing
+- **AI-Assisted Mapping**: Smart field mapping with confidence scoring
+- **URL Extraction**: Compliant web scraping from .edu domains
 
-### Domain Verification (Production)
+**Quality Assurance**
+- Real-time validation with Zod schemas
+- Business rule enforcement
+- Duplicate detection with fuzzy matching
+- Manual review workflows for edge cases
 
-For production use, you must verify your sending domain:
+**Job Monitoring**
+- Real-time import job tracking
+- Detailed error reporting and resolution
+- Processing time and performance metrics
+- Retry mechanisms for failed operations
 
-1. Go to your Resend dashboard
-2. Add your domain (e.g., `practicelink.com`)
-3. Add the required DNS records
-4. Update `FROM_EMAIL` to use your verified domain
+### 4. Analytics & Reporting
+**Multi-Dimensional Analytics**
+- Institution analytics (type, location, accreditation)
+- Program analytics (specialty, type, outcomes)
+- Provider analytics (specialty, training level, geography)
+- Time-series analysis with configurable date ranges
 
-### Email Templates
+**Production Metrics**
+- User performance tracking
+- System usage analytics
+- Data quality metrics
+- Productivity measurements
 
-The application includes professionally designed email templates for:
-- Account verification emails with PracticeLink branding
-- Password reset emails (future feature)
-- Responsive HTML design
-- Security notices and expiration warnings
+**Export Capabilities**
+- Flexible data export with custom field selection
+- Multiple formats (CSV, Excel, JSON)
+- Filtered exports based on search criteria
+- Automated report generation
 
-## Architecture
+### 5. User Management & Security
+**Role-Based Access Control**
+- **Administrator**: Full system access and user management
+- **Provider Relations Coordinator**: Data entry and management
 
-### Frontend (React + TypeScript)
-- **Port**: 5173 (Vite dev server)
-- **Authentication**: Context-based auth system
-- **UI**: Tailwind CSS with Lucide React icons
-- **Email**: API calls to backend server
+**Security Features**
+- Email domain restriction (@practicelink.com)
+- Input sanitization and XSS prevention
+- File upload security with type validation
+- URL extraction compliance checking
+- Complete audit logging
 
-### Backend (Node.js + Express)
-- **Port**: 3001
-- **Email Service**: Resend API integration
-- **Security**: CORS enabled, domain validation
-- **API Endpoints**:
-  - `POST /api/send-verification-email`
-  - `POST /api/send-password-reset-email`
-  - `GET /api/health`
+**User Experience**
+- Responsive design for all device types
+- Progressive enhancement with graceful degradation
+- Comprehensive error handling and recovery
+- Contextual help and guidance
 
-## User Roles
+## 📊 Database Schema
 
-- **Provider Relations Data Coordinator**: Can register HCPs and manage data
-- **Administrator/Manager**: Full system access including user management
+### Core Tables
+```sql
+-- User Management
+users                    # User accounts and authentication
+user_specialties        # User specialty assignments
+user_production_metrics # Performance and productivity metrics
+bookmarks               # User bookmarks and favorites
 
-## Security Features
+-- Healthcare Provider Data
+healthcare_providers    # Main provider records
+provider_assignments   # Provider-user assignments
+duplicate_candidates    # Duplicate detection results
 
-- Email domain restriction (@practicelink.com only)
-- Email verification required for account activation
-- Role-based access control
-- Secure token-based verification system
-- 24-hour token expiration for security
-- Server-side email processing (API keys never exposed to client)
+-- Import & Validation
+import_jobs            # Import job tracking
+validation_errors      # Data validation errors
+mapping_profiles       # AI field mapping profiles
 
-## Demo Accounts
+-- GME Data
+gme_programs           # Residency and fellowship programs
+gme_business_review_data # Business review data
+gme_institutions       # Medical institutions (future)
 
-For testing purposes, the following demo accounts are available:
-
-- **Coordinator**: coordinator@practicelink.com / password
-- **Administrator**: admin@practicelink.com / password
-
-## Development
-
-```bash
-# Start backend server (in server/ directory)
-npm run dev
-
-# Start frontend (in root directory)
-npm run dev
-
-# Build frontend for production
-npm run build
-
-# Preview production build
-npm run preview
+-- System
+audit_log              # Complete audit trail
+metric_definitions     # Metric definitions and targets
 ```
 
-## Environment Variables
+### Advanced Features
+- **Row Level Security (RLS)**: Granular data access control
+- **Audit Triggers**: Automatic change tracking
+- **Materialized Views**: Optimized reporting queries
+- **Full-Text Search**: Advanced search capabilities
+- **Data Validation**: Database-level constraint enforcement
 
-### Frontend (.env)
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `VITE_API_URL` | Backend API URL | No (defaults to localhost:3001) |
-| `VITE_APP_URL` | Frontend URL | No (defaults to localhost:5173) |
+## 🔧 Development Setup
 
-### Backend (server/.env)
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `RESEND_API_KEY` | Resend API key for email functionality | Yes |
-| `FROM_EMAIL` | Sender email address (must be verified domain) | Yes |
-| `PORT` | Server port | No (defaults to 3001) |
-| `FRONTEND_URL` | Frontend URL for CORS | No (defaults to localhost:5173) |
+### Prerequisites
+- Node.js 18+ and npm
+- Supabase account and project
+- Auth0 account (for production)
+- Resend API account (for email)
+- OpenAI API key (for AI features)
 
-## Deployment
+### Quick Start
+```bash
+# Clone and install frontend dependencies
+npm install
 
-### Frontend
-Deploy to any static hosting service (Vercel, Netlify, etc.)
+# Install backend dependencies
+cd server && npm install && cd ..
 
-### Backend
-Deploy to any Node.js hosting service (Railway, Render, Heroku, etc.)
+# Configure environment variables
+cp .env.example .env
+cp server/.env.example server/.env
 
-Make sure to:
-1. Set all required environment variables
-2. Verify your sending domain in Resend
-3. Update CORS settings for production URLs
+# Start backend server
+cd server && npm run dev &
 
-## Contributing
+# Start frontend development server
+npm run dev
+```
 
-This is a private internal tool for PracticeLink's Provider Relations & Development Team. Access is restricted to authorized personnel only.
+### Environment Configuration
+**Frontend (.env)**
+```env
+VITE_AUTH0_DOMAIN=your-auth0-domain
+VITE_AUTH0_CLIENT_ID=your-auth0-client-id
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
 
-## License
+**Backend (server/.env)**
+```env
+RESEND_API_KEY=your-resend-api-key
+FROM_EMAIL=noreply@practicelink.com
+FRONTEND_URL=http://localhost:5173
+PORT=3001
+```
 
-Private and confidential. All rights reserved by PracticeLink.
+**Supabase Edge Functions**
+```env
+OPENAI_API_KEY=your-openai-api-key
+```
+
+## 🔐 Security & Compliance
+
+### Data Protection
+- **Input Sanitization**: All user inputs are sanitized to prevent XSS attacks
+- **File Upload Security**: Strict file type validation and size limits
+- **SQL Injection Prevention**: Parameterized queries and ORM usage
+- **CORS Configuration**: Proper cross-origin resource sharing setup
+
+### Compliance Features
+- **Audit Logging**: Complete activity tracking for compliance
+- **Data Provenance**: Full source tracking for all imported data
+- **Access Controls**: Role-based permissions with principle of least privilege
+- **Email Domain Restrictions**: Limited to authorized @practicelink.com addresses
+
+### Privacy & Ethics
+- **URL Extraction Compliance**: Respects robots.txt and educational institution policies
+- **Data Minimization**: Only collects necessary information
+- **Retention Policies**: Configurable data retention settings
+- **User Consent**: Clear data usage policies and consent mechanisms
+
+## 🎨 User Interface Design
+
+### Design Principles
+- **Apple-Level Aesthetics**: Clean, sophisticated visual presentation
+- **Responsive Design**: Optimized for desktop, tablet, and mobile
+- **Accessibility**: ARIA labels, keyboard navigation, screen reader support
+- **Progressive Enhancement**: Works without JavaScript for core functionality
+
+### Key UI Components
+- **Smart Search**: Debounced search with real-time filtering
+- **Bulk Operations**: Efficient multi-record management
+- **Progress Indicators**: Clear feedback for long-running operations
+- **Error Recovery**: User-friendly error messages with recovery options
+- **Contextual Help**: Inline guidance and tooltips
+
+## 🤖 AI-Powered Features
+
+### Intelligent Data Extraction
+- **Text Parsing**: Extract structured data from unstructured text
+- **URL Content Extraction**: Parse residency program websites
+- **Field Mapping**: Automatic mapping of arbitrary data formats
+- **Confidence Scoring**: AI confidence metrics for data quality
+
+### Smart Validation
+- **Business Rule Validation**: Context-aware data validation
+- **Duplicate Detection**: Fuzzy matching with confidence scores
+- **Data Enrichment**: Automatic completion of missing fields
+- **Quality Scoring**: Overall data quality assessment
+
+## 📈 Analytics & Metrics
+
+### Comprehensive Reporting
+- **Institution Analytics**: Type distribution, geographic analysis, accreditation tracking
+- **Program Analytics**: Specialty distribution, program outcomes, application statistics
+- **Provider Analytics**: Training level distribution, specialty coverage, geographic spread
+- **User Performance**: Productivity metrics, data quality scores, system usage
+
+### Real-Time Dashboards
+- **Executive Dashboard**: High-level KPIs and trends
+- **Operational Dashboard**: Day-to-day metrics and alerts
+- **User Dashboard**: Individual performance and assignments
+- **System Health**: Technical metrics and performance indicators
+
+## 🔄 Data Workflows
+
+### Import Workflows
+1. **Template Upload**: Standardized CSV/Excel import with validation
+2. **AI Mapping**: Intelligent field mapping for arbitrary formats
+3. **URL Extraction**: Automated extraction from educational websites
+4. **Manual Entry**: Individual provider registration forms
+
+### Validation Workflows
+1. **Automated Validation**: Schema and business rule checking
+2. **Duplicate Detection**: AI-powered duplicate identification
+3. **Manual Review**: Human oversight for edge cases
+4. **Quality Assurance**: Final approval and publication
+
+### Export Workflows
+1. **Filtered Exports**: Custom field selection and filtering
+2. **Scheduled Reports**: Automated report generation
+3. **API Integration**: Real-time data access for external systems
+4. **Compliance Reports**: Audit and compliance documentation
+
+## 🚀 Deployment & Operations
+
+### Production Deployment
+**Frontend (Vercel)**
+- Automatic deployments from Git
+- Global CDN distribution
+- Custom domain support
+- SSL/TLS encryption
+
+**Backend (Railway/Render/Heroku)**
+- Container-based deployment
+- Auto-scaling capabilities
+- Health monitoring
+- Log aggregation
+
+**Database (Supabase)**
+- Managed PostgreSQL with automatic backups
+- Real-time subscriptions
+- Edge functions for serverless computing
+- Built-in authentication and authorization
+
+### Monitoring & Maintenance
+- **Error Tracking**: Comprehensive error logging and alerting
+- **Performance Monitoring**: Application performance metrics
+- **Usage Analytics**: User behavior and system usage tracking
+- **Security Monitoring**: Access logs and security event tracking
+
+## 🧪 Testing & Quality Assurance
+
+### Testing Strategy
+- **Unit Tests**: Component and service testing with Vitest
+- **Integration Tests**: API and database integration testing
+- **End-to-End Tests**: Complete user workflow testing
+- **Security Testing**: Vulnerability scanning and penetration testing
+
+### Code Quality
+- **TypeScript**: Full type safety with strict configuration
+- **ESLint**: Code quality and consistency enforcement
+- **Prettier**: Automated code formatting
+- **Husky**: Pre-commit hooks for quality gates
+
+## 📚 Documentation
+
+### User Documentation
+- **User Guides**: Step-by-step instructions for all features
+- **Video Tutorials**: Screen recordings for complex workflows
+- **FAQ**: Common questions and troubleshooting
+- **Best Practices**: Recommended workflows and data standards
+
+### Technical Documentation
+- **API Documentation**: Complete API reference
+- **Database Schema**: Entity relationship diagrams and field definitions
+- **Deployment Guides**: Step-by-step deployment instructions
+- **Development Guidelines**: Coding standards and contribution guidelines
+
+## 🔮 Future Roadmap
+
+### Planned Enhancements
+- **Advanced AI Features**: Enhanced natural language processing
+- **Mobile Application**: Native mobile app for field data collection
+- **API Ecosystem**: Public APIs for third-party integrations
+- **Advanced Analytics**: Machine learning-powered insights
+
+### Integration Opportunities
+- **EHR Systems**: Electronic health record integration
+- **Credentialing Services**: Automated credential verification
+- **Licensing Boards**: Real-time license status checking
+- **Professional Organizations**: Membership and certification tracking
+
+## 📞 Support & Contact
+
+### Development Team
+- **Technical Lead**: PracticeLink Development Team
+- **Product Owner**: Provider Relations & Development Team
+- **Security Officer**: IT Security Team
+
+### Support Channels
+- **Internal Support**: IT Help Desk
+- **Technical Issues**: Development Team
+- **Feature Requests**: Product Management
+- **Security Concerns**: Security Team
+
+---
+
+**Project Status**: Production Ready  
+**Last Updated**: January 2025  
+**Version**: 1.0.0  
+**License**: Private and Confidential - All Rights Reserved by PracticeLink
+
+*This platform represents a significant investment in healthcare data infrastructure and provider relationship management. It embodies PracticeLink's commitment to improving healthcare delivery through effective provider network management and data-driven insights.*
