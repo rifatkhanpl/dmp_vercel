@@ -54,6 +54,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
       
+      // If no mock user exists, create a default admin for testing
+      if (!mockUser) {
+        const defaultAdmin = createMockAdmin();
+        localStorage.setItem('mockUser', JSON.stringify(defaultAdmin));
+        setUser(defaultAdmin);
+        setIsLoading(false);
+        return;
+      }
+      
       if (mockUser) {
         try {
           setUser(JSON.parse(mockUser));
