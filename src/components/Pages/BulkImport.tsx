@@ -7,6 +7,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { LoadingOverlay } from '../ui/LoadingSpinner';
 import { supabase, getAuthenticatedSupabase } from '../../services/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
+import { RealDMPService } from '../../services/realDmpService';
 import {
   Upload,
   FileText,
@@ -179,19 +180,15 @@ export function BulkImport() {
   };
 
   const processFile = async () => {
-    if (!uploadedFile) {
-      errorService.showError('No file selected');
+    if (!uploadedFile || !user) {
+      errorService.showError('No file selected or user not authenticated');
       return;
     }
     
     setIsProcessingFile(true);
     
     try {
-      // Enhanced file processing with timeout and error handling
-      const job = await errorService.withTimeout(
-        DMPService.processTemplateUpload(uploadedFile),
-        60000 // 60 second timeout
-      );
+      const job = await RealDMPService.processTemplateUpload(uploadedFile, user.id);
       
       setResults({
         success: job.successCount,
@@ -205,9 +202,9 @@ export function BulkImport() {
       });
       
       if (job.status === 'completed') {
-        errorService.showSuccess(`Successfully processed ${job.successCount} records`);
+        errorService.showSuccess(`Successfully imported ${job.successCount} records to database`);
       } else if (job.status === 'partial') {
-        errorService.showWarning(`Processed ${job.successCount} records with ${job.errorCount} errors`);
+        errorService.showWarning(`Imported ${job.successCount} records with ${job.errorCount} errors`);
       }
       
     } catch (error) {
@@ -358,14 +355,9 @@ Jane,Smith,DO,jane.smith@example.com,555-0124,1234567891,Family Medicine,NY,1234
       return;
     }
     
-    // Check if user is authenticated and has admin privileges
+    // Check if user is authenticated
     if (!user) {
       errorService.showError('You must be logged in to import data');
-      return;
-    }
-    
-    if (user.role !== 'administrator') {
-      errorService.showError('Only administrators can import data to the database');
       return;
     }
     
@@ -373,53 +365,10 @@ Jane,Smith,DO,jane.smith@example.com,555-0124,1234567891,Family Medicine,NY,1234
     setIsProcessingAI(true);
     
     try {
-      // Get authenticated Supabase client
-      const accessToken = await getAccessToken();
-      const authenticatedSupabase = await getAuthenticatedSupabase(accessToken);
+      const sourceContent = aiMode === 'url' ? inputUrl : inputText;
+      const job = await RealDMPService.processAIImport(selectedData, user.id, aiMode, sourceContent);
       
-      // Transform parsed data to match database schema
-      const recordsToInsert = selectedData.map(resident => ({
-        npi: generateTempNPI(), // Generate temporary NPI for now
-        first_name: extractFirstName(resident.name),
-        last_name: extractLastName(resident.name),
-        credentials: extractCredentials(resident.name),
-        primary_specialty: resident.specialty || 'Unknown',
-        email: resident.email,
-        phone: resident.phone,
-        practice_address_1: resident.location || 'Unknown',
-        practice_city: 'Unknown',
-        practice_state: 'CA', // Default for now
-        practice_zip: '00000',
-        mailing_address_1: resident.location || 'Unknown',
-        mailing_city: 'Unknown',
-        mailing_state: 'CA',
-        mailing_zip: '00000',
-        license_state: 'CA', // Default for now
-        license_number: 'TEMP' + Date.now(),
-        source_type: aiMode === 'url' ? 'URL' : 'AI-Map',
-        source_url: aiMode === 'url' ? inputUrl : null,
-        source_artifact: aiMode === 'text' ? 'AI_PARSED_TEXT' : null,
-        source_fetch_date: new Date().toISOString(),
-        status: 'pending',
-        pgy_year: resident.pgyYear,
-        program_name: inferProgramName(resident),
-        institution: inferInstitution(resident),
-        entered_by: user.id,
-        entered_at: new Date().toISOString()
-      }));
-
-      // Insert records into dmp.healthcare_providers table
-      const { data, error } = await authenticatedSupabase
-        .schema('dmp')
-        .from('healthcare_providers')
-        .insert(recordsToInsert)
-        .select();
-
-      if (error) {
-        throw new Error(`Database error: ${error.message}`);
-      }
-      
-      errorService.showSuccess(`Successfully imported ${data?.length || selectedData.length} residents/fellows to the DMP database!`);
+      errorService.showSuccess(`Successfully imported ${job.successCount} residents/fellows to the database!`);
       
       // Reset form after successful import
       if (aiMode === 'text') setInputText('');
