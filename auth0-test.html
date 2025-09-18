@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth0 Test</title>
+</head>
+<body>
+    <h1>Auth0 Configuration Test</h1>
+    <button onclick="testAuth0()">Test Auth0 Direct</button>
+    <div id="results"></div>
+
+    <script>
+        async function testAuth0() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Testing Auth0...</p>';
+
+            const domain = 'dev-c4u34lk8e3qzwt8q.us.auth0.com';
+            const clientId = 'Aha8XFlrZi7rMcOzb4Jaz3GQ9jFEC6M4';
+            const redirectUri = window.location.origin;
+
+            console.log('Testing with config:', { domain, clientId, redirectUri });
+
+            // Test 1: Basic domain connectivity
+            try {
+                const response = await fetch(`https://${domain}/`, {
+                    method: 'HEAD',
+                    mode: 'no-cors'
+                });
+                results.innerHTML += '<p>✅ Domain reachable</p>';
+                console.log('Domain test passed');
+            } catch (error) {
+                results.innerHTML += '<p>❌ Domain unreachable: ' + error.message + '</p>';
+                console.error('Domain test failed:', error);
+            }
+
+            // Test 2: Direct authorization URL
+            const authUrl = `https://${domain}/authorize?` +
+                `response_type=code&` +
+                `client_id=${clientId}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `scope=openid profile email&` +
+                `state=test123`;
+
+            results.innerHTML += `<p><a href="${authUrl}" target="_blank">🔗 Try Direct Auth URL</a></p>`;
+            results.innerHTML += `<p>Auth URL: <code>${authUrl}</code></p>`;
+
+            console.log('Auth URL generated:', authUrl);
+        }
+    </script>
+</body>
+</html>

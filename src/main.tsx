@@ -5,14 +5,20 @@ import App from './App';
 import { auth0Config } from './config/auth0';
 import './index.css';
 
-// Add error boundary for Auth0 initialization
-const onRedirectCallback = (appState: any) => {
+// Auth0 redirect callback
+const onRedirectCallback = (appState?: { returnTo?: string }) => {
   console.log('Auth0 redirect callback:', appState);
-  window.history.replaceState(
-    {},
-    document.title,
-    appState?.returnTo || window.location.pathname
-  );
+  // Let React Router handle navigation naturally
+};
+
+// Auth0 error handler
+const onError = (error: Error) => {
+  console.error('Auth0 Provider Error:', error);
+  console.error('Error details:', {
+    name: error.name,
+    message: error.message,
+    stack: error.stack
+  });
 };
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -22,12 +28,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       clientId={auth0Config.clientId}
       authorizationParams={{
         redirect_uri: auth0Config.redirectUri,
-        audience: auth0Config.audience,
+        // Only include audience if it exists in config
+        ...(auth0Config.audience ? { audience: auth0Config.audience } : {}),
         scope: auth0Config.scope,
       }}
       useRefreshTokens={auth0Config.useRefreshTokens}
       cacheLocation={auth0Config.cacheLocation}
       onRedirectCallback={onRedirectCallback}
+      onError={onError}
     >
       <App />
     </Auth0Provider>

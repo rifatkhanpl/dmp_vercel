@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout } from '../Layout/Layout';
+import { auth0Management, Auth0ManagementService } from '../../services/auth0Management';
 import { 
   Users,
   User as UserIcon,
@@ -28,7 +29,8 @@ interface User {
   firstName: string;
   lastName: string;
   email: string;
-  role: 'provider-relations-coordinator' | 'administrator';
+  role: string; // Changed to accept any string to show exact Auth0 roles
+  roles: string[]; // Added to store all Auth0 roles
   status: 'active' | 'inactive' | 'pending' | 'suspended';
   lastLogin: string;
   createdAt: string;
@@ -41,104 +43,10 @@ interface User {
 }
 
 export function UserManagement() {
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: '1',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@practicelink.com',
-      role: 'provider-relations-coordinator',
-      status: 'active',
-      lastLogin: '2024-01-15T10:30:00Z',
-      createdAt: '2023-06-15T09:00:00Z',
-      isEmailVerified: true,
-      phone: '(555) 123-4567',
-      department: 'Provider Relations',
-      providersManaged: 28,
-      lastActivity: '2024-01-15T14:22:00Z',
-      assignedSpecialties: ['Internal Medicine', 'Cardiology', 'Gastroenterology']
-    },
-    {
-      id: '2',
-      firstName: 'Sarah',
-      lastName: 'Johnson',
-      email: 'sarah.johnson@practicelink.com',
-      role: 'administrator',
-      status: 'active',
-      lastLogin: '2024-01-15T08:15:00Z',
-      createdAt: '2023-03-10T10:30:00Z',
-      isEmailVerified: true,
-      phone: '(555) 234-5678',
-      department: 'IT Administration',
-      providersManaged: 2,
-      lastActivity: '2024-01-15T16:45:00Z',
-      assignedSpecialties: []
-    },
-    {
-      id: '3',
-      firstName: 'Mike',
-      lastName: 'Chen',
-      email: 'mike.chen@practicelink.com',
-      role: 'provider-relations-coordinator',
-      status: 'pending',
-      lastLogin: '',
-      createdAt: '2024-01-10T14:20:00Z',
-      isEmailVerified: false,
-      phone: '(555) 345-6789',
-      department: 'Provider Relations',
-      providersManaged: 0,
-      lastActivity: '2024-01-10T14:20:00Z',
-      assignedSpecialties: ['Emergency Medicine', 'Critical Care']
-    },
-    {
-      id: '4',
-      firstName: 'Emily',
-      lastName: 'Rodriguez',
-      email: 'emily.rodriguez@practicelink.com',
-      role: 'provider-relations-coordinator',
-      status: 'active',
-      lastLogin: '2024-01-05T16:45:00Z',
-      createdAt: '2023-08-22T11:15:00Z',
-      isEmailVerified: true,
-      phone: '(555) 456-7890',
-      department: 'Provider Relations',
-      providersManaged: 3,
-      lastActivity: '2024-01-05T16:45:00Z',
-      assignedSpecialties: ['Pediatrics', 'Family Medicine', 'Pediatric Surgery']
-    },
-    {
-      id: '5',
-      firstName: 'David',
-      lastName: 'Thompson',
-      email: 'david.thompson@practicelink.com',
-      role: 'provider-relations-coordinator',
-      status: 'active',
-      lastLogin: '2024-01-14T12:30:00Z',
-      createdAt: '2023-09-05T08:45:00Z',
-      isEmailVerified: true,
-      phone: '(555) 567-8901',
-      department: 'Provider Relations',
-      providersManaged: 3,
-      lastActivity: '2024-01-14T17:15:00Z',
-      assignedSpecialties: ['Orthopedic Surgery', 'Sports Medicine', 'Physical Therapy']
-    },
-    {
-      id: '6',
-      firstName: 'Lisa',
-      lastName: 'Wang',
-      email: 'lisa.wang@practicelink.com',
-      role: 'provider-relations-coordinator',
-      status: 'active',
-      lastLogin: '2024-01-15T09:20:00Z',
-      createdAt: '2023-07-18T13:30:00Z',
-      isEmailVerified: true,
-      phone: '(555) 678-9012',
-      department: 'Provider Relations',
-      providersManaged: 0,
-      lastActivity: '2024-01-15T15:45:00Z',
-      assignedSpecialties: ['Psychiatry', 'Psychology', 'Mental Health']
-    }
-  ]);
+  const [showAuth0Notice, setShowAuth0Notice] = useState(false);
+  const [isLoadingAuth0, setIsLoadingAuth0] = useState(true);
+  const [auth0Error, setAuth0Error] = useState<string | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -146,6 +54,39 @@ export function UserManagement() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showUserModal, setShowUserModal] = useState(false);
+
+  // Fetch Auth0 users on mount
+  useEffect(() => {
+    const fetchAuth0Users = async () => {
+      try {
+        setIsLoadingAuth0(true);
+        setAuth0Error(null);
+
+        const auth0Users = await auth0Management.getUsers(0, 100);
+
+        if (auth0Users && auth0Users.length > 0) {
+          // Map Auth0 users to our User format
+          const mappedUsers = auth0Users.map((auth0User: any) =>
+            Auth0ManagementService.mapAuth0UserToAppUser(auth0User)
+          );
+
+          console.log('Fetched and mapped Auth0 users:', mappedUsers);
+          setUsers(mappedUsers);
+        } else {
+          console.log('No Auth0 users found');
+          setUsers([]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch Auth0 users:', error);
+        setAuth0Error(error instanceof Error ? error.message : 'Failed to fetch Auth0 users');
+        setUsers([]); // Show empty list on error
+      } finally {
+        setIsLoadingAuth0(false);
+      }
+    };
+
+    fetchAuth0Users();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -182,7 +123,7 @@ export function UserManagement() {
       user.email.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
-    const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+    const matchesRole = roleFilter === 'all' || user.roles?.includes(roleFilter) || (roleFilter === 'No Role' && user.roles?.length === 0);
     
     return matchesSearch && matchesStatus && matchesRole;
   });
@@ -234,6 +175,68 @@ export function UserManagement() {
           </div>
         </div>
 
+        {/* Loading State */}
+        {isLoadingAuth0 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
+              <span className="text-blue-800">Loading Auth0 users...</span>
+            </div>
+          </div>
+        )}
+
+        {/* Auth0 Error */}
+        {auth0Error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex">
+              <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Error loading Auth0 users</h3>
+                <p className="mt-1 text-sm text-red-700">{auth0Error}</p>
+                <p className="mt-2 text-xs text-red-600">No users will be displayed until Auth0 connection is fixed. Check console for details.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Auth0 Integration Notice */}
+        {showAuth0Notice && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <div className="flex">
+              <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
+              <div className="ml-3 flex-1">
+                <h3 className="text-sm font-medium text-amber-800">Auth0 Management API Integration</h3>
+                <div className="mt-2 text-sm text-amber-700">
+                  <p>To display real Auth0 users, you need to set up a backend API that connects to Auth0's Management API.</p>
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li>Auth0 Management API requires server-side authentication</li>
+                    <li>Create backend endpoints to proxy Auth0 Management API calls</li>
+                    <li>Never expose Management API credentials in frontend code</li>
+                  </ul>
+                  <div className="mt-3">
+                    <p className="font-medium">Required backend endpoints:</p>
+                    <code className="block mt-1 text-xs bg-amber-100 p-2 rounded">
+                      GET /api/auth0/users - List users<br/>
+                      GET /api/auth0/users/:id - Get user details<br/>
+                      PATCH /api/auth0/users/:id - Update user<br/>
+                      DELETE /api/auth0/users/:id - Delete user
+                    </code>
+                  </div>
+                  <p className="mt-3 text-xs">Currently showing mock data. Once backend is configured, real Auth0 users will appear here.</p>
+                </div>
+                <div className="mt-4">
+                  <button
+                    onClick={() => setShowAuth0Notice(false)}
+                    className="text-sm font-medium text-amber-800 hover:text-amber-900"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg shadow-sm p-6">
@@ -272,7 +275,7 @@ export function UserManagement() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Administrators</p>
                 <p className="text-2xl font-bold text-purple-600">
-                  {users.filter(u => u.role === 'administrator').length}
+                  {users.filter(u => u.roles?.includes('superadminudb') || u.roles?.includes('administrator')).length}
                 </p>
               </div>
               <Shield className="h-8 w-8 text-purple-600" />
@@ -333,8 +336,10 @@ export function UserManagement() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="all">All Roles</option>
+                    <option value="superadminudb">Super Admin</option>
                     <option value="administrator">Administrator</option>
                     <option value="provider-relations-coordinator">Provider Relations Coordinator</option>
+                    <option value="No Role">No Role</option>
                   </select>
                 </div>
               </div>
@@ -398,13 +403,13 @@ export function UserManagement() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        {user.role === 'administrator' ? (
+                        {user.roles?.includes('superadminudb') || user.roles?.includes('administrator') ? (
                           <ShieldCheck className="h-4 w-4 text-purple-600 mr-2" />
                         ) : (
                           <Users className="h-4 w-4 text-blue-600 mr-2" />
                         )}
-                        <span className="text-sm text-gray-900 capitalize">
-                          {user.role.replace(/-/g, ' ')}
+                        <span className="text-sm text-gray-900">
+                          {user.role}
                         </span>
                       </div>
                     </td>

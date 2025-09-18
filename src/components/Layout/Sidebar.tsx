@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBookmarks } from '../../contexts/BookmarkContext';
 import { 
@@ -29,6 +30,7 @@ interface SidebarProps {
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user } = useAuth();
   const { bookmarks } = useBookmarks();
+  const location = useLocation();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['main', 'analytics', 'admin', 'user']));
 
   const toggleSection = (sectionId: string) => {
@@ -195,17 +197,17 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <div className="space-y-1">
                 {section.items.map((item) => {
                   const Icon = item.icon;
-                  const isActive = window.location.pathname === item.href;
-                  
+                  const isActive = location.pathname === item.href;
+
                   return (
-                    <a
+                    <Link
                       key={item.name}
-                      href={item.href}
+                      to={item.href}
                       onClick={onClose}
                       className={`
                         group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
-                        ${isActive 
-                          ? 'bg-blue-100 text-blue-700' 
+                        ${isActive
+                          ? 'bg-blue-100 text-blue-700'
                           : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
                         }
                       `}
@@ -216,7 +218,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         ${isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-500'}
                       `} />
                       <span className="truncate">{item.name}</span>
-                    </a>
+                    </Link>
                   );
                 })}
               </div>
