@@ -7,7 +7,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { LoadingOverlay } from '../ui/LoadingSpinner';
 import { supabase, getAuthenticatedSupabase } from '../../services/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
-import { RealDMPService } from '../../services/realDmpService';
+import { DMPService } from '../../services/dmpService';
 import {
   Upload,
   FileText,
@@ -188,7 +188,7 @@ export function BulkImport() {
     setIsProcessingFile(true);
     
     try {
-      const job = await RealDMPService.processTemplateUpload(uploadedFile, user.id);
+      const job = await DMPService.processTemplateUpload(uploadedFile, user.id);
       
       setResults({
         success: job.successCount,
@@ -366,7 +366,7 @@ Jane,Smith,DO,jane.smith@example.com,555-0124,1234567891,Family Medicine,NY,1234
     
     try {
       const sourceContent = aiMode === 'url' ? inputUrl : inputText;
-      const job = await RealDMPService.processAIImport(selectedData, user.id, aiMode, sourceContent);
+      const job = await DMPService.processAIImport(selectedData, user.id, aiMode, sourceContent);
       
       errorService.showSuccess(`Successfully imported ${job.successCount} residents/fellows to the database!`);
       
