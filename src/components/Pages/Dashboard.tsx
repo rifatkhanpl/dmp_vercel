@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Layout } from '../Layout/Layout';
 import { useAuth } from '../../contexts/AuthContext';
 import { HealthcareProviderService } from '../../services/healthcareProviderService';
