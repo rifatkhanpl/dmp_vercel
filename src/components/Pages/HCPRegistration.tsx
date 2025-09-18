@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
 import { Layout } from '../Layout/Layout';
-import { useAuth } from '../../contexts/AuthContext';
-import { HealthcareProviderService } from '../../services/healthcareProviderService';
-import { errorService } from '../../services/errorService';
-import { ResidentFellowSchema } from '../../schemas/dmpSchemas';
 import { 
   User, 
   Mail, 
@@ -17,7 +13,6 @@ import {
 } from 'lucide-react';
 
 export function HCPRegistration() {
-  const { user } = useAuth();
   const [formData, setFormData] = useState({
     // Personal Information
     firstName: '',
@@ -101,37 +96,19 @@ export function HCPRegistration() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
-      errorService.showError('You must be logged in to register providers');
-      return;
-    }
-    
     setIsLoading(true);
     setMessage(null);
 
     try {
-      // Validate form data
-      const validation = ResidentFellowSchema.safeParse({
-        ...formData,
-        sourceType: 'Template',
-        status: 'pending'
-      });
-      
-      if (!validation.success) {
-        const errors = validation.error.errors.map(e => e.message).join(', ');
-        throw new Error(`Validation failed: ${errors}`);
-      }
-      
-      // Create provider record
-      await HealthcareProviderService.createProvider(validation.data, user.id);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       setMessage({
         type: 'success',
         text: 'Healthcare provider registered successfully!'
       });
       
-      // Reset form after successful submission
+      // Reset form
       setFormData({
         firstName: '',
         middleName: '',
@@ -167,17 +144,10 @@ export function HCPRegistration() {
         certificateName: '',
         certificationDate: ''
       });
-      
-      // Redirect to search page after 2 seconds
-      setTimeout(() => {
-        window.location.href = '/search';
-      }, 2000);
-      
     } catch (error) {
-      const errorMessage = errorService.handleApiError(error, 'Provider registration');
       setMessage({
         type: 'error',
-        text: errorMessage
+        text: 'Failed to register healthcare provider. Please try again.'
       });
     } finally {
       setIsLoading(false);
