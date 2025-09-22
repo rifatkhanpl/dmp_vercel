@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Menu, X, User, LogOut, Home } from 'lucide-react';
+import { Menu, X, User, LogOut, Home, Shield, ChevronDown } from 'lucide-react';
+import { Auth0UserMenu } from '../Auth/Auth0Login';
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -8,8 +9,9 @@ interface HeaderProps {
 }
 
 export function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, isAdmin, availableRoles, switchRole } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showRoleSelector, setShowRoleSelector] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -45,6 +47,50 @@ export function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
 
         {/* Right side - User info or auth links */}
         <div className="flex items-center space-x-4">
+          {/* Role Selector - Show only if multiple roles available */}
+          {isAuthenticated && user && availableRoles.length > 1 && (
+            <div className="relative">
+              <button
+                onClick={() => setShowRoleSelector(!showRoleSelector)}
+                className="flex items-center space-x-2 px-3 py-1.5 rounded-md border border-gray-300 bg-white hover:bg-gray-50 text-sm"
+              >
+                <span className="text-gray-600">Role:</span>
+                <span className={`font-medium ${isAdmin ? 'text-yellow-600' : 'text-blue-600'}`}>
+                  {user.role.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                </span>
+                <ChevronDown className="h-4 w-4 text-gray-400" />
+              </button>
+
+              {showRoleSelector && (
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-xs text-gray-500">Switch Role</p>
+                  </div>
+                  {availableRoles.map(role => (
+                    <button
+                      key={role}
+                      onClick={() => {
+                        switchRole(role);
+                        setShowRoleSelector(false);
+                        // No need to reload - AuthContext will update automatically
+                      }}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center justify-between ${
+                        user.role === role ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                      }`}
+                    >
+                      <span className="capitalize">
+                        {role.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                      </span>
+                      {user.role === role && (
+                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Active</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {isAuthenticated && user ? (
             <div className="relative">
               <button
@@ -52,12 +98,20 @@ export function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
                 className="flex items-center space-x-3 p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
-                  <User className="h-5 w-5 text-blue-600" />
+                  {isAdmin ? (
+                    <Shield className="h-5 w-5 text-yellow-600" />
+                  ) : (
+                    <User className="h-5 w-5 text-blue-600" />
+                  )}
                 </div>
                 <div className="hidden sm:block text-left">
                   <p className="text-sm font-medium">{user.firstName} {user.lastName}</p>
-                  <p className="text-xs text-gray-500 capitalize">
-                    {user.role.replace(/-/g, ' ')}
+                  <p className="text-xs font-semibold">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                      isAdmin ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
+                    }`}>
+                      {user.role.replace(/-/g, ' ').toUpperCase()}
+                    </span>
                   </p>
                 </div>
               </button>
