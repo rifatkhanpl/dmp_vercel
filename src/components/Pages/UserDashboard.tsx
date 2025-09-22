@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation, Link } from 'react-router-dom';
 import {
   Search,
@@ -143,11 +143,31 @@ export function UserDashboard() {
 /*************************
  * Drop-in Routes (user + admin)
  *************************/
-const AdminLayout = lazy(() => import('../pages/admin/AdminLayout'));
-const AdminOverview = lazy(() => import('../pages/admin/Overview'));
-const AdminUsers = lazy(() => import('../pages/admin/Users'));
-const AdminReports = lazy(() => import('../pages/admin/Reports'));
-const AdminSettings = lazy(() => import('../pages/admin/Settings'));
+/* Inline admin components to avoid missing-file build errors */
+function AdminLayout() {
+  return (
+    <div className="min-h-screen">
+      <header className="border-b bg-white">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Admin</h1>
+          <nav className="flex gap-4 text-sm">
+            <Link to="/admin">Overview</Link>
+            <Link to="/admin/users">Users</Link>
+            <Link to="/admin/reports">Reports</Link>
+            <Link to="/admin/settings">Settings</Link>
+          </nav>
+        </div>
+      </header>
+      <main className="max-w-7xl mx-auto px-6 py-6">
+        <Outlet />
+      </main>
+    </div>
+  );
+}
+function AdminOverview()  { return <div className="bg-white rounded-lg shadow p-6">Admin overview</div>; }
+function AdminUsers()     { return <div className="bg-white rounded-lg shadow p-6">User management</div>; }
+function AdminReports()   { return <div className="bg-white rounded-lg shadow p-6">System reports</div>; }
+function AdminSettings()  { return <div className="bg-white rounded-lg shadow p-6">Admin settings</div>; }
 
 export function AppRoutes() {
   return (
