@@ -363,7 +363,7 @@ export class DMPService {
             content: url,
             allowedDegreesOnly: true
           }),
-        this.processTemplateUpload(uploadedFile),
+        }),
         45000 // 45 second timeout for URL extraction
       );
 
