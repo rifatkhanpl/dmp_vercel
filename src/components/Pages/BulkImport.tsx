@@ -7,6 +7,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { LoadingOverlay } from '../ui/LoadingSpinner';
 import { supabase, getAuthenticatedSupabase } from '../../services/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
+import { DMPService } from '../../services/dmpService';
 import {
   Upload,
   FileText,
