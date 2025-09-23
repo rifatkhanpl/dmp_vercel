@@ -42,7 +42,7 @@ function jsonResponse(body: any, status = 200, extraHeaders = {}) {
 function getEnvOrThrow(key: string): string {
   const val = Deno.env.get(key);
   if (!val) {
-    throw new Error(`Missing required environment variable: ${key}. Please set it in your Supabase project settings.`);
+    throw new Error(`Missing required environment variable: ${key}. Please set it in your Supabase Edge Function environment variables. Go to your Supabase dashboard → Edge Functions → parse-hcp-data → Settings → Environment Variables and add: ${key}=your_openai_api_key_here`);
   }
   return val;
 }
