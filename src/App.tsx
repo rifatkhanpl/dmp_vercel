@@ -5,6 +5,7 @@ import { BookmarkProvider } from './contexts/BookmarkContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Toast } from './components/ui/Toast';
 import { ProtectedRoute, AdminRoute } from './components/Auth/ProtectedRoute';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
 
 // Import components
 import { LandingPage } from './components/Pages/LandingPage';
@@ -37,7 +38,6 @@ import { URLExtraction } from './components/Pages/URLExtraction';
 import { JobConsole } from './components/Pages/JobConsole';
 import { DuplicateReview } from './components/Pages/DuplicateReview';
 import { DataExport } from './components/Pages/DataExport';
-
 import { Analytics } from './components/Pages/Analytics';
 import { MetricsDashboard } from './components/Pages/MetricsDashboard';
 import { MetricsSearch } from './components/Pages/MetricsSearch';
@@ -58,7 +58,11 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <LoadingSpinner size="lg" text="Loading..." />
+      </div>
+    );
   }
   
   if (isAuthenticated) {
@@ -87,7 +91,7 @@ function App() {
                   </div>
                 </div>
               }>
-          <Routes>
+                <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/signin" element={
