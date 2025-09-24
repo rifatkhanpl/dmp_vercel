@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layout } from '../Layout/Layout';
+import { useAuth } from '../../contexts/AuthContext';
 import { auth0Management, Auth0ManagementService } from '../../services/auth0Management';
 import { 
   Users,
@@ -43,6 +44,7 @@ interface User {
 }
 
 export function UserManagement() {
+  const { getAccessTokenSilently } = useAuth();
   const [showAuth0Notice, setShowAuth0Notice] = useState(false);
   const [isLoadingAuth0, setIsLoadingAuth0] = useState(true);
   const [auth0Error, setAuth0Error] = useState<string | null>(null);
@@ -62,7 +64,9 @@ export function UserManagement() {
         setIsLoadingAuth0(true);
         setAuth0Error(null);
 
-        const auth0Users = await auth0Management.getUsers(0, 100);
+        // Get Auth0 access token
+        const accessToken = await getAccessTokenSilently();
+        const auth0Users = await auth0Management.getUsers(accessToken, 0, 100);
 
         if (auth0Users && auth0Users.length > 0) {
           // Map Auth0 users to our User format
@@ -86,7 +90,7 @@ export function UserManagement() {
     };
 
     fetchAuth0Users();
-  }, []);
+  }, [getAccessTokenSilently]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

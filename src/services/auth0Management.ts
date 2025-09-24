@@ -48,20 +48,14 @@ export class Auth0ManagementService {
   }
 
   // Get users via Supabase Edge Function
-  async getUsers(page = 0, perPage = 50): Promise<Auth0User[]> {
+  async getUsers(accessToken: string, page = 0, perPage = 50): Promise<Auth0User[]> {
     try {
-      // Get the current user's session for proper authorization
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('Authentication required');
-      }
-
       // Use dynamic Supabase URL and environment variables
       const response = await fetch(`${supabaseUrl}/functions/v1/auth0-users?page=${page}&per_page=${perPage}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${accessToken}`,
         },
       });
 
@@ -83,14 +77,11 @@ export class Auth0ManagementService {
     }
   }
 
-  async getUser(userId: string): Promise<Auth0User | null> {
+  async getUser(accessToken: string, userId: string): Promise<Auth0User | null> {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Authentication required');
-
       const { data, error } = await supabase.functions.invoke(`auth0-users/${userId}`, {
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 
@@ -102,14 +93,11 @@ export class Auth0ManagementService {
     }
   }
 
-  async updateUser(userId: string, data: Partial<Auth0User>): Promise<Auth0User> {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error('Authentication required');
-
+  async updateUser(accessToken: string, userId: string, data: Partial<Auth0User>): Promise<Auth0User> {
     const { data: result, error } = await supabase.functions.invoke(`auth0-users/${userId}`, {
       method: 'PATCH',
       headers: {
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: data,
     });
@@ -118,42 +106,33 @@ export class Auth0ManagementService {
     return result;
   }
 
-  async deleteUser(userId: string): Promise<void> {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error('Authentication required');
-
+  async deleteUser(accessToken: string, userId: string): Promise<void> {
     const { error } = await supabase.functions.invoke(`auth0-users/${userId}`, {
       method: 'DELETE',
       headers: {
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 
     if (error) throw error;
   }
 
-  async blockUser(userId: string): Promise<void> {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error('Authentication required');
-
+  async blockUser(accessToken: string, userId: string): Promise<void> {
     const { error } = await supabase.functions.invoke(`auth0-users/${userId}/block`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 
     if (error) throw error;
   }
 
-  async unblockUser(userId: string): Promise<void> {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error('Authentication required');
-
+  async unblockUser(accessToken: string, userId: string): Promise<void> {
     const { error } = await supabase.functions.invoke(`auth0-users/${userId}/unblock`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
 
