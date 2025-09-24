@@ -41,6 +41,7 @@ import { DataExport } from './components/Pages/DataExport';
 import { Analytics } from './components/Pages/Analytics';
 import { MetricsDashboard } from './components/Pages/MetricsDashboard';
 import { MetricsSearch } from './components/Pages/MetricsSearch';
+import { AdminUserSettings } from './components/Pages/AdminUserSettings';
 
 // Role-based Dashboard Component
 function RoleDashboard() {
@@ -165,6 +166,11 @@ function App() {
               <ProtectedRoute>
                 <UserSettings />
               </ProtectedRoute>
+            } />
+            <Route path="/admin/user-settings" element={
+              <AdminRoute>
+                <AdminUserSettings />
+              </AdminRoute>
             } />
             <Route path="/gme-program-search" element={
               <ProtectedRoute>
