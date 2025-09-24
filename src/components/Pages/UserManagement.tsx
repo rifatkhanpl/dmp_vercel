@@ -88,6 +88,7 @@ export function UserManagement() {
     };
 
     fetchAuth0Users();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
