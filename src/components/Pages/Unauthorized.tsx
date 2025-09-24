@@ -60,3 +60,5 @@ export function Unauthorized() {
     </div>
   );
 }
+
+export { Unauthorized }
