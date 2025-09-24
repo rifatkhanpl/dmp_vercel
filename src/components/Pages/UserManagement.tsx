@@ -44,7 +44,7 @@ interface User {
 }
 
 export function UserManagement() {
-  const { getAccessTokenSilently } = useAuth();
+  const { getAccessToken } = useAuth();
   const [showAuth0Notice, setShowAuth0Notice] = useState(false);
   const [isLoadingAuth0, setIsLoadingAuth0] = useState(true);
   const [auth0Error, setAuth0Error] = useState<string | null>(null);
@@ -65,7 +65,7 @@ export function UserManagement() {
         setAuth0Error(null);
 
         // Get Auth0 access token
-        const accessToken = await getAccessTokenSilently();
+        const accessToken = await getAccessToken();
         const auth0Users = await auth0Management.getUsers(accessToken, 0, 100);
 
         if (auth0Users && auth0Users.length > 0) {
