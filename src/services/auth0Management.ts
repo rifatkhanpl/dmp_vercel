@@ -50,12 +50,12 @@ export class Auth0ManagementService {
   // Get users via Supabase Edge Function
   async getUsers(page = 0, perPage = 50): Promise<Auth0User[]> {
     try {
-      // Use direct fetch to the deployed Edge Function URL with working Supabase token
-      const response = await fetch(`https://api.pl-udbs.com/functions/v1/auth0-users?page=${page}&per_page=${perPage}`, {
+      // Use dynamic Supabase URL and environment variables
+      const response = await fetch(`${supabaseUrl}/functions/v1/auth0-users?page=${page}&per_page=${perPage}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpb25rd3Rsemtqc2Fic3RpeWN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyNjU4NTcsImV4cCI6MjA2NTg0MTg1N30.UYw7ktCdtbvAye2X1gBD40tz8mdXvzk0E-e5g1VLjSw',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
         },
       });
 
