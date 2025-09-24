@@ -332,7 +332,7 @@ export function AdminUserSettings() {
 
   return (
     <Layout breadcrumbs={[
-      { label: 'My Profile', href: '/user-profile' },
+      { label: 'User Management', href: '/user-management' },
       { label: 'Admin User Settings' }
     ]}>
       <div className="max-w-6xl mx-auto space-y-6">
@@ -363,56 +363,64 @@ export function AdminUserSettings() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* User Selection */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Select User</h2>
-            <div className="space-y-3">
-              {mockUsers.map((mockUser) => (
-                <button
-                  key={mockUser.id}
-                  onClick={() => setSelectedUserId(mockUser.id)}
-                  className={`w-full text-left p-3 border rounded-lg transition-colors ${
-                    selectedUserId === mockUser.id
-                      ? 'border-blue-300 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <span className="text-xs font-medium text-blue-600">
-                        {mockUser.firstName[0]}{mockUser.lastName[0]}
-                      </span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
-                        {mockUser.firstName} {mockUser.lastName}
-                      </p>
-                      <div className="flex items-center space-x-2">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getRoleColor(mockUser.role)}`}>
-                          {mockUser.role === 'administrator' ? 'Admin' : 'Coordinator'}
-                        </span>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(mockUser.status)}`}>
-                          {mockUser.status}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* User Details & Settings */}
-          <div className="lg:col-span-2 space-y-6">
-            {!selectedUser ? (
-              <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Select a User</h3>
-                <p className="text-gray-600">Choose a user from the list to view and edit their settings.</p>
+        {!selectedUser ? (
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+            <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">User Not Found</h3>
+            <p className="text-gray-600 mb-4">The requested user could not be found.</p>
+            <a
+              href="/user-management"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Back to User Management
+            </a>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* User Selection (only show if no URL param) */}
+            {!userIdFromUrl && (
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Select User</h2>
+                <div className="space-y-3">
+                  {mockUsers.map((mockUser) => (
+                    <button
+                      key={mockUser.id}
+                      onClick={() => setSelectedUserId(mockUser.id)}
+                      className={`w-full text-left p-3 border rounded-lg transition-colors ${
+                        selectedUserId === mockUser.id
+                          ? 'border-blue-300 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                          <span className="text-xs font-medium text-blue-600">
+                            {mockUser.firstName[0]}{mockUser.lastName[0]}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">
+                            {mockUser.firstName} {mockUser.lastName}
+                          </p>
+                          <div className="flex items-center space-x-2">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getRoleColor(mockUser.role)}`}>
+                              {mockUser.role === 'administrator' ? 'Admin' : 'Coordinator'}
+                            </span>
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(mockUser.status)}`}>
+                              {mockUser.status}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
-            ) : (
-              <>
+            )}
+
+            {/* User Details & Settings */}
+            <>
                 {/* User Header */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
                   <div className="flex items-center justify-between">
@@ -874,9 +882,8 @@ export function AdminUserSettings() {
                   </div>
                 </div>
               </>
-            )}
           </div>
-        </div>
+        )}
       </div>
     </Layout>
   );
