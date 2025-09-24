@@ -60,7 +60,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Mock user for development
   const [mockUser, setMockUser] = useState<AuthUser | null>(null);
-  const [useMockAuth, setUseMockAuth] = useState(false);
+  const [useMockAuth, setUseMockAuth] = useState(isDevelopment);
 
   // Get persisted role from localStorage
   const getPersistedRole = (): UserRole | null => {
@@ -171,14 +171,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       useMockAuth
     });
 
-    // In development, allow mock authentication if Auth0 fails
-    if (isDevelopment && !auth0IsAuthenticated && !auth0IsLoading && !useMockAuth) {
-      console.log('Development mode: Auth0 not working, enabling mock auth');
-      setUseMockAuth(true);
-      return;
-    }
-
-    if (useMockAuth && isDevelopment) {
+    // In development, use mock authentication by default
+    if (isDevelopment && useMockAuth) {
       // Use mock authentication in development
       if (!mockUser) {
         const defaultMockUser: AuthUser = {
@@ -251,7 +245,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [auth0IsAuthenticated, auth0User, auth0IsLoading, selectedRole]);
 
   const login = async () => {
-    if (isDevelopment && useMockAuth) {
+    if (isDevelopment) {
       // Mock login in development
       const mockUser: AuthUser = {
         id: 'mock-user-1',
@@ -266,6 +260,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(mockUser);
       setAvailableRoles(['administrator', 'provider-relations-coordinator']);
       setUserPermissions(ROLE_PERMISSIONS['administrator']);
+      setUseMockAuth(true);
       return;
     }
 
@@ -298,7 +293,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const register = async (email: string, password: string, firstName: string, lastName: string) => {
-    if (isDevelopment && useMockAuth) {
+    if (isDevelopment) {
       // Mock registration in development
       const mockUser: AuthUser = {
         id: 'mock-user-2',
@@ -313,6 +308,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(mockUser);
       setAvailableRoles(['provider-relations-coordinator']);
       setUserPermissions(ROLE_PERMISSIONS['provider-relations-coordinator']);
+      setUseMockAuth(true);
       return;
     }
 
@@ -326,12 +322,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const logout = () => {
-    if (isDevelopment && useMockAuth) {
+    if (isDevelopment) {
       // Mock logout
       setMockUser(null);
       setUser(null);
       setUserPermissions([]);
       setAvailableRoles([]);
+      setUseMockAuth(false);
       localStorage.removeItem('selectedRole');
       return;
     }
@@ -409,8 +406,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const value: AuthContextType = {
     user,
-    isLoading: useMockAuth ? false : auth0IsLoading,
-    isAuthenticated: useMockAuth ? !!mockUser : (auth0IsAuthenticated && !!user),
+    isLoading: (isDevelopment && useMockAuth) ? false : auth0IsLoading,
+    isAuthenticated: (isDevelopment && useMockAuth) ? !!mockUser : (auth0IsAuthenticated && !!user),
     login,
     register,
     logout,
