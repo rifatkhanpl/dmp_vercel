@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { useAuth0 } from '@auth0/auth0-react';
 import { User, UserRole } from '../types/user';
 import { ROLES, ROLE_PERMISSIONS } from '../config/auth0';
+import { errorService } from '../services/errorService';
 
 export interface AuthUser {
   id: string;
@@ -49,6 +50,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
   const [availableRoles, setAvailableRoles] = useState<UserRole[]>([]);
+
+  // Check if we're in development mode
+  const isDevelopment = window.location.hostname === 'localhost' || 
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       import.meta.env.DEV;
+
+  // Mock user for development
+  const [mockUser, setMockUser] = useState<AuthUser | null>(null);
+  const [useMockAuth, setUseMockAuth] = useState(false);
 
   // Get persisted role from localStorage
   const getPersistedRole = (): UserRole | null => {
@@ -154,10 +165,40 @@ export function AuthProvider({ children }: AuthProviderProps) {
     console.log('AuthContext useEffect triggered:', {
       auth0IsAuthenticated,
       auth0IsLoading,
-      hasAuth0User: !!auth0User
+      hasAuth0User: !!auth0User,
+      isDevelopment,
+      useMockAuth
     });
 
-    if (!auth0IsLoading) {
+    // In development, allow mock authentication if Auth0 fails
+    if (isDevelopment && !auth0IsAuthenticated && !auth0IsLoading && !useMockAuth) {
+      console.log('Development mode: Auth0 not working, enabling mock auth');
+      setUseMockAuth(true);
+      return;
+    }
+
+    if (useMockAuth && isDevelopment) {
+      // Use mock authentication in development
+      if (!mockUser) {
+        const defaultMockUser: AuthUser = {
+          id: 'mock-user-1',
+          firstName: 'Demo',
+          lastName: 'User',
+          email: 'demo@practicelink.com',
+          role: 'administrator',
+          isEmailVerified: true,
+          createdAt: new Date().toISOString()
+        };
+        setMockUser(defaultMockUser);
+        setUser(defaultMockUser);
+        setAvailableRoles(['administrator', 'provider-relations-coordinator']);
+        setUserPermissions(ROLE_PERMISSIONS['administrator']);
+        console.log('Mock auth enabled with demo user');
+      }
+      return;
+    }
+
+    if (!auth0IsLoading && !useMockAuth) {
       if (auth0IsAuthenticated && auth0User) {
         console.log('Auth0 authenticated, processing user...', auth0User);
         const roles = getUserRoles(auth0User);
@@ -205,6 +246,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [auth0IsAuthenticated, auth0User, auth0IsLoading, selectedRole]);
 
   const login = async () => {
+    if (isDevelopment && useMockAuth) {
+      // Mock login in development
+      const mockUser: AuthUser = {
+        id: 'mock-user-1',
+        firstName: 'Demo',
+        lastName: 'User',
+        email: 'demo@practicelink.com',
+        role: 'administrator',
+        isEmailVerified: true,
+        createdAt: new Date().toISOString()
+      };
+      setMockUser(mockUser);
+      setUser(mockUser);
+      setAvailableRoles(['administrator', 'provider-relations-coordinator']);
+      setUserPermissions(ROLE_PERMISSIONS['administrator']);
+      return;
+    }
+
     try {
       console.log('AuthContext login called');
       console.log('Login config:', {
@@ -220,11 +279,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
     } catch (error) {
       console.error('AuthContext login error:', error);
+      
+      // In development, fall back to mock auth if Auth0 fails
+      if (isDevelopment) {
+        console.log('Auth0 failed in development, falling back to mock auth');
+        setUseMockAuth(true);
+        errorService.showWarning('Auth0 connection failed. Using development mode.');
+        return;
+      }
+      
       throw error;
     }
   };
 
   const register = async (email: string, password: string, firstName: string, lastName: string) => {
+    if (isDevelopment && useMockAuth) {
+      // Mock registration in development
+      const mockUser: AuthUser = {
+        id: 'mock-user-2',
+        firstName,
+        lastName,
+        email,
+        role: 'provider-relations-coordinator',
+        isEmailVerified: true,
+        createdAt: new Date().toISOString()
+      };
+      setMockUser(mockUser);
+      setUser(mockUser);
+      setAvailableRoles(['provider-relations-coordinator']);
+      setUserPermissions(ROLE_PERMISSIONS['provider-relations-coordinator']);
+      return;
+    }
+
     // Redirect to Auth0 signup
     await loginWithRedirect({
       authorizationParams: {
@@ -235,6 +321,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const logout = () => {
+    if (isDevelopment && useMockAuth) {
+      // Mock logout
+      setMockUser(null);
+      setUser(null);
+      setUserPermissions([]);
+      setAvailableRoles([]);
+      localStorage.removeItem('selectedRole');
+      return;
+    }
+
     // Clear persisted role on logout
     localStorage.removeItem('selectedRole');
     auth0Logout({
@@ -245,6 +341,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const getAccessToken = async (): Promise<string | undefined> => {
+    if (isDevelopment && useMockAuth) {
+      return 'mock-access-token';
+    }
+
     try {
       return await getAccessTokenSilently();
     } catch (error) {
@@ -254,12 +354,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const verifyEmail = async (token: string) => {
+    if (isDevelopment && useMockAuth) {
+      return { success: true, message: 'Email verified (mock)' };
+    }
+
     // Email verification handled by Auth0
     console.log('Email verification handled by Auth0');
     return { success: true, message: 'Email verification handled by Auth0' };
   };
 
   const resendVerification = async (email: string) => {
+    if (isDevelopment && useMockAuth) {
+      return { success: true, message: 'Verification email sent (mock)' };
+    }
+
     // Resend verification handled by Auth0
     console.log('Resend verification handled by Auth0');
     return { success: true, message: 'Resend verification handled by Auth0' };
@@ -278,16 +386,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.log('Switching role to:', role);
       setSelectedRole(role);
       localStorage.setItem('selectedRole', role);
+      
+      // Update current user role
+      if (user) {
+        const updatedUser = { ...user, role };
+        setUser(updatedUser);
+        if (mockUser) {
+          setMockUser(updatedUser);
+        }
+        setUserPermissions(ROLE_PERMISSIONS[role] || []);
+      }
       // Don't need page reload, useEffect will handle the update
     }
   };
 
-  const isAdmin = user?.role === 'administrator';
+  const isAdmin = user?.role === 'administrator' || (isDevelopment && useMockAuth && user?.role === 'administrator');
 
   const value: AuthContextType = {
     user,
-    isLoading: auth0IsLoading,
-    isAuthenticated: auth0IsAuthenticated && !!user,
+    isLoading: useMockAuth ? false : auth0IsLoading,
+    isAuthenticated: useMockAuth ? !!mockUser : (auth0IsAuthenticated && !!user),
     login,
     register,
     logout,
