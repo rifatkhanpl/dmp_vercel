@@ -332,8 +332,9 @@ export function AdminUserSettings() {
 
   return (
     <Layout breadcrumbs={[
+     { label: 'Dashboard', href: '/dashboard' },
       { label: 'User Management', href: '/user-management' },
-      { label: 'Admin User Settings' }
+     { label: selectedUser ? `Edit ${selectedUser.firstName} ${selectedUser.lastName}` : 'User Settings' }
     ]}>
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
