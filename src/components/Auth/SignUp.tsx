@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { UserPlus, AlertTriangle, LogIn } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function SignUp() {
@@ -20,15 +20,6 @@ export function SignUp() {
   // Check if we're in development environment
   const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname.includes('bolt.new');
 
-  const handleSignUp = () => {
-    // In development, just redirect to login
-    if (isDevelopment) {
-      login();
-    } else {
-      login(); // Auth0 handles both login and signup
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -43,6 +34,7 @@ export function SignUp() {
           </p>
         </div>
 
+        <div className="max-w-md w-full space-y-8">
         <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="space-y-6">
               {isDevelopment && (
@@ -68,13 +60,23 @@ export function SignUp() {
               )}
               
               <button
-                onClick={handleSignUp}
-                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
-                disabled={isLoading}
+                onClick={handleLogin}
+                className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
                 <LogIn className="mr-2 h-5 w-5" />
-                {isLoading ? 'Signing up...' : isDevelopment ? 'Sign up (Development Mode)' : 'Sign up with Auth0'}
+                Sign in with Auth0
               </button>
+
+              {isDevelopment && (
+                <div className="text-center">
+                  <a
+                    href="/dashboard"
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Skip Auth (Development Only)
+                  </a>
+                </div>
+              )}
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -89,7 +91,7 @@ export function SignUp() {
                 <p className="text-sm text-gray-600">
                   Don't have an account?{' '}
                   <button
-                    onClick={handleSignUp}
+                    onClick={handleLogin}
                     className="font-medium text-blue-600 hover:text-blue-500"
                   >
                     Sign up
@@ -101,13 +103,11 @@ export function SignUp() {
             <div className="mt-6 p-4 bg-blue-50 rounded-md">
               <h3 className="text-sm font-medium text-blue-900 mb-2">Note:</h3>
               <p className="text-xs text-blue-700">
-                {isDevelopment 
-                  ? 'Development mode active. Authentication will use demo credentials.'
-                  : 'Auth0 handles both sign in and sign up. Click the button above and follow the prompts to create a new account or sign in to an existing one.'
-                }
+                Auth0 handles both sign in and sign up. Click "Sign in with Auth0" and follow the prompts to create a new account or sign in to an existing one.
               </p>
             </div>
           </div>
+        </div>
       </div>
     </div>
   );

@@ -50,17 +50,22 @@ export class Auth0ManagementService {
   // Get users via Supabase Edge Function
   async getUsers(page = 0, perPage = 50): Promise<Auth0User[]> {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Authentication required');
-
-      const { data, error } = await supabase.functions.invoke('auth0-users', {
+      // Use direct fetch to the deployed Edge Function URL with working Supabase token
+      const response = await fetch(`https://api.pl-udbs.com/functions/v1/auth0-users?page=${page}&per_page=${perPage}`, {
+        method: 'GET',
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpb25rd3Rsemtqc2Fic3RpeWN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyNjU4NTcsImV4cCI6MjA2NTg0MTg1N30.UYw7ktCdtbvAye2X1gBD40tz8mdXvzk0E-e5g1VLjSw',
         },
-        body: { page, per_page: perPage },
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`Failed to fetch users: ${response.status}`);
+      }
+
+      const data = await response.json();
       console.log('Fetched Auth0 users:', data);
 
       // Auth0 returns users array directly or in a 'users' property with pagination
