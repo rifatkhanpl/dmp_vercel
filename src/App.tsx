@@ -47,11 +47,8 @@ import { AdminUserSettings } from './components/Pages/AdminUserSettings';
 function RoleDashboard() {
   const { user, isAdmin } = useAuth();
 
-  if (isAdmin) {
-    return <AdminDashboard />;
-  }
-
-  return <UserDashboard />;
+  // Always use the main Dashboard component for /dashboard route
+  return <Dashboard />;
 }
 
 // Public Route Component (redirect to dashboard if already logged in)
