@@ -50,6 +50,12 @@ export class Auth0ManagementService {
   // Get users via Supabase Edge Function
   async getUsers(page = 0, perPage = 50): Promise<Auth0User[]> {
     try {
+      // Check if Supabase URL and key are available
+      if (!supabaseUrl || !supabaseAnonKey) {
+        console.warn('Supabase configuration missing, returning empty user list');
+        return [];
+      }
+
       // Use dynamic Supabase URL and environment variables
       const response = await fetch(`${supabaseUrl}/functions/v1/auth0-users?page=${page}&per_page=${perPage}`, {
         method: 'GET',
@@ -62,7 +68,8 @@ export class Auth0ManagementService {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Error response:', errorText);
-        throw new Error(`Failed to fetch users: ${response.status}`);
+        console.warn(`Supabase Edge Function not available (${response.status}), returning empty user list`);
+        return [];
       }
 
       const data = await response.json();
@@ -72,7 +79,7 @@ export class Auth0ManagementService {
       return data.users || data || [];
     } catch (error) {
       console.error('Error fetching Auth0 users:', error);
-      // Return empty array as fallback
+      console.warn('Supabase Edge Function not deployed or unreachable, returning empty user list');
       return [];
     }
   }
