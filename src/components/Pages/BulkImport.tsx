@@ -1027,14 +1027,12 @@ export function BulkImport() {
                         {errorMessage && (
                           <div className="text-sm mt-1">
                             {errorMessage}
-                            {(errorMessage.toLowerCase().includes('openai api key') || errorMessage.toLowerCase().includes('missing required environment variable: openai_api_key')) && (
+                            {errorMessage.toLowerCase().includes('openai api key') && (
                               <div className="mt-2 p-2 bg-red-100 rounded text-xs">
-                                <strong>Setup Required:</strong> Go to your Supabase project dashboard → Edge Functions → 
-                                <code className="bg-red-200 px-1 rounded">parse-hcp-data</code> → Settings → Environment Variables and add:
+                                <strong>Setup Required:</strong> Go to your Supabase project dashboard → Edge Functions
+                                → <code className="bg-red-200 px-1 rounded">parse-hcp-data</code> → Environment Variables and add:
                                 <br />
-                                <code className="bg-red-200 px-1 rounded">OPENAI_API_KEY = your_openai_api_key_here</code>
-                                <br />
-                                <small className="text-red-600">Without this API key, the AI parsing functionality will not work.</small>
+                                <code className="bg-red-200 px-1 rounded">OPENAI_API_KEY = &lt;your-key-here&gt;</code>
                               </div>
                             )}
                           </div>
