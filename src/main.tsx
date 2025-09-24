@@ -5,10 +5,6 @@ import App from './App';
 import { auth0Config } from './config/auth0';
 import './index.css';
 
-// Initialize security interceptors
-import { SecurityUtils } from './utils/security';
-SecurityUtils.interceptAIRequests();
-
 // Auth0 redirect callback
 const onRedirectCallback = (appState?: { returnTo?: string }) => {
   console.log('Auth0 redirect callback:', appState);

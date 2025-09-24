@@ -196,56 +196,8 @@ export class SecurityUtils {
    * Intercept and block invalid AI API requests
    */
   static interceptAIRequests() {
-    // Override fetch to intercept AI API calls
-    const originalFetch = window.fetch;
-    
-    window.fetch = async function(input: RequestInfo | URL, init?: RequestInit) {
-      const url = typeof input === 'string' ? input : input.toString();
-      
-      // Check if this is an AI API call
-      if (url.includes('api.openai.com') || url.includes('api.anthropic.com') || url.includes('claude')) {
-        try {
-          if (init?.body) {
-            const requestData = typeof init.body === 'string' ? JSON.parse(init.body) : init.body;
-            
-            // Validate image data in the request
-            if (requestData.messages && Array.isArray(requestData.messages)) {
-              for (const message of requestData.messages) {
-                if (message.content && Array.isArray(message.content)) {
-                  for (const content of message.content) {
-                    if (content.type === 'image' && content.image && content.image.source) {
-                      const base64Data = content.image.source.base64;
-                      if (!base64Data || base64Data.trim() === '') {
-                        console.warn('Detected empty image data, removing image content from request');
-                        // Remove the empty image content instead of blocking the entire request
-                        message.content = message.content.filter(c => 
-                          !(c.type === 'image' && (!c.image?.source?.base64 || c.image.source.base64.trim() === ''))
-                        );
-                        
-                        // If no content remains, add a text fallback
-                        if (message.content.length === 0) {
-                          message.content = [{
-                            type: 'text',
-                            text: 'Please describe the changes you would like to make to this element.'
-                          }];
-                        }
-                        
-                        // Update the request body
-                        init.body = JSON.stringify(requestData);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        } catch (error) {
-          console.warn('Error validating AI request:', error);
-        }
-      }
-      
-      // Proceed with original fetch
-      return originalFetch.call(this, input, init);
-    };
+    // Note: AI request interception disabled to prevent interference with Bolt's screenshot functionality
+    // The empty image error handling is now done at the service level instead
+    console.log('AI request interception disabled to preserve Bolt functionality');
   }
 }
