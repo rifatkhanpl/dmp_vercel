@@ -50,12 +50,18 @@ export class Auth0ManagementService {
   // Get users via Supabase Edge Function
   async getUsers(page = 0, perPage = 50): Promise<Auth0User[]> {
     try {
+      // Get the current user's session for proper authorization
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Authentication required');
+      }
+
       // Use dynamic Supabase URL and environment variables
       const response = await fetch(`${supabaseUrl}/functions/v1/auth0-users?page=${page}&per_page=${perPage}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Authorization': `Bearer ${session.access_token}`,
         },
       });
 
