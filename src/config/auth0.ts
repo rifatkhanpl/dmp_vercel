@@ -1,12 +1,26 @@
+// Check if we're in development mode
+const isDevelopment = typeof window !== 'undefined' && (
+  window.location.hostname === 'localhost' || 
+  window.location.hostname.includes('bolt.new') ||
+  window.location.hostname.includes('127.0.0.1') ||
+  import.meta.env.DEV
+);
+
 export const auth0Config = {
   domain: import.meta.env.VITE_AUTH0_DOMAIN || 'dev-c4u34lk8e3qzwt8q.us.auth0.com',
   clientId: import.meta.env.VITE_AUTH0_CLIENT_ID || 'Aha8XFlrZi7rMcOzb4Jaz3GQ9jFEC6M4',
-  redirectUri: `${window.location.origin}/callback`,
+  redirectUri: typeof window !== 'undefined' ? `${window.location.origin}/callback` : 'http://localhost:5173/callback',
   // Only include audience if it's defined and not empty
   ...(import.meta.env.VITE_AUTH0_AUDIENCE && { audience: import.meta.env.VITE_AUTH0_AUDIENCE }),
   scope: 'openid profile email',
   useRefreshTokens: true,
   cacheLocation: 'localstorage' as const,
+  // Add development-specific settings
+  ...(isDevelopment && {
+    skipRedirectCallback: true,
+    useRefreshTokens: false,
+    cacheLocation: 'memory' as const
+  })
 };
 
 export const ROLES = {

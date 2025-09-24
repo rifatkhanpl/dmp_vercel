@@ -3,7 +3,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { User, UserRole } from '../types/user';
 import { ROLES, ROLE_PERMISSIONS } from '../config/auth0';
 import { errorService } from '../services/errorService';
-import { supabase } from '../services/supabaseClient';
 
 export interface AuthUser {
   id: string;
@@ -202,29 +201,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!auth0IsLoading && !useMockAuth) {
       if (auth0IsAuthenticated && auth0User) {
         console.log('Auth0 authenticated, processing user...', auth0User);
-        
-        // Sign into Supabase using Auth0 ID token
-        const signIntoSupabase = async () => {
-          try {
-            const token = await getAccessTokenSilently();
-            if (token) {
-              const { error } = await supabase.auth.signInWithIdToken({
-                provider: 'auth0',
-                token: token
-              });
-              if (error) {
-                console.error('Failed to sign into Supabase:', error);
-              } else {
-                console.log('Successfully signed into Supabase');
-              }
-            }
-          } catch (error) {
-            console.error('Error getting Auth0 token for Supabase:', error);
-          }
-        };
-        
-        signIntoSupabase();
-        
         const roles = getUserRoles(auth0User);
         setAvailableRoles(roles);
 
