@@ -228,10 +228,7 @@ export function MetricsSearch() {
 
   return (
     <ErrorBoundary>
-      <Layout breadcrumbs={[
-        { label: 'Production Metrics', href: '/metrics-dashboard' },
-        { label: 'Metrics Search' }
-      ]}>
+      <Layout>
         <div className="space-y-6">
           {/* Header */}
           <div className="bg-white rounded-lg shadow-sm p-6">

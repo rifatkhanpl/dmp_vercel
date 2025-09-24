@@ -200,10 +200,7 @@ export function AddUser() {
   };
 
   return (
-    <Layout breadcrumbs={[
-      { label: 'User Management', href: '/user-management' },
-      { label: 'Add User' }
-    ]}>
+    <Layout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">

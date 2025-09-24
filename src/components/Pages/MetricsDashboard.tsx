@@ -123,7 +123,7 @@ export function MetricsDashboard() {
 
   return (
     <ErrorBoundary>
-      <Layout breadcrumbs={[{ label: 'Production Metrics Dashboard' }]}>
+      <Layout>
         <div className="space-y-6">
           {/* Header */}
           <div className="bg-white rounded-lg shadow-sm p-6">

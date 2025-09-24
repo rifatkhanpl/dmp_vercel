@@ -499,13 +499,12 @@ export function GMEProgramSearch() {
         { label: `Programs at ${institution}` }
       ]
     : [
-        { label: 'Dashboard', href: '/dashboard' },
         { label: 'GME Program Search' }
       ];
 
   return (
     <ErrorBoundary>
-      <Layout breadcrumbs={breadcrumbs}>
+      <Layout breadcrumbs={institution ? breadcrumbs : undefined}>
         <div className="space-y-6">
           {/* Header */}
           <div className="bg-white rounded-lg shadow-sm p-6">

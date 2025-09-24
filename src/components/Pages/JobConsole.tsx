@@ -196,10 +196,7 @@ export function JobConsole() {
   };
 
   return (
-    <Layout breadcrumbs={[
-      { label: 'DMP Dashboard', href: '/dmp' },
-      { label: 'Job Console' }
-    ]}>
+    <Layout>
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">

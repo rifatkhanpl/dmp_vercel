@@ -552,7 +552,7 @@ export function BulkImport() {
   return (
     <ErrorBoundary>
       <LoadingOverlay isLoading={isProcessingFile || isProcessingAI} text={isProcessingFile ? "Processing file..." : "Processing with AI..."}>
-        <Layout breadcrumbs={[{ label: 'HCP Import' }]} >
+        <Layout>
           <div className="max-w-6xl mx-auto space-y-6 p-6">
             {/* Header */}
             <div className="bg-white rounded-lg shadow-sm p-6 flex items-start justify-between">

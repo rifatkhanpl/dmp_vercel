@@ -174,10 +174,7 @@ export function DuplicateReview() {
   };
 
   return (
-    <Layout breadcrumbs={[
-      { label: 'DMP Dashboard', href: '/dmp' },
-      { label: 'Duplicate Review' }
-    ]}>
+    <Layout>
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">

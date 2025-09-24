@@ -97,10 +97,7 @@ export function HCPDetail() {
   };
 
   return (
-    <Layout breadcrumbs={[
-      { label: 'HCP Search', href: '/search' },
-      { label: 'Provider Details' }
-    ]}>
+    <Layout>
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">

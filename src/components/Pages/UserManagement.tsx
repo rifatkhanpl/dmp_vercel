@@ -344,7 +344,7 @@ export function UserManagement() {
   }
 
   return (
-    <Layout breadcrumbs={[{ label: 'User Management' }]}>
+    <Layout>
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">

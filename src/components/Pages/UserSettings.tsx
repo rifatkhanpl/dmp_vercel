@@ -150,10 +150,7 @@ export function UserSettings() {
   };
 
   return (
-    <Layout breadcrumbs={[
-      { label: 'My Profile', href: '/user-profile' },
-      { label: 'Settings' }
-    ]}>
+    <Layout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">

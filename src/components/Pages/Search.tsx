@@ -292,7 +292,7 @@ export function Search() {
 
   return (
     <ErrorBoundary>
-      <Layout breadcrumbs={breadcrumbs}>
+      <Layout>
         <div className="space-y-6">
           {/* Header */}
           <div className="bg-white rounded-lg shadow-sm p-6">

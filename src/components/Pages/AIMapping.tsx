@@ -268,10 +268,7 @@ export function AIMapping() {
   return (
     <ErrorBoundary>
       <LoadingOverlay isLoading={isAnalyzing} text="Analyzing file headers with AI...">
-        <Layout breadcrumbs={[
-          { label: 'DMP Dashboard', href: '/dmp' },
-          { label: 'AI-Assisted Mapping' }
-        ]}>
+        <Layout>
           <div className="max-w-6xl mx-auto space-y-6">
             {/* Header */}
             <div className="bg-white rounded-lg shadow-sm p-6">

@@ -480,10 +480,7 @@ export function GMEInstitutionSearch() {
 
   return (
     <ErrorBoundary>
-      <Layout breadcrumbs={[
-        { label: 'Dashboard', href: '/dashboard' },
-        { label: 'GME Institution Search' }
-      ]}>
+      <Layout>
         <div className="space-y-6">
           {/* Header */}
           <div className="bg-white rounded-lg shadow-sm p-6">

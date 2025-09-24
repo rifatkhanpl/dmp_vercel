@@ -159,7 +159,7 @@ export function DMPDashboard() {
   };
 
   return (
-    <Layout breadcrumbs={[{ label: 'DMP Dashboard' }]}>
+    <Layout>
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">

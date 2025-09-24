@@ -175,10 +175,7 @@ export function GMEInstitutionDetail() {
   };
 
   return (
-    <Layout breadcrumbs={[
-      { label: 'GME Institution Search', href: '/gme-institution-search' },
-      { label: 'Institution Details' }
-    ]}>
+    <Layout>
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">

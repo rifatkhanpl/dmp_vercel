@@ -155,7 +155,7 @@ export function HCPRegistration() {
   };
 
   return (
-    <Layout breadcrumbs={[{ label: 'HCP Registration' }]}>
+    <Layout>
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="px-6 py-4 border-b border-gray-200">

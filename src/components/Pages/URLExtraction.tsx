@@ -166,10 +166,7 @@ export function URLExtraction() {
   return (
     <ErrorBoundary>
       <LoadingOverlay isLoading={isProcessing} text="Extracting data from URL...">
-    <Layout breadcrumbs={[
-      { label: 'DMP Dashboard', href: '/dmp' },
-      { label: 'URL Extraction' }
-    ]}>
+    <Layout>
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
