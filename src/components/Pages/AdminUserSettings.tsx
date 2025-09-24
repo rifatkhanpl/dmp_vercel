@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Layout } from '../Layout/Layout';
 import { useAuth } from '../../contexts/AuthContext';
 import { errorService } from '../../services/errorService';
@@ -25,11 +26,16 @@ import {
   UserCheck,
   Clock,
   Award,
-  Activity
+  Activity,
+  Trash2,
+  Edit
 } from 'lucide-react';
 
 export function AdminUserSettings() {
   const { user, isAdmin } = useAuth();
+  const [searchParams] = useSearchParams();
+  const userIdFromUrl = searchParams.get('id');
+  
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -99,6 +105,14 @@ export function AdminUserSettings() {
       updatedAt: '2024-01-10T09:00:00Z'
     }
   ];
+
+  // Set selected user from URL parameter on component mount
+  React.useEffect(() => {
+    if (userIdFromUrl && mockUsers.find(u => u.id === userIdFromUrl)) {
+      setSelectedUserId(userIdFromUrl);
+      setIsEditing(true); // Auto-enter edit mode when coming from user management
+    }
+  }, [userIdFromUrl]);
 
   const selectedUser = mockUsers.find(u => u.id === selectedUserId);
 
