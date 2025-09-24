@@ -64,9 +64,7 @@ export function UserManagement() {
         setIsLoadingAuth0(true);
         setAuth0Error(null);
 
-        // Get Auth0 access token
-        const accessToken = await getAccessToken();
-        const auth0Users = await auth0Management.getUsers(accessToken, 0, 100);
+        const auth0Users = await auth0Management.getUsers(0, 100);
 
         if (auth0Users && auth0Users.length > 0) {
           // Map Auth0 users to our User format
@@ -90,7 +88,6 @@ export function UserManagement() {
     };
 
     fetchAuth0Users();
-  }, [getAccessToken]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

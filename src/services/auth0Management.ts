@@ -48,14 +48,14 @@ export class Auth0ManagementService {
   }
 
   // Get users via Supabase Edge Function
-  async getUsers(accessToken: string, page = 0, perPage = 50): Promise<Auth0User[]> {
+  async getUsers(page = 0, perPage = 50): Promise<Auth0User[]> {
     try {
       // Use dynamic Supabase URL and environment variables
       const response = await fetch(`${supabaseUrl}/functions/v1/auth0-users?page=${page}&per_page=${perPage}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
+          'Authorization': `Bearer ${supabaseAnonKey}`,
         },
       });
 
@@ -77,11 +77,11 @@ export class Auth0ManagementService {
     }
   }
 
-  async getUser(accessToken: string, userId: string): Promise<Auth0User | null> {
+  async getUser(userId: string): Promise<Auth0User | null> {
     try {
       const { data, error } = await supabase.functions.invoke(`auth0-users/${userId}`, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${supabaseAnonKey}`,
         },
       });
 
@@ -93,11 +93,11 @@ export class Auth0ManagementService {
     }
   }
 
-  async updateUser(accessToken: string, userId: string, data: Partial<Auth0User>): Promise<Auth0User> {
+  async updateUser(userId: string, data: Partial<Auth0User>): Promise<Auth0User> {
     const { data: result, error } = await supabase.functions.invoke(`auth0-users/${userId}`, {
       method: 'PATCH',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${supabaseAnonKey}`,
       },
       body: data,
     });
@@ -106,33 +106,33 @@ export class Auth0ManagementService {
     return result;
   }
 
-  async deleteUser(accessToken: string, userId: string): Promise<void> {
+  async deleteUser(userId: string): Promise<void> {
     const { error } = await supabase.functions.invoke(`auth0-users/${userId}`, {
       method: 'DELETE',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${supabaseAnonKey}`,
       },
     });
 
     if (error) throw error;
   }
 
-  async blockUser(accessToken: string, userId: string): Promise<void> {
+  async blockUser(userId: string): Promise<void> {
     const { error } = await supabase.functions.invoke(`auth0-users/${userId}/block`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${supabaseAnonKey}`,
       },
     });
 
     if (error) throw error;
   }
 
-  async unblockUser(accessToken: string, userId: string): Promise<void> {
+  async unblockUser(userId: string): Promise<void> {
     const { error } = await supabase.functions.invoke(`auth0-users/${userId}/unblock`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${supabaseAnonKey}`,
       },
     });
 
