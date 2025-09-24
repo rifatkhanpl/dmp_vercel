@@ -175,62 +175,21 @@ export class ErrorService {
   }
 
   /**
-   * Validate and sanitize user input
+   * Handle AI API requests with empty image data
    */
-  sanitizeInput(input: string): string {
-    if (!input) return '';
+  handleAIImageError(error: any): void {
+    // Silently handle empty image data errors to prevent user confusion
+    if (error?.message?.includes('image cannot be empty') || 
+        error?.message?.includes('base64') ||
+        error?.type === 'invalid_request_error') {
+      console.warn('AI image processing error handled:', error.message);
+      return; // Don't show toast for these errors
+    }
     
-    return input
-      .replace(/[<>]/g, '') // Remove potential HTML tags
-      .replace(/javascript:/gi, '') // Remove javascript: protocols
-      .replace(/on\w+=/gi, '') // Remove event handlers
-      .replace(/data:/gi, '') // Remove data: protocols
-      .trim();
+    // Show other AI errors normally
+    this.showError('AI processing failed. Please try again.');
   }
 
-  /**
-   * Validate base64 image data
-   */
-  validateImageData(base64Data: string): boolean {
-    if (!base64Data || base64Data.trim() === '') {
-      console.warn('Empty base64 image data detected, skipping API call');
-      return false;
-    }
-    
-    // Check if it's a valid base64 string
-    try {
-      const decoded = atob(base64Data.replace(/^data:image\/[a-z]+;base64,/, ''));
-      return decoded.length > 0;
-    } catch {
-      console.warn('Invalid base64 image data detected');
-      return false;
-    }
-  }
-
-  /**
-   * Intercept and validate AI API calls with images
-   */
-  validateAIImageRequest(requestData: any): boolean {
-    if (!requestData) return true;
-    
-    // Check for image content in messages
-    if (requestData.messages && Array.isArray(requestData.messages)) {
-      for (const message of requestData.messages) {
-        if (message.content && Array.isArray(message.content)) {
-          for (const content of message.content) {
-            if (content.type === 'image' && content.image && content.image.source) {
-              if (!this.validateImageData(content.image.source.base64)) {
-                console.warn('Blocking AI API call with empty image data');
-                return false;
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    return true;
-  }
   /**
    * Create timeout wrapper for async operations
    */

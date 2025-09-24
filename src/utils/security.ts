@@ -216,14 +216,22 @@ export class SecurityUtils {
                     if (content.type === 'image' && content.image && content.image.source) {
                       const base64Data = content.image.source.base64;
                       if (!base64Data || base64Data.trim() === '') {
-                        console.warn('Blocking AI API call with empty image data');
-                        // Return a mock successful response to prevent error
-                        return new Response(JSON.stringify({
-                          error: { message: 'Image data validation failed - empty base64 data' }
-                        }), {
-                          status: 400,
-                          headers: { 'Content-Type': 'application/json' }
-                        });
+                        console.warn('Detected empty image data, removing image content from request');
+                        // Remove the empty image content instead of blocking the entire request
+                        message.content = message.content.filter(c => 
+                          !(c.type === 'image' && (!c.image?.source?.base64 || c.image.source.base64.trim() === ''))
+                        );
+                        
+                        // If no content remains, add a text fallback
+                        if (message.content.length === 0) {
+                          message.content = [{
+                            type: 'text',
+                            text: 'Please describe the changes you would like to make to this element.'
+                          }];
+                        }
+                        
+                        // Update the request body
+                        init.body = JSON.stringify(requestData);
                       }
                     }
                   }
