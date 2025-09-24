@@ -252,16 +252,27 @@ export function AdminUserSettings() {
       
       switch (action) {
         case 'activate':
+          // Update the user status in the mock data
+          setUserData(prev => ({ ...prev, status: 'active' }));
           setMessage({ type: 'success', text: 'User activated successfully' });
           break;
         case 'suspend':
+          setUserData(prev => ({ ...prev, status: 'suspended' }));
           setMessage({ type: 'success', text: 'User suspended successfully' });
           break;
         case 'reset-password':
           setMessage({ type: 'success', text: 'Password reset email sent to user' });
           break;
         case 'verify-email':
+          setUserData(prev => ({ ...prev, isEmailVerified: true }));
           setMessage({ type: 'success', text: 'Email verification sent to user' });
+          break;
+        case 'delete-user':
+          setMessage({ type: 'success', text: 'User deleted successfully' });
+          // In a real app, this would redirect back to user management
+          setTimeout(() => {
+            window.location.href = '/user-management';
+          }, 2000);
           break;
       }
       
@@ -606,6 +617,11 @@ export function AdminUserSettings() {
                           {selectedUser.role === 'administrator' ? 'Administrator' : 'Coordinator'}
                         </span>
                       )}
+                      {isEditing && (
+                        <p className="mt-1 text-xs text-gray-500">
+                          Administrators have full system access including user management
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Account Status</label>
@@ -628,6 +644,14 @@ export function AdminUserSettings() {
                           {selectedUser.status === 'suspended' && <Ban className="h-3 w-3 mr-1" />}
                           {selectedUser.status}
                         </span>
+                      )}
+                      {isEditing && (
+                        <div className="mt-1 text-xs text-gray-500">
+                          <p>• <strong>Active:</strong> Full access to the system</p>
+                          <p>• <strong>Suspended:</strong> Account disabled, cannot log in</p>
+                          <p>• <strong>Pending:</strong> Awaiting email verification</p>
+                          <p>• <strong>Inactive:</strong> Account deactivated</p>
+                        </div>
                       )}
                     </div>
                     <div>
@@ -711,7 +735,7 @@ export function AdminUserSettings() {
                 {!isEditing && (
                   <div className="bg-white rounded-lg shadow-sm p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Actions</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {selectedUser.status === 'active' ? (
                         <button
                           onClick={() => handleUserAction('suspend')}
@@ -751,6 +775,19 @@ export function AdminUserSettings() {
                           <span>Send Verification</span>
                         </button>
                       )}
+                      
+                      <button
+                        onClick={() => {
+                          if (confirm(`Are you sure you want to permanently delete ${selectedUser.firstName} ${selectedUser.lastName}? This action cannot be undone.`)) {
+                            handleUserAction('delete-user');
+                          }
+                        }}
+                        disabled={isLoading}
+                        className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        <span>Delete User</span>
+                      </button>
                       
                       <a
                         href={`/search?managedBy=${encodeURIComponent(selectedUser.firstName + ' ' + selectedUser.lastName)}`}
