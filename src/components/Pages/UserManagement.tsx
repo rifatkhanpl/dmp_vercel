@@ -90,7 +90,7 @@ export function UserManagement() {
     };
 
     fetchAuth0Users();
-  }, [getAccessTokenSilently]);
+  }, [getAccessToken]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
