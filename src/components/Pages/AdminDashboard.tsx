@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Users,
   UserPlus,
@@ -15,7 +15,6 @@ import {
 import { Layout } from '../Layout/Layout';
 import { useAuth } from '../../contexts/AuthContext';
 
-/* ---------- inline KPI cards (drop-in, no new files) ---------- */
 function KpiStats({ stats }: {
   stats: { title: string; value: string | number; change: string; changeType: 'positive'|'negative'; description?: string; icon: any; color?: 'blue'|'green'|'purple'|'orange'|'red'; }[];
 }) {
@@ -62,6 +61,14 @@ function KpiStats({ stats }: {
 
 export function AdminDashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect non-admin users
+  React.useEffect(() => {
+    if (user && user.role !== 'administrator') {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const adminCards = [
     { title: 'User Management',  description: 'Manage users, roles, and permissions', icon: Users,    link: '/user-management',  color: 'bg-blue-500' },
@@ -75,13 +82,16 @@ export function AdminDashboard() {
     { title: 'Security Audit',   description: 'View security logs and audit trails', icon: Shield,   link: '/metrics-dashboard', color: 'bg-red-500' }
   ];
 
-  // New KPI-style quick stats (mirrors your user KPI cards)
   const kpiStats = [
     { title: 'Total Users',     value: '248', change: '+3%',  changeType: 'positive' as const, description: 'vs last week', icon: Users,   color: 'blue' },
     { title: 'Active Sessions', value: '42',  change: '+12%', changeType: 'positive' as const, description: 'past hour',    icon: Activity, color: 'green' },
     { title: 'Pending Jobs',    value: '7',   change: '-22%', changeType: 'negative' as const, description: 'vs yesterday', icon: Upload,  color: 'purple' },
     { title: 'System Health',   value: 'Healthy', change: '+0%', changeType: 'positive' as const, description: 'status',   icon: Shield,  color: 'orange' }
   ];
+
+  if (!user || user.role !== 'administrator') {
+    return null; // Will redirect via useEffect
+  }
 
   return (
     <Layout>
@@ -116,10 +126,10 @@ export function AdminDashboard() {
           </div>
         </div>
 
-        {/* NEW: KPI cards (replaces the old 'Quick Stats' box) */}
+        {/* KPI cards */}
         <KpiStats stats={kpiStats} />
 
-        {/* Admin action tiles (unchanged) */}
+        {/* Admin action tiles */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {adminCards.map((card) => {
             const Icon = card.icon;
@@ -141,9 +151,8 @@ export function AdminDashboard() {
           })}
         </div>
 
-        {/* Recent Activity (unchanged) */}
+        {/* Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Removed the old Quick Stats box since KPIs replace it */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
             <div className="space-y-3 text-sm">
@@ -171,7 +180,6 @@ export function AdminDashboard() {
             </div>
           </div>
 
-          {/* Optional: keep a small info card or remove for symmetry */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-2">Admin Tips</h2>
             <p className="text-sm text-gray-600">
