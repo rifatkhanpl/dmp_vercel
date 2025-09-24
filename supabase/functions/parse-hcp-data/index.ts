@@ -34,15 +34,16 @@ function htmlToStructuredText(html) {
   let t = html;
   // Keep <noscript> content
   t = t.replace(/<noscript[^>]*>([\s\S]*?)<\/noscript>/gi, " $1 ");
-  // Inject IMG alt text into stream (e.g., Headshot of Name, M.D.)
+  // Inject IMG alt text
   t = t.replace(/<img[^>]*\balt=["']([^"']+)["'][^>]*>/gi, (_, alt)=>`\n${alt}\n`);
   // Remove scripts/styles
   t = t.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
   t = t.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
   // Convert boundaries to newlines BEFORE stripping tags
   t = t.replace(/<br\s*\/?>/gi, "\n").replace(/<\/(p|div|section|article|header|footer|li|h[1-6]|tr)>/gi, "\n").replace(/<(ul|ol|table|thead|tbody|tr)\b[^>]*>/gi, "\n").replace(/<(h[1-6])\b[^>]*>/gi, "\n");
-  // Strip remaining tags, decode & clean
+  // Strip remaining tags
   t = t.replace(/<[^>]+>/g, " ");
+  // Decode & clean
   t = decodeEntities(t).replace(/\u00a0/g, " ").replace(/[ \t]+\n/g, "\n").replace(/\n{2,}/g, "\n").replace(/[ \t]{2,}/g, " ").trim();
   return t;
 }
@@ -54,7 +55,7 @@ async function fetchUrlContent(url) {
     const res = await fetch(url, {
       signal: ctrl.signal,
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; HCP-Parser/2.1)",
+        "User-Agent": "Mozilla/5.0 (compatible; HCP-Parser/2.2)",
         "Accept": "text/html,application/xhtml+xml"
       }
     });
@@ -81,21 +82,15 @@ function dedupeProviders(providers) {
   for (const p of providers){
     const key = `${normalizeName(p.name)}|${(p.specialty ?? "").toLowerCase().trim()}|${(p.pgyYear ?? "").toLowerCase().trim()}`;
     const prev = seen.get(key);
-    if (!prev) {
-      seen.set(key, p);
-    } else {
-      if ((p.confidence ?? 0) > (prev.confidence ?? 0)) {
-        seen.set(key, {
-          ...p,
-          rawText: p.rawText ?? prev.rawText
-        });
-      } else if (!prev.rawText && p.rawText) {
-        seen.set(key, {
-          ...prev,
-          rawText
-        });
-      }
-    }
+    if (!prev) seen.set(key, p);
+    else if ((p.confidence ?? 0) > (prev.confidence ?? 0)) seen.set(key, {
+      ...p,
+      rawText: p.rawText ?? prev.rawText
+    });
+    else if (!prev.rawText && p.rawText) seen.set(key, {
+      ...prev,
+      rawText: p.rawText
+    });
   }
   return Array.from(seen.values());
 }
@@ -108,12 +103,12 @@ function inferPGYFromText(s) {
   const m = s.match(/\bPGY[-–\s]?([123])\b/i);
   return m ? `PGY-${m[1]}` : null;
 }
-// Try to recover degree evidence from the source text near a name
+// Fuzzy locate a name in source text (tolerate extra spaces/quotes)
 function escapeRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 function makeNameRegex(name) {
-  // tolerate quotes/nicknames and variable spaces
+  // allow variable spaces and optional quotes around nicknames
   const pattern = escapeRegex(name).replace(/\s+/g, "\\s+");
   return new RegExp(pattern, "i");
 }
@@ -122,34 +117,37 @@ function snippetAround(text, idx, span = 120) {
   const end = Math.min(text.length, idx + Math.floor(span / 2));
   return text.slice(start, end).replace(/\s+/g, " ").trim();
 }
-function ensureDegreeEvidence(providers, sourceText, allowedOnly) {
-  if (!allowedOnly) return providers;
+// Hard evidence gate: ensure each record exists in source
+function evidenceFilter(providers, sourceText, allowedDegreesOnly) {
   const out = [];
   for (const p of providers){
-    const already = hasAllowedDegree(p.name) || hasAllowedDegree(p.rawText);
-    if (already) {
-      out.push(p);
-      continue;
-    }
-    // search for degree near the person's name in the source text
-    const re = makeNameRegex(p.name);
+    const name = (p.name ?? "").trim();
+    if (!name) continue;
+    // 1) Name must appear in source
+    const re = makeNameRegex(name);
     const m = sourceText.match(re);
-    if (m && typeof m.index === "number") {
-      // look forward a bit for degree token
-      const lookStart = m.index;
-      const lookEnd = Math.min(sourceText.length, lookStart + p.name.length + 80);
-      const window = sourceText.slice(lookStart, lookEnd);
-      if (DEG_RE.test(window)) {
-        // keep and attach snippet
-        out.push({
-          ...p,
-          rawText: p.rawText ?? snippetAround(sourceText, lookStart),
-          confidence: Math.max(p.confidence ?? 0.8, 0.85)
-        });
-        continue;
-      }
+    if (!m || typeof m.index !== "number") continue;
+    const idx = m.index;
+    // 2) Degree presence near the matched name (±100 chars) if required
+    if (allowedDegreesOnly) {
+      const win = sourceText.slice(Math.max(0, idx - 20), Math.min(sourceText.length, idx + name.length + 100));
+      if (!DEG_RE.test(win)) continue;
     }
-  // no degree found -> drop
+    // 3) rawText must be a real substring; if not, replace with local snippet
+    let raw = p.rawText ?? null;
+    if (!raw || !sourceText.includes(raw)) {
+      raw = snippetAround(sourceText, idx);
+    }
+    // 4) Exclude staff-like snippets
+    if (isLikelyStaff(raw)) continue;
+    // 5) Fill PGY from snippet if missing
+    let pgy = (p.pgyYear ?? "").trim();
+    if (!pgy) pgy = inferPGYFromText(raw) ?? "";
+    out.push({
+      ...p,
+      rawText: raw,
+      pgyYear: pgy
+    });
   }
   return out;
 }
@@ -158,7 +156,6 @@ function normalizeForChunking(text) {
   let t = text;
   t = t.replace(/\s+(Headshot of\s+[^\n]+)\s+/gi, "\n$1\n");
   t = t.replace(/\s+(Class of\s+\d{4})/gi, "\n$1\n");
-  // broader headers to match more sites
   t = t.replace(/\s+(Categorical Residents?|Categorical|Preliminary Residents?|Medicine\/Pediatrics|Interns)\b/gi, "\n$1\n");
   t = t.replace(/\s+(PGY\s*[123]\b)/gi, "\n$1\n");
   t = t.replace(/\s+(Meet The Residents?)/i, "\n$1\n");
@@ -203,7 +200,7 @@ function chunkText(input, maxChars = 5_500) {
 // ---------- OpenAI (per chunk) ----------
 async function parseChunkWithOpenAI(text, opts) {
   const OPENAI_API_KEY = getEnvOrThrow("OPENAI_API_KEY");
-  // AY anchor to help with PGY inference if the site uses "Class of YYYY"
+  // AY anchor (helps PGY inference if needed)
   const now = new Date();
   const month = now.getUTCMonth() + 1;
   const academicYearStart = month >= 7 ? now.getUTCFullYear() : now.getUTCFullYear() - 1;
@@ -211,9 +208,10 @@ async function parseChunkWithOpenAI(text, opts) {
   const hintLines = [];
   if (opts.specialtyHint) hintLines.push(`Specialty hint: ${opts.specialtyHint}`);
   if (opts.allowedDegreesOnly) hintLines.push("Only include entries with MD, DO, or MBBS near the name.");
-  hintLines.push(`Academic year starts in July; current AY anchor: ${academicYearStart}. If 'Class of YYYY' is present for 3-year programs (IM/FM), map roughly: AY+(3->PGY-1, 2->PGY-2, 1->PGY-3). If unclear, leave pgyYear empty or infer from explicit PGY tags.`);
+  hintLines.push(`Academic year starts in July; current AY anchor: ${academicYearStart}. For 3-year programs (IM/FM) you may map 'Class of YYYY' to PGY heuristically; if unclear, leave pgyYear empty.`);
+  hintLines.push(`IMPORTANT: For each provider, include "rawText" that is a VERBATIM substring (≤120 chars) copied from the input. If no exact evidence exists, do not include that provider.`);
   const user = `
-Extract TRAINEE records (residents/fellows only; ignore staff/faculty/coordinators/directors) from the text.
+Extract TRAINEE records (residents/fellows only; ignore staff/faculty/coordinators/directors).
 
 Schema:
 {"providers":[{"name":string,"specialty":string,"pgyYear":string,"confidence":number,"email":string|null,"phone":string|null,"location":string|null,"rawText":string|null}]}
@@ -222,9 +220,9 @@ Rules:
 - Output MINIFIED JSON (no spaces or newlines). No markdown. No code fences.
 - Include ONLY trainees.
 - ${opts.allowedDegreesOnly ? "Require MD, DO, or MBBS near the name." : "Prefer MD/DO/MBBS if present."}
-- If PGY appears (e.g., PGY1/PGY-2) use it; else you may infer from nearby 'Class of YYYY' headers per the hint; otherwise leave empty.
-- Use the specialty hint unless the text clearly indicates another specialty.
-- Keep rawText ≤120 chars if included.
+- If PGY appears (e.g., PGY1/PGY-2) use it; else infer cautiously or leave empty.
+- Use the specialty hint unless clearly contradicted by the text.
+- "rawText" must be a VERBATIM substring (≤120 chars) from the input that supports the extraction.
 - confidence ∈ [0,1].
 - Return AT MOST 20 providers for this chunk.
 - If none found, return {"providers":[]}.
@@ -290,7 +288,7 @@ ${text}
     }
   }
   let providers = Array.isArray(extracted?.providers) ? extracted.providers : [];
-  // Normalize
+  // Normalize quick
   providers = providers.map((p)=>{
     const out = {
       name: String(p?.name ?? "").trim(),
@@ -308,7 +306,7 @@ ${text}
     }
     return out;
   });
-  // Exclude staff-like snippets
+  // Exclude staff-like snippets early
   providers = providers.filter((p)=>!isLikelyStaff(p.rawText));
   return providers;
 }
@@ -331,11 +329,10 @@ async function parseWithOpenAIAll(text, opts) {
       }
     }
   }
-  // Dedupe first
+  // Dedupe, then HARD evidence gating against the full normalized text
   let merged = dedupeProviders(all);
-  // Degree recovery against the full normalized text (so we can keep legit MD/DO/MBBS like "Samantha Knopp, MD")
-  merged = ensureDegreeEvidence(merged, t, opts.allowedDegreesOnly);
-  // Final degree filter (should no-op for recovered entries)
+  merged = evidenceFilter(merged, t, opts.allowedDegreesOnly);
+  // Final degree filter (no-ops for evidence-kept entries)
   if (opts.allowedDegreesOnly) {
     merged = merged.filter((p)=>hasAllowedDegree(p.name) || hasAllowedDegree(p.rawText));
   }
@@ -389,7 +386,7 @@ Deno.serve(async (req)=>{
       providers,
       processedLength: textContent.length,
       sourceType: type,
-      parser: "llm-only",
+      parser: "llm-only+evidence",
       specialtyHint: specialtyHint ?? null,
       allowedDegreesOnly
     });

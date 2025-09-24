@@ -15,6 +15,12 @@ import {
 export function LandingPage() {
   const { user } = useAuth();
 
+  // Check if we're in development environment
+  const isDevelopment = window.location.hostname === 'localhost' || 
+                       window.location.hostname.includes('bolt.new') ||
+                       window.location.hostname.includes('127.0.0.1') ||
+                       import.meta.env.DEV;
+
   const features = [
     {
       icon: Users,
@@ -81,14 +87,23 @@ export function LandingPage() {
                 </a>
               </div>
             ) : (
-              <div className="flex justify-center">
+              <div className="flex justify-center space-x-4">
                 <a
                   href="/signin"
                   className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
                 >
-                  Get Started
+                  {isDevelopment ? 'Sign In (Demo Mode)' : 'Get Started'}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </a>
+                {isDevelopment && (
+                  <a
+                    href="/dashboard"
+                    className="inline-flex items-center px-8 py-4 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors shadow-lg"
+                  >
+                    Skip to Dashboard
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </a>
+                )}
               </div>
             )}
           </div>
