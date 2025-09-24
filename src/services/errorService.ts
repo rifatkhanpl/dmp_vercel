@@ -189,6 +189,49 @@ export class ErrorService {
   }
 
   /**
+   * Validate base64 image data
+   */
+  validateImageData(base64Data: string): boolean {
+    if (!base64Data || base64Data.trim() === '') {
+      console.warn('Empty base64 image data detected, skipping API call');
+      return false;
+    }
+    
+    // Check if it's a valid base64 string
+    try {
+      const decoded = atob(base64Data.replace(/^data:image\/[a-z]+;base64,/, ''));
+      return decoded.length > 0;
+    } catch {
+      console.warn('Invalid base64 image data detected');
+      return false;
+    }
+  }
+
+  /**
+   * Intercept and validate AI API calls with images
+   */
+  validateAIImageRequest(requestData: any): boolean {
+    if (!requestData) return true;
+    
+    // Check for image content in messages
+    if (requestData.messages && Array.isArray(requestData.messages)) {
+      for (const message of requestData.messages) {
+        if (message.content && Array.isArray(message.content)) {
+          for (const content of message.content) {
+            if (content.type === 'image' && content.image && content.image.source) {
+              if (!this.validateImageData(content.image.source.base64)) {
+                console.warn('Blocking AI API call with empty image data');
+                return false;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    return true;
+  }
+  /**
    * Create timeout wrapper for async operations
    */
   withTimeout<T>(promise: Promise<T>, timeoutMs: number = 30000): Promise<T> {

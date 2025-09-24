@@ -191,4 +191,53 @@ export class SecurityUtils {
       return true; // Request allowed
     };
   }
+
+  /**
+   * Intercept and block invalid AI API requests
+   */
+  static interceptAIRequests() {
+    // Override fetch to intercept AI API calls
+    const originalFetch = window.fetch;
+    
+    window.fetch = async function(input: RequestInfo | URL, init?: RequestInit) {
+      const url = typeof input === 'string' ? input : input.toString();
+      
+      // Check if this is an AI API call
+      if (url.includes('api.openai.com') || url.includes('api.anthropic.com') || url.includes('claude')) {
+        try {
+          if (init?.body) {
+            const requestData = typeof init.body === 'string' ? JSON.parse(init.body) : init.body;
+            
+            // Validate image data in the request
+            if (requestData.messages && Array.isArray(requestData.messages)) {
+              for (const message of requestData.messages) {
+                if (message.content && Array.isArray(message.content)) {
+                  for (const content of message.content) {
+                    if (content.type === 'image' && content.image && content.image.source) {
+                      const base64Data = content.image.source.base64;
+                      if (!base64Data || base64Data.trim() === '') {
+                        console.warn('Blocking AI API call with empty image data');
+                        // Return a mock successful response to prevent error
+                        return new Response(JSON.stringify({
+                          error: { message: 'Image data validation failed - empty base64 data' }
+                        }), {
+                          status: 400,
+                          headers: { 'Content-Type': 'application/json' }
+                        });
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.warn('Error validating AI request:', error);
+        }
+      }
+      
+      // Proceed with original fetch
+      return originalFetch.call(this, input, init);
+    };
+  }
 }
