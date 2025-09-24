@@ -59,7 +59,7 @@ function KpiStats({ stats }: {
   );
 }
 
-export function AdminDashboard() {
+export function UserManagement() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
