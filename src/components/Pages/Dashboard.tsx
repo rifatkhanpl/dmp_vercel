@@ -65,7 +65,7 @@ export function Dashboard() {
   const quickActions = [
     {
       title: 'Register New HCP',
-      description: 'Add a new healthcare provider to the system',
+      description: 'Add RF-HCP',
       icon: UserPlus,
       href: '/hcp-registration',
       color: 'blue'
