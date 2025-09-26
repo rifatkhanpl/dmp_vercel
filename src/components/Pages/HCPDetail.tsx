@@ -1,21 +1,7 @@
 import React from 'react';
 import { Layout } from '../Layout/Layout';
 import { useLocation } from 'react-router-dom';
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Stethoscope,
-  FileText,
-  Calendar,
-  Shield,
-  Edit,
-  ArrowLeft,
-  CheckCircle,
-  AlertCircle,
-  GraduationCap
-} from 'lucide-react';
+import { User, Mail, Phone, MapPin, Stethoscope, FileText, Calendar, Shield, CreditCard as Edit, ArrowLeft, CheckCircle, AlertCircle, GraduationCap } from 'lucide-react';
 
 export function HCPDetail() {
   const location = useLocation();
@@ -128,7 +114,7 @@ export function HCPDetail() {
             <div className="flex space-x-3">
               <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                 <Edit className="h-4 w-4" />
-                <span>Edit Residents & Fellows</span>
+                <span>Edit Resident/Fellow</span>
               </button>
             </div>
           </div>

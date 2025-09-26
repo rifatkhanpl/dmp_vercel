@@ -70,25 +70,25 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           name: 'HCP Import',
           href: '/bulk-import',
           icon: Upload,
-          description: 'Import multiple residents & fellows'
+          description: 'Import multiple resident/fellow records'
         },
         {
           name: 'HCP Registration',
           href: '/hcp-registration',
           icon: UserPlus,
-          description: 'Register new residents & fellows'
+          description: 'Register new resident/fellow'
         },
         {
           name: 'HCP Search',
           href: '/search',
           icon: Search,
-          description: 'Find and manage residents & fellows'
+          description: 'Find and manage resident/fellow records'
         },
         {
           name: 'DMP Console',
           href: '/dmp',
           icon: Brain,
-          description: 'Residents & Fellows Data Management Platform'
+          description: 'Resident & Fellow Data Management Platform'
         }
       ]
     },

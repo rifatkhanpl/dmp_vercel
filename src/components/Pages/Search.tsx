@@ -4,24 +4,7 @@ import { ErrorBoundary } from '../ErrorBoundary';
 import { useDebounce } from '../../hooks/useDebounce';
 import { SecurityUtils } from '../../utils/security';
 import { useLocation } from 'react-router-dom';
-import { 
-  Search as SearchIcon,
-  Filter,
-  Download,
-  ChevronDown,
-  X,
-  Eye,
-  Edit,
-  User,
-  Stethoscope,
-  MapPin,
-  Mail,
-  Phone,
-  FileText,
-  Users,
-  Ban,
-  Trash2
-} from 'lucide-react';
+import { Search as SearchIcon, Filter, Download, ChevronDown, X, Eye, CreditCard as Edit, User, Stethoscope, MapPin, Mail, Phone, FileText, Users, Ban, Trash2 } from 'lucide-react';
 
 interface Provider {
   id: string;
@@ -297,12 +280,12 @@ export function Search() {
           {/* Header */}
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {managedBy ? `Residents/Fellows managed by ${managedBy}` : 'Residents/Fellows Search'}
+              {managedBy ? `Resident/Fellow managed by ${managedBy}` : 'Resident/Fellow Search'}
             </h1>
             <p className="text-gray-600">
               {managedBy 
-                ? `View and manage all residents/fellows assigned to ${managedBy}`
-                : 'Search and manage resident/fellow records in the system'
+                ? `View and manage all resident/fellow assigned to ${managedBy}`
+                : 'Search and manage resident & fellow records in the system'
               }
             </p>
           </div>
@@ -317,11 +300,11 @@ export function Search() {
                   </div>
                   <input
                     type="text"
-                    placeholder="Search residents & fellows by name, specialty, location, email, or NPI..."
+                    placeholder="Search residents/fellows by name, specialty, location, email, or NPI..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    aria-label="Search residents & fellows"
+                    aria-label="Search residents/fellows"
                     maxLength={100}
                   />
                 </div>
