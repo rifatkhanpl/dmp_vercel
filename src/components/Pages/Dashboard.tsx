@@ -79,6 +79,7 @@ export function Dashboard() {
     },
     {
       title: 'Search RF-HCP-WIP',
+      title: 'Search RF-HCPs WIP',
       description: 'Find and manage RF-HCPs in process.',
       icon: Search,
       href: '/search',
