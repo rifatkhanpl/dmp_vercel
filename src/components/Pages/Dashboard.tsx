@@ -111,6 +111,53 @@ export function Dashboard() {
     }
   ];
 
+  const gmeFStats = [
+    {
+      title: 'GME-F Programs YTD',
+      value: '234',
+      change: '+15%',
+      changeType: 'positive' as const,
+      yoyChange: '+28%',
+      yoyChangeType: 'positive' as const,
+      icon: Award,
+      description: 'from last month',
+      yoyDescription: 'vs last year'
+    },
+    {
+      title: 'GME-F Programs MTD',
+      value: '18',
+      change: '+11%',
+      changeType: 'positive' as const,
+      yoyChange: '+24%',
+      yoyChangeType: 'positive' as const,
+      icon: Target,
+      description: 'from last month',
+      yoyDescription: 'vs last year'
+    },
+    {
+      title: 'GME-F Programs WTD',
+      value: '4',
+      change: '+0%',
+      changeType: 'positive' as const,
+      yoyChange: '+33%',
+      yoyChangeType: 'positive' as const,
+      icon: Zap,
+      description: 'from last week',
+      yoyDescription: 'vs last year'
+    },
+    {
+      title: 'GME-F Programs WIP',
+      value: '227',
+      change: '+13%',
+      changeType: 'positive' as const,
+      yoyChange: '+31%',
+      yoyChangeType: 'positive' as const,
+      icon: TrendingUp,
+      description: 'from last month',
+      yoyDescription: 'vs last year'
+    }
+  ];
+
   const quickActions = [
     {
       title: 'Add RF-HCP',
@@ -284,6 +331,44 @@ export function Dashboard() {
                     </div>
                   </div>
                   <div className={`p-3 rounded-full ${getIconColorClasses('purple')} flex-shrink-0 ml-4`}>
+                    <Icon className="h-6 w-6" />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* GME-F Programs Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {gmeFStats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
+                <div className="flex items-start justify-between h-full">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                    <div className="space-y-1 mt-2">
+                      <div className="flex items-center">
+                        <span className={`text-sm font-medium ${
+                          stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {stat.change}
+                        </span>
+                        <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className={`text-sm font-medium ${
+                          stat.yoyChangeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {stat.yoyChange}
+                        </span>
+                        <span className="text-sm text-gray-500 ml-1">{stat.yoyDescription}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={`p-3 rounded-full ${getIconColorClasses('orange')} flex-shrink-0 ml-4`}>
                     <Icon className="h-6 w-6" />
                   </div>
                 </div>
