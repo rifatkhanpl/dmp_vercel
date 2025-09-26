@@ -99,7 +99,7 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
 // User-only route component
 export function UserRoute({ children }: { children: React.ReactNode }) {
   return (
-    <ProtectedRoute requiredRole="provider-relations-data-coordinator">
+    <ProtectedRoute requiredRole="hcp-data-coordinator">
       {children}
     </ProtectedRoute>
   );
