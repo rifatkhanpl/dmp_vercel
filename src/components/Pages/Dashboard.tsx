@@ -288,6 +288,7 @@ export function Dashboard() {
     totalCoordinators: 8,
     performanceScore: 94.2,
     statesManaged: ['California', 'Nevada', 'Arizona'],
+    specialtiesManaged: ['Internal Medicine', 'Emergency Medicine', 'Family Medicine', 'Cardiology'],
     gmeRProgramsManaged: ['Internal Medicine - UCLA', 'Emergency Medicine - USC', 'Family Medicine - UCSF'],
     gmeFProgramsManaged: ['Cardiology Fellowship - Stanford', 'GI Fellowship - UCSF'],
     topAchievements: [
