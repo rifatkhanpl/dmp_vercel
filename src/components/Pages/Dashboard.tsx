@@ -19,7 +19,9 @@ import {
   MapPin,
   Award,
   Target,
-  Zap
+  Zap,
+  GraduationCap,
+  Building
 } from 'lucide-react';
 
 export function Dashboard() {
@@ -59,6 +61,53 @@ export function Dashboard() {
       changeType: 'positive' as const,
       icon: CheckCircle,
       description: 'from last month'
+    }
+  ];
+
+  const gmeStats = [
+    {
+      title: 'GME-R Programs YTD',
+      value: '847',
+      change: '+18%',
+      changeType: 'positive' as const,
+      yoyChange: '+22%',
+      yoyChangeType: 'positive' as const,
+      icon: GraduationCap,
+      description: 'from last month',
+      yoyDescription: 'vs last year'
+    },
+    {
+      title: 'GME-R Programs MTD',
+      value: '67',
+      change: '+14%',
+      changeType: 'positive' as const,
+      yoyChange: '+19%',
+      yoyChangeType: 'positive' as const,
+      icon: Building,
+      description: 'from last month',
+      yoyDescription: 'vs last year'
+    },
+    {
+      title: 'GME-R Programs WTD',
+      value: '12',
+      change: '-3%',
+      changeType: 'negative' as const,
+      yoyChange: '+8%',
+      yoyChangeType: 'positive' as const,
+      icon: Calendar,
+      description: 'from last week',
+      yoyDescription: 'vs last year'
+    },
+    {
+      title: 'GME-R Programs WIP',
+      value: '823',
+      change: '+16%',
+      changeType: 'positive' as const,
+      yoyChange: '+25%',
+      yoyChangeType: 'positive' as const,
+      icon: Activity,
+      description: 'from last month',
+      yoyDescription: 'vs last year'
     }
   ];
 
@@ -197,6 +246,44 @@ export function Dashboard() {
                     </div>
                   </div>
                   <div className={`p-3 rounded-full ${getIconColorClasses('blue')} flex-shrink-0 ml-4`}>
+                    <Icon className="h-6 w-6" />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* GME-R Programs Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {gmeStats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
+                <div className="flex items-start justify-between h-full">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                    <div className="space-y-1 mt-2">
+                      <div className="flex items-center">
+                        <span className={`text-sm font-medium ${
+                          stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {stat.change}
+                        </span>
+                        <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className={`text-sm font-medium ${
+                          stat.yoyChangeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {stat.yoyChange}
+                        </span>
+                        <span className="text-sm text-gray-500 ml-1">{stat.yoyDescription}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={`p-3 rounded-full ${getIconColorClasses('purple')} flex-shrink-0 ml-4`}>
                     <Icon className="h-6 w-6" />
                   </div>
                 </div>
