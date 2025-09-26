@@ -21,54 +21,58 @@ import {
   Target,
   Zap,
   GraduationCap,
-  Building
+  Building,
+  User,
+  Star,
+  Trophy,
+  Briefcase
 } from 'lucide-react';
 
 export function Dashboard() {
   const { user } = useAuth();
   const [timeRange, setTimeRange] = useState('month');
 
-  // Mock data for dashboard
-  const gmeStats = [
+  // Individual coordinator stats for GME-R Programs
+  const myGmeRStats = [
     {
-      title: 'GME-R Programs YTD',
-      value: '847',
-      change: '+18%',
+      title: 'My GME-R Programs YTD',
+      value: '127',
+      change: '+15%',
       changeType: 'positive' as const,
-      yoyChange: '+22%',
+      yoyChange: '+28%',
       yoyChangeType: 'positive' as const,
       icon: GraduationCap,
       description: 'from last month',
       yoyDescription: 'vs last year'
     },
     {
-      title: 'GME-R Programs MTD',
-      value: '67',
-      change: '+14%',
+      title: 'My GME-R Programs MTD',
+      value: '12',
+      change: '+20%',
       changeType: 'positive' as const,
-      yoyChange: '+19%',
+      yoyChange: '+33%',
       yoyChangeType: 'positive' as const,
       icon: Building,
       description: 'from last month',
       yoyDescription: 'vs last year'
     },
     {
-      title: 'GME-R Programs WTD',
-      value: '12',
-      change: '-3%',
-      changeType: 'negative' as const,
-      yoyChange: '+8%',
+      title: 'My GME-R Programs WTD',
+      value: '3',
+      change: '+0%',
+      changeType: 'positive' as const,
+      yoyChange: '+50%',
       yoyChangeType: 'positive' as const,
       icon: Calendar,
       description: 'from last week',
       yoyDescription: 'vs last year'
     },
     {
-      title: 'GME-R Programs WIP',
-      value: '823',
-      change: '+16%',
+      title: 'My GME-R Programs WIP',
+      value: '124',
+      change: '+18%',
       changeType: 'positive' as const,
-      yoyChange: '+25%',
+      yoyChange: '+31%',
       yoyChangeType: 'positive' as const,
       icon: Activity,
       description: 'from last month',
@@ -76,81 +80,83 @@ export function Dashboard() {
     }
   ];
 
-  const stats = [
+  // Individual coordinator stats for HCP-Rs
+  const myHcpRStats = [
     {
-      title: 'HCP-Rs YTD',
-      value: '2,847',
-      change: '+12%',
+      title: 'My HCP-Rs YTD',
+      value: '347',
+      change: '+18%',
       changeType: 'positive' as const,
       icon: Users,
       description: 'from last month'
     },
     {
-      title: 'HCP-Rs MTD',
-      value: '156',
-      change: '+8%',
+      title: 'My HCP-Rs MTD',
+      value: '28',
+      change: '+12%',
       changeType: 'positive' as const,
       icon: UserPlus,
       description: 'from last month'
     },
     {
-      title: 'HCP-Rs WTD',
-      value: '23',
-      change: '-5%',
-      changeType: 'negative' as const,
+      title: 'My HCP-Rs WTD',
+      value: '6',
+      change: '+20%',
+      changeType: 'positive' as const,
       icon: Clock,
-      description: 'from last month'
+      description: 'from last week'
     },
     {
-      title: 'HCP-Rs in WIP',
-      value: '2,824',
-      change: '+15%',
+      title: 'My HCP-Rs in WIP',
+      value: '341',
+      change: '+19%',
       changeType: 'positive' as const,
       icon: CheckCircle,
       description: 'from last month'
     }
   ];
 
-  const gmeFStats = [
+  // Individual coordinator stats for GME-F Programs
+  const myGmeFStats = [
     {
-      title: 'GME-F Programs YTD',
-      value: '234',
-      change: '+15%',
+      title: 'My GME-F Programs YTD',
+      value: '45',
+      change: '+22%',
       changeType: 'positive' as const,
-      yoyChange: '+28%',
+      yoyChange: '+35%',
       yoyChangeType: 'positive' as const,
       icon: Award,
       description: 'from last month',
       yoyDescription: 'vs last year'
     },
     {
-      title: 'GME-F Programs MTD',
-      value: '18',
-      change: '+11%',
+      title: 'My GME-F Programs MTD',
+      value: '4',
+      change: '+33%',
       changeType: 'positive' as const,
-      yoyChange: '+24%',
+      yoyChange: '+100%',
       yoyChangeType: 'positive' as const,
       icon: Target,
       description: 'from last month',
       yoyDescription: 'vs last year'
     },
     {
-      title: 'GME-F Programs WTD',
-      value: '4',
+      title: 'My GME-F Programs WTD',
+      value: '1',
       change: '+0%',
       changeType: 'positive' as const,
-      yoyChange: '+33%',
+      yoyChange: '+100%',
       yoyChangeType: 'positive' as const,
       icon: Zap,
       description: 'from last week',
       yoyDescription: 'vs last year'
     },
     {
-      title: 'GME-F Programs WIP',
-      value: '227',
-      change: '+13%',
+      title: 'My GME-F Programs WIP',
+      value: '44',
+      change: '+22%',
       changeType: 'positive' as const,
-      yoyChange: '+31%',
+      yoyChange: '+38%',
       yoyChangeType: 'positive' as const,
       icon: TrendingUp,
       description: 'from last month',
@@ -158,46 +164,47 @@ export function Dashboard() {
     }
   ];
 
-  const hcpFStats = [
+  // Individual coordinator stats for HCP-F
+  const myHcpFStats = [
     {
-      title: 'HCP-F YTD',
-      value: '1,234',
-      change: '+16%',
+      title: 'My HCP-F YTD',
+      value: '189',
+      change: '+25%',
       changeType: 'positive' as const,
-      yoyChange: '+29%',
+      yoyChange: '+42%',
       yoyChangeType: 'positive' as const,
       icon: Award,
       description: 'from last month',
       yoyDescription: 'vs last year'
     },
     {
-      title: 'HCP-F MTD',
-      value: '89',
-      change: '+12%',
+      title: 'My HCP-F MTD',
+      value: '16',
+      change: '+23%',
       changeType: 'positive' as const,
-      yoyChange: '+21%',
+      yoyChange: '+45%',
       yoyChangeType: 'positive' as const,
       icon: Target,
       description: 'from last month',
       yoyDescription: 'vs last year'
     },
     {
-      title: 'HCP-F WTD',
-      value: '18',
-      change: '+6%',
+      title: 'My HCP-F WTD',
+      value: '3',
+      change: '+50%',
       changeType: 'positive' as const,
-      yoyChange: '+44%',
+      yoyChange: '+200%',
       yoyChangeType: 'positive' as const,
       icon: Zap,
       description: 'from last week',
       yoyDescription: 'vs last year'
     },
     {
-      title: 'HCP-F in WIP',
-      value: '1,216',
-      change: '+18%',
+      title: 'My HCP-F in WIP',
+      value: '186',
+      change: '+26%',
       changeType: 'positive' as const,
-      yoyChange: '+32%',
+      yoyChange: '+44%',
       yoyChangeType: 'positive' as const,
       icon: TrendingUp,
       description: 'from last month',
@@ -221,26 +228,26 @@ export function Dashboard() {
       color: 'green'
     },
     {
-      title: 'Search RF-HCPs WIP',
-      description: 'Find and manage RF-HCPs in process.',
+      title: 'Search My RF-HCPs',
+      description: 'Find and manage my assigned RF-HCPs.',
       icon: Search,
       href: '/search',
       color: 'purple'
     },
     {
-      title: 'View RF-HCP Reports',
-      description: 'Generate analytics and performance reports',
+      title: 'My Performance Reports',
+      description: 'View my analytics and performance metrics',
       icon: BarChart3,
-      href: '/analytics',
+      href: '/metrics-dashboard',
       color: 'orange'
     }
   ];
 
-  const recentActivity = [
+  const myRecentActivity = [
     {
       id: '1',
       type: 'registration',
-      title: 'New provider registered',
+      title: 'I registered a new provider',
       description: 'Dr. Sarah Johnson, MD - Internal Medicine',
       time: '2 hours ago',
       icon: UserPlus,
@@ -249,8 +256,8 @@ export function Dashboard() {
     {
       id: '2',
       type: 'import',
-      title: 'Bulk import completed',
-      description: '45 providers imported successfully',
+      title: 'I completed a bulk import',
+      description: '28 providers imported successfully',
       time: '4 hours ago',
       icon: Upload,
       color: 'green'
@@ -258,7 +265,7 @@ export function Dashboard() {
     {
       id: '3',
       type: 'update',
-      title: 'Profile updated',
+      title: 'I updated a profile',
       description: 'Dr. Michael Chen, DO - Emergency Medicine',
       time: '6 hours ago',
       icon: FileText,
@@ -267,13 +274,26 @@ export function Dashboard() {
     {
       id: '4',
       type: 'verification',
-      title: 'Verification completed',
+      title: 'I completed verification',
       description: 'Dr. Emily Rodriguez, MD - Pediatrics',
       time: '1 day ago',
       icon: CheckCircle,
       color: 'green'
     }
   ];
+
+  // Performance summary for the individual coordinator
+  const myPerformanceSummary = {
+    rank: 3,
+    totalCoordinators: 8,
+    performanceScore: 94.2,
+    specialtiesManaged: ['Internal Medicine', 'Emergency Medicine', 'Cardiology'],
+    topAchievements: [
+      { metric: 'Data Quality Score', value: '98.5%', rank: 1 },
+      { metric: 'Processing Speed', value: '2.3 min avg', rank: 2 },
+      { metric: 'Monthly Registrations', value: '28 providers', rank: 3 }
+    ]
+  };
 
   const getColorClasses = (color: string) => {
     const colors = {
@@ -308,30 +328,101 @@ export function Dashboard() {
                 Welcome back, {user?.firstName}!
               </h1>
               <p className="text-gray-600 mt-1">
-                Here's what's happening with the Resident & Fellow Data Management Portal today!
+                Here's your individual performance summary for the Resident & Fellow Data Management Portal
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-500">Role:</p>
+              <div className="flex items-center space-x-2 mb-1">
+                <User className="h-4 w-4 text-gray-400" />
+                <p className="text-sm text-gray-500">My Role:</p>
+              </div>
               <p className="font-medium text-gray-900 capitalize">
-                {user?.role === 'administrator' ? 'Administrator' : 'Coordinator'}
+                {user?.role === 'administrator' ? 'Administrator' : 'Provider Relations Data Coordinator'}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {gmeStats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-start justify-between h-full">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                    <div className="space-y-1 mt-2">
-                      <div className="flex items-center">
+        {/* Performance Summary Card */}
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-sm p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold mb-2">My Performance Summary</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-blue-100 text-sm">Team Ranking</p>
+                  <p className="text-2xl font-bold">#{myPerformanceSummary.rank} of {myPerformanceSummary.totalCoordinators}</p>
+                </div>
+                <div>
+                  <p className="text-blue-100 text-sm">Performance Score</p>
+                  <p className="text-2xl font-bold">{myPerformanceSummary.performanceScore}%</p>
+                </div>
+                <div>
+                  <p className="text-blue-100 text-sm">Specialties Managed</p>
+                  <p className="text-lg font-semibold">{myPerformanceSummary.specialtiesManaged.length} specialties</p>
+                </div>
+              </div>
+            </div>
+            <div className="hidden md:block">
+              <Trophy className="h-16 w-16 text-yellow-300" />
+            </div>
+          </div>
+        </div>
+
+        {/* My GME-R Programs Stats */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">My GME-R Programs Performance</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {myGmeRStats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
+                  <div className="flex items-start justify-between h-full">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                      <div className="space-y-1 mt-2">
+                        <div className="flex items-center">
+                          <span className={`text-sm font-medium ${
+                            stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {stat.change}
+                          </span>
+                          <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className={`text-sm font-medium ${
+                            stat.yoyChangeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {stat.yoyChange}
+                          </span>
+                          <span className="text-sm text-gray-500 ml-1">{stat.yoyDescription}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`p-3 rounded-full ${getIconColorClasses('purple')} flex-shrink-0 ml-4`}>
+                      <Icon className="h-6 w-6" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* My HCP-Rs Stats */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">My HCP-Rs Performance</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {myHcpRStats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
+                  <div className="flex items-start justify-between h-full">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                      <div className="flex items-center mt-2">
                         <span className={`text-sm font-medium ${
                           stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
                         }`}>
@@ -339,132 +430,163 @@ export function Dashboard() {
                         </span>
                         <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
                       </div>
-                      <div className="flex items-center">
-                        <span className={`text-sm font-medium ${
-                          stat.yoyChangeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {stat.yoyChange}
-                        </span>
-                        <span className="text-sm text-gray-500 ml-1">{stat.yoyDescription}</span>
-                      </div>
+                    </div>
+                    <div className={`p-3 rounded-full ${getIconColorClasses('blue')} flex-shrink-0 ml-4`}>
+                      <Icon className="h-6 w-6" />
                     </div>
                   </div>
-                  <div className={`p-3 rounded-full ${getIconColorClasses('purple')} flex-shrink-0 ml-4`}>
-                    <Icon className="h-6 w-6" />
-                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
-        {/* HCP-Rs Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-start justify-between h-full">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                    <div className="flex items-center mt-2">
-                      <span className={`text-sm font-medium ${
-                        stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {stat.change}
-                      </span>
-                      <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
+        {/* My GME-F Programs Stats */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">My GME-F Programs Performance</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {myGmeFStats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
+                  <div className="flex items-start justify-between h-full">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                      <div className="space-y-1 mt-2">
+                        <div className="flex items-center">
+                          <span className={`text-sm font-medium ${
+                            stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {stat.change}
+                          </span>
+                          <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className={`text-sm font-medium ${
+                            stat.yoyChangeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {stat.yoyChange}
+                          </span>
+                          <span className="text-sm text-gray-500 ml-1">{stat.yoyDescription}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`p-3 rounded-full ${getIconColorClasses('orange')} flex-shrink-0 ml-4`}>
+                      <Icon className="h-6 w-6" />
                     </div>
                   </div>
-                  <div className={`p-3 rounded-full ${getIconColorClasses('blue')} flex-shrink-0 ml-4`}>
-                    <Icon className="h-6 w-6" />
-                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
-        {/* GME-F Programs Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {gmeFStats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-start justify-between h-full">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                    <div className="space-y-1 mt-2">
-                      <div className="flex items-center">
-                        <span className={`text-sm font-medium ${
-                          stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {stat.change}
-                        </span>
-                        <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <span className={`text-sm font-medium ${
-                          stat.yoyChangeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {stat.yoyChange}
-                        </span>
-                        <span className="text-sm text-gray-500 ml-1">{stat.yoyDescription}</span>
+        {/* My HCP-F Stats */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">My HCP-F Performance</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {myHcpFStats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
+                  <div className="flex items-start justify-between h-full">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                      <div className="space-y-1 mt-2">
+                        <div className="flex items-center">
+                          <span className={`text-sm font-medium ${
+                            stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {stat.change}
+                          </span>
+                          <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className={`text-sm font-medium ${
+                            stat.yoyChangeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {stat.yoyChange}
+                          </span>
+                          <span className="text-sm text-gray-500 ml-1">{stat.yoyDescription}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className={`p-3 rounded-full ${getIconColorClasses('orange')} flex-shrink-0 ml-4`}>
-                    <Icon className="h-6 w-6" />
+                    <div className={`p-3 rounded-full ${getIconColorClasses('red')} flex-shrink-0 ml-4`}>
+                      <Icon className="h-6 w-6" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
-        {/* HCP-F Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {hcpFStats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-start justify-between h-full">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                    <div className="space-y-1 mt-2">
-                      <div className="flex items-center">
-                        <span className={`text-sm font-medium ${
-                          stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {stat.change}
-                        </span>
-                        <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <span className={`text-sm font-medium ${
-                          stat.yoyChangeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {stat.yoyChange}
-                        </span>
-                        <span className="text-sm text-gray-500 ml-1">{stat.yoyDescription}</span>
-                      </div>
+        {/* My Achievements & Goals */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <Trophy className="h-5 w-5 mr-2 text-yellow-500" />
+              My Top Achievements
+            </h2>
+            <div className="space-y-3">
+              {myPerformanceSummary.topAchievements.map((achievement, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                      achievement.rank === 1 ? 'bg-yellow-100 text-yellow-800' :
+                      achievement.rank === 2 ? 'bg-gray-100 text-gray-800' :
+                      'bg-orange-100 text-orange-800'
+                    }`}>
+                      #{achievement.rank}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{achievement.metric}</p>
+                      <p className="text-sm text-gray-600">{achievement.value}</p>
                     </div>
                   </div>
-                  <div className={`p-3 rounded-full ${getIconColorClasses('red')} flex-shrink-0 ml-4`}>
-                    <Icon className="h-6 w-6" />
-                  </div>
+                  {achievement.rank === 1 && <Star className="h-5 w-5 text-yellow-500" />}
                 </div>
-              </div>
-            );
-          })}
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <Briefcase className="h-5 w-5 mr-2 text-blue-500" />
+              My Assigned Specialties
+            </h2>
+            <div className="space-y-3">
+              {myPerformanceSummary.specialtiesManaged.map((specialty, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Award className="h-5 w-5 text-blue-600" />
+                    <span className="font-medium text-gray-900">{specialty}</span>
+                  </div>
+                  <a
+                    href={`/search?specialty=${encodeURIComponent(specialty)}&managedBy=${encodeURIComponent(user?.firstName + ' ' + user?.lastName)}`}
+                    className="text-sm text-blue-600 hover:text-blue-700"
+                  >
+                    View Providers →
+                  </a>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <a
+                href="/user-settings"
+                className="text-sm text-blue-600 hover:text-blue-700"
+              >
+                Manage my specialty assignments →
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">My Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {quickActions.map((action, index) => {
               const Icon = action.icon;
@@ -491,16 +613,16 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Recent Activity */}
+        {/* My Recent Activity */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-            <a href="/activity" className="text-sm text-blue-600 hover:text-blue-700">
-              View all activity →
+            <h2 className="text-lg font-semibold text-gray-900">My Recent Activity</h2>
+            <a href="/metrics-search" className="text-sm text-blue-600 hover:text-blue-700">
+              View my full activity log →
             </a>
           </div>
           <div className="space-y-4">
-            {recentActivity.map((activity) => {
+            {myRecentActivity.map((activity) => {
               const Icon = activity.icon;
               return (
                 <div key={activity.id} className="flex items-start space-x-3">
