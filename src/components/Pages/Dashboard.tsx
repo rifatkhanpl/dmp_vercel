@@ -78,8 +78,8 @@ export function Dashboard() {
       color: 'green'
     },
     {
-      title: 'Search Providers',
-      description: 'Find and manage existing provider records',
+      title: 'Search RF-HCP-WIP',
+      description: 'Find and manage RF-HCPs in process.',
       icon: Search,
       href: '/search',
       color: 'purple'
