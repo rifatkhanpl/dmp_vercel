@@ -169,6 +169,11 @@ function App() {
                 <AdminUserSettings />
               </AdminRoute>
             } />
+            <Route path="/admin" element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            } />
             <Route path="/gme-program-search" element={
               <ProtectedRoute>
                 <GMEProgramSearch />
