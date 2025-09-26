@@ -609,7 +609,7 @@ export function AdminUserSettings() {
                       ) : (
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(selectedUser.role)}`}>
                           {selectedUser.role === 'administrator' ? <Shield className="h-3 w-3 mr-1" /> : <User className="h-3 w-3 mr-1" />}
-                          {selectedUser.role === 'administrator' ? 'Administrator' : 'Coordinator'}
+                          {selectedUser.role === 'administrator' ? 'Administrator' : 'Provider Relations & Development'}
                         </span>
                       )}
                       {isEditing && (

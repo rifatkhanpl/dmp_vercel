@@ -83,7 +83,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (metaRole === 'administrator' || metaRole === 'admin' || metaRole === 'Admin') {
         roles.push('administrator');
       } else {
-        roles.push('hcp-data-coordinator');
+        roles.push('provider-relations-coordinator');
       }
     }
 
@@ -93,8 +93,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       auth0User.user_metadata.roles.forEach((role: string) => {
         if ((role === 'administrator' || role === 'admin' || role === 'Admin') && !roles.includes('administrator')) {
           roles.push('administrator');
-        } else if (!roles.includes('hcp-data-coordinator')) {
-          roles.push('hcp-data-coordinator');
+        } else if (!roles.includes('provider-relations-coordinator')) {
+          roles.push('provider-relations-coordinator');
         }
       });
     }
@@ -106,8 +106,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       namespacedRoles.forEach(role => {
         if (role === 'Admin' || role === 'administrator') {
           if (!roles.includes('administrator')) roles.push('administrator');
-        } else if (role === 'hcp-data-coordinator' || role === 'User') {
-          if (!roles.includes('hcp-data-coordinator')) roles.push('hcp-data-coordinator');
+        } else if (role === 'provider-relations-coordinator' || role === 'User') {
+          if (!roles.includes('provider-relations-coordinator')) roles.push('provider-relations-coordinator');
         }
       });
     } else if (auth0User['https://practicelink.com/role']) {
@@ -116,8 +116,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.log('Found single namespaced role:', singleRole);
       if (singleRole === 'Admin' || singleRole === 'administrator') {
         if (!roles.includes('administrator')) roles.push('administrator');
-      } else if (!roles.includes('hcp-data-coordinator')) {
-        roles.push('hcp-data-coordinator');
+      } else if (!roles.includes('provider-relations-coordinator')) {
+        roles.push('provider-relations-coordinator');
       }
     }
 
@@ -128,8 +128,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Map Auth0 roles to application roles
         if (role === 'superadminudb' || role === 'administrator' || role === 'Admin') {
           if (!roles.includes('administrator')) roles.push('administrator');
-        } else if ((role === 'user' || role === 'User') && !roles.includes('hcp-data-coordinator')) {
-          roles.push('hcp-data-coordinator');
+        } else if ((role === 'user' || role === 'User') && !roles.includes('provider-relations-coordinator')) {
+          roles.push('provider-relations-coordinator');
+        } else if (role === 'provider-relations-coordinator' && !roles.includes('provider-relations-coordinator')) {
+          roles.push('provider-relations-coordinator');
         }
       });
     }
@@ -140,8 +142,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       auth0User.app_metadata.roles.forEach((role: string) => {
         if ((role === 'administrator' || role === 'Admin') && !roles.includes('administrator')) {
           roles.push('administrator');
-        } else if (!roles.includes('hcp-data-coordinator')) {
-          roles.push('hcp-data-coordinator');
+        } else if (!roles.includes('provider-relations-coordinator')) {
+          roles.push('provider-relations-coordinator');
         }
       });
     } else if (auth0User.app_metadata?.role) {
@@ -149,15 +151,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.log('Found app_metadata single role:', appRole);
       if (appRole === 'administrator' && !roles.includes('administrator')) {
         roles.push('administrator');
-      } else if (!roles.includes('hcp-data-coordinator')) {
-        roles.push('hcp-data-coordinator');
+      } else if (!roles.includes('provider-relations-coordinator')) {
+        roles.push('provider-relations-coordinator');
       }
     }
 
     // If no roles found, default to provider-relations-coordinator
     if (roles.length === 0) {
-      console.log('No roles found, defaulting to hcp-data-coordinator');
-      roles.push('hcp-data-coordinator');
+      console.log('No roles found, defaulting to provider-relations-coordinator');
+      roles.push('provider-relations-coordinator');
     }
 
     console.log('Available roles:', roles);
@@ -188,7 +190,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         };
         setMockUser(defaultMockUser);
         setUser(defaultMockUser);
-        setAvailableRoles(['administrator', 'hcp-data-coordinator']);
+        setAvailableRoles(['administrator', 'provider-relations-coordinator']);
         setUserPermissions(ROLE_PERMISSIONS['administrator']);
         console.log('Mock auth enabled with demo user');
       }
@@ -213,7 +215,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           if (persistedRole && roles.includes(persistedRole)) {
             activeRole = persistedRole;
           } else {
-            activeRole = roles.includes('administrator') ? 'administrator' : 'hcp-data-coordinator';
+            activeRole = roles.includes('administrator') ? 'administrator' : 'provider-relations-coordinator';
           }
           setSelectedRole(activeRole);
           localStorage.setItem('selectedRole', activeRole);
@@ -232,7 +234,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(authUser);
 
         // Set permissions based on active role
-        const permissions = ROLE_PERMISSIONS[activeRole] || ROLE_PERMISSIONS['hcp-data-coordinator'] || [];
+        const permissions = ROLE_PERMISSIONS[activeRole] || ROLE_PERMISSIONS['provider-relations-coordinator'] || [];
         setUserPermissions(permissions);
 
         console.log('Auth0 login successful, user set:', authUser);
@@ -260,7 +262,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       };
       setMockUser(mockUser);
       setUser(mockUser);
-      setAvailableRoles(['administrator', 'hcp-data-coordinator']);
+      setAvailableRoles(['administrator', 'provider-relations-coordinator']);
       setUserPermissions(ROLE_PERMISSIONS['administrator']);
       setUseMockAuth(true);
       return;
@@ -302,14 +304,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         firstName,
         lastName,
         email,
-        role: 'hcp-data-coordinator',
+        role: 'provider-relations-coordinator',
         isEmailVerified: true,
         createdAt: new Date().toISOString()
       };
       setMockUser(mockUser);
       setUser(mockUser);
-      setAvailableRoles(['hcp-data-coordinator']);
-      setUserPermissions(ROLE_PERMISSIONS['hcp-data-coordinator']);
+      setAvailableRoles(['provider-relations-coordinator']);
+      setUserPermissions(ROLE_PERMISSIONS['provider-relations-coordinator']);
       setUseMockAuth(true);
       return;
     }

@@ -11,7 +11,7 @@ export function RegistrationForm() {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'hcp-data-coordinator' as UserRole
+    role: 'provider-relations-coordinator' as UserRole
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);

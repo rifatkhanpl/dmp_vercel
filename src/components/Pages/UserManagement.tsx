@@ -61,7 +61,7 @@ export function UserManagement() {
       firstName: 'Jane',
       lastName: 'Smith',
       email: 'jane.smith@practicelink.com',
-      role: 'hcp-data-coordinator',
+      role: 'provider-relations-coordinator',
       status: 'active',
       lastLogin: '2024-01-14T16:45:00Z',
       createdAt: '2023-02-01T09:00:00Z',
@@ -77,7 +77,7 @@ export function UserManagement() {
       firstName: 'Mike',
       lastName: 'Johnson',
       email: 'mike.johnson@practicelink.com',
-      role: 'hcp-data-coordinator',
+      role: 'provider-relations-coordinator',
       status: 'pending',
       createdAt: '2024-01-10T09:00:00Z',
       isEmailVerified: false,
@@ -91,7 +91,7 @@ export function UserManagement() {
       firstName: 'Emily',
       lastName: 'Rodriguez',
       email: 'emily.rodriguez@practicelink.com',
-      role: 'hcp-data-coordinator',
+      role: 'provider-relations-coordinator',
       status: 'active',
       lastLogin: '2024-01-13T14:20:00Z',
       createdAt: '2023-03-15T09:00:00Z',
@@ -107,7 +107,7 @@ export function UserManagement() {
       firstName: 'David',
       lastName: 'Thompson',
       email: 'david.thompson@practicelink.com',
-      role: 'hcp-data-coordinator',
+      role: 'provider-relations-coordinator',
       status: 'active',
       lastLogin: '2024-01-12T11:15:00Z',
       createdAt: '2023-04-20T09:00:00Z',
@@ -593,7 +593,7 @@ export function UserManagement() {
                             ) : (
                               <>
                                 <User className="h-3 w-3 mr-1" />
-                                Coordinator
+                                Provider Relations & Development
                               </>
                             )}
                           </span>
