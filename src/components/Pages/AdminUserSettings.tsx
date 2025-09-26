@@ -366,7 +366,7 @@ export function AdminUserSettings() {
                           : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                       }`}
                     >
-                      <option value="provider-relations-data-coordinator">Provider Relations Data Coordinator</option>
+                      <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                           <span className="text-xs font-medium text-blue-600">
                             {mockUser.firstName[0]}{mockUser.lastName[0]}
