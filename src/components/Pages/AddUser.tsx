@@ -213,9 +213,9 @@ export function AddUser() {
                 <ArrowLeft className="h-5 w-5" />
               </a>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Add New User</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Add RF-HCP</h1>
                 <p className="text-gray-600 mt-1">
-                  Create a new user account for the PracticeLink system
+                  Create a new Resident/Fellow Healthcare Provider account for the PracticeLink system
                 </p>
               </div>
             </div>
