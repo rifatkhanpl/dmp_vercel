@@ -38,10 +38,7 @@ export function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
           
           <a href="/" className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors">
             <Home className="h-8 w-8" />
-            <div>
-              <h1 className="text-xl font-bold">PracticeLink</h1>
-              <p className="text-xs text-gray-500 hidden sm:block">RF-DMP</p>
-            </div>
+            <h1 className="text-xl font-bold">PracticeLink RF-DMP</h1>
           </a>
         </div>
 
