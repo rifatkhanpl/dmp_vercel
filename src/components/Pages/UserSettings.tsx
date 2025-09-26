@@ -30,7 +30,8 @@ export function UserSettings() {
     { id: '5', type: 'subspecialty', name: 'Cardiology', category: 'Internal Medicine' },
     { id: '6', type: 'state', name: 'California' },
     { id: '7', type: 'state', name: 'New York' },
-    title: 'HCP Data Coordinator',
+    { id: '8', type: 'profession', name: 'HCP Data Coordinator', title: 'HCP Data Coordinator' }
+  ]);
 
   const [newAssignment, setNewAssignment] = useState({
     type: 'profession' as 'profession' | 'specialty' | 'subspecialty' | 'state',
@@ -400,7 +401,7 @@ export function UserSettings() {
                 )}
               </div>
             </div>
-          </div>
+
             {/* States */}
             <div>
               <h3 className="text-md font-medium text-gray-900 mb-3">States</h3>
@@ -424,6 +425,7 @@ export function UserSettings() {
                 )}
               </div>
             </div>
+          </div>
 
           {/* Save Button */}
           <div className="flex justify-end mt-6 pt-6 border-t border-gray-200">
