@@ -65,7 +65,7 @@ export function Dashboard() {
   const quickActions = [
     {
       title: 'Add RF-HCP',
-      description: 'Add RF-HCP to the system',
+      description: 'One at a time.',
       icon: UserPlus,
       href: '/hcp-registration',
       color: 'blue'
