@@ -317,11 +317,11 @@ export function Search() {
                   </div>
                   <input
                     type="text"
-                    placeholder="Search residents/fellows by name, specialty, location, email, or NPI..."
+                    placeholder="Search residents & fellows by name, specialty, location, email, or NPI..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    aria-label="Search residents/fellows"
+                    aria-label="Search residents & fellows"
                     maxLength={100}
                   />
                 </div>

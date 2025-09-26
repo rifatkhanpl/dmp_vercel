@@ -338,7 +338,7 @@ export function Analytics() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">HCP-RF Summary</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Validated Profiles</span>
+                    <span className="text-sm text-gray-600">Validated Residents & Fellows</span>
                     <span className="text-sm font-medium text-green-600">{hcpRfStats.validated.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
