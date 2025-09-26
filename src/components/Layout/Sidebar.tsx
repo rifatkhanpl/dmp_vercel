@@ -119,6 +119,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       title: 'Administration',
       items: [
         {
+          name: 'Admin Dashboard',
+          href: '/admin',
+          icon: Shield,
+          description: 'System overview and admin tools'
+        },
+        {
           name: 'User Management',
           href: '/user-management',
           icon: Users,
