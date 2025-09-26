@@ -71,7 +71,7 @@ export function Dashboard() {
       color: 'blue'
     },
     {
-      title: 'RF-HCP Import',
+      title: 'Import RF-HCPs',
       description: 'With CSV, URL, or Copy/Paste.',
       icon: Upload,
       href: '/bulk-import',
