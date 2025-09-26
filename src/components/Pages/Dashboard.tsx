@@ -53,7 +53,7 @@ export function Dashboard() {
       description: 'from last month'
     },
     {
-      title: 'Verified Profiles',
+      title: 'RF-HCPs in WIP',
       value: '2,824',
       change: '+15%',
       changeType: 'positive' as const,
