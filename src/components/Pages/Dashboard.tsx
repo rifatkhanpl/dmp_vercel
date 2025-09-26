@@ -287,7 +287,9 @@ export function Dashboard() {
     rank: 3,
     totalCoordinators: 8,
     performanceScore: 94.2,
-    specialtiesManaged: ['Internal Medicine', 'Emergency Medicine', 'Cardiology'],
+    statesManaged: ['California', 'Nevada', 'Arizona'],
+    gmeRProgramsManaged: ['Internal Medicine - UCLA', 'Emergency Medicine - USC', 'Family Medicine - UCSF'],
+    gmeFProgramsManaged: ['Cardiology Fellowship - Stanford', 'GI Fellowship - UCSF'],
     topAchievements: [
       { metric: 'Data Quality Score', value: '98.5%', rank: 1 },
       { metric: 'Processing Speed', value: '2.3 min avg', rank: 2 },
@@ -524,7 +526,7 @@ export function Dashboard() {
         </div>
 
         {/* My Achievements & Goals */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <Trophy className="h-5 w-5 mr-2 text-yellow-500" />
@@ -554,18 +556,18 @@ export function Dashboard() {
 
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <Briefcase className="h-5 w-5 mr-2 text-blue-500" />
-              My Assigned Specialties
+              <MapPin className="h-5 w-5 mr-2 text-blue-500" />
+              My States Managed
             </h2>
             <div className="space-y-3">
-              {myPerformanceSummary.specialtiesManaged.map((specialty, index) => (
+              {myPerformanceSummary.statesManaged.map((state, index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                   <div className="flex items-center space-x-3">
-                    <Award className="h-5 w-5 text-blue-600" />
-                    <span className="font-medium text-gray-900">{specialty}</span>
+                    <MapPin className="h-5 w-5 text-blue-600" />
+                    <span className="font-medium text-gray-900">{state}</span>
                   </div>
                   <a
-                    href={`/search?specialty=${encodeURIComponent(specialty)}&managedBy=${encodeURIComponent(user?.firstName + ' ' + user?.lastName)}`}
+                    href={`/search?state=${encodeURIComponent(state)}&managedBy=${encodeURIComponent(user?.firstName + ' ' + user?.lastName)}`}
                     className="text-sm text-blue-600 hover:text-blue-700"
                   >
                     View Providers →
@@ -578,8 +580,56 @@ export function Dashboard() {
                 href="/user-settings"
                 className="text-sm text-blue-600 hover:text-blue-700"
               >
-                Manage my specialty assignments →
+                Manage my state assignments →
               </a>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <GraduationCap className="h-5 w-5 mr-2 text-purple-500" />
+              My GME Programs Managed
+            </h2>
+            <div className="space-y-3">
+              <div>
+                <h3 className="text-sm font-medium text-gray-700 mb-2">GME-R Programs</h3>
+                <div className="space-y-2">
+                  {myPerformanceSummary.gmeRProgramsManaged.map((program, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-purple-50 rounded">
+                      <div className="flex items-center space-x-2">
+                        <GraduationCap className="h-4 w-4 text-purple-600" />
+                        <span className="text-sm text-gray-900">{program}</span>
+                      </div>
+                      <a
+                        href={`/gme-program-search?program=${encodeURIComponent(program)}`}
+                        className="text-xs text-purple-600 hover:text-purple-700"
+                      >
+                        View →
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium text-gray-700 mb-2">GME-F Programs</h3>
+                <div className="space-y-2">
+                  {myPerformanceSummary.gmeFProgramsManaged.map((program, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-orange-50 rounded">
+                      <div className="flex items-center space-x-2">
+                        <Award className="h-4 w-4 text-orange-600" />
+                        <span className="text-sm text-gray-900">{program}</span>
+                      </div>
+                      <a
+                        href={`/gme-program-search?program=${encodeURIComponent(program)}`}
+                        className="text-xs text-orange-600 hover:text-orange-700"
+                      >
+                        View →
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
