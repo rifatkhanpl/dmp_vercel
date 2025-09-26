@@ -1,10 +1,10 @@
-# PracticeLink Data Management Portal (PL-DMP) - Project Export Manifest
+# PracticeLink Residents/Fellows Data Management Portal (RF-DMP) - Project Export Manifest
 
 ## Project Overview
-**Project Name:** PracticeLink Data Management Portal (PL-DMP)  
+**Project Name:** PracticeLink Residents/Fellows Data Management Portal (RF-DMP)  
 **Version:** 1.0.0  
 **Export Date:** January 2025  
-**Description:** Secure data collection platform for PracticeLink's Provider Relations & Development Team
+**Description:** Secure residents/fellows data collection platform for PracticeLink's Provider Relations & Development Team
 
 ## Technology Stack
 - **Frontend:** React 18 + TypeScript + Vite
@@ -145,15 +145,15 @@ src/components/Layout/
 src/components/Pages/
 ├── LandingPage.tsx                 # Public landing page
 ├── Dashboard.tsx                   # Main dashboard
-├── HCPRegistration.tsx             # Healthcare provider registration form
+├── HCPRegistration.tsx             # Resident/fellow registration form
 ├── BulkImport.tsx                  # Bulk import with file upload and AI parsing
-├── Search.tsx                      # Provider search and management
-├── HCPDetail.tsx                   # Provider detail view
+├── Search.tsx                      # Resident/fellow search and management
+├── HCPDetail.tsx                   # Resident/fellow detail view
 ├── UserManagement.tsx              # User management (admin only)
 ├── AddUser.tsx                     # Add new user form
 ├── UserProfile.tsx                 # User profile page
 ├── UserSettings.tsx                # User settings and assignments
-├── ProviderProfile.tsx             # Provider profile page
+├── ProviderProfile.tsx             # Resident/fellow profile page
 └── Analytics.tsx                   # Comprehensive analytics dashboard
 ```
 
@@ -232,11 +232,11 @@ data/
 - **Role-based Access Control:** Administrator vs Coordinator permissions
 - **Email Verification:** Resend API integration
 
-### 2. Healthcare Provider Management
-- **Individual Registration:** Comprehensive HCP registration forms
+### 2. Residents/Fellows Management
+- **Individual Registration:** Comprehensive resident/fellow registration forms
 - **Bulk Import:** CSV/Excel file processing with validation
 - **AI-Assisted Import:** Text and URL parsing with OpenAI
-- **Search & Filter:** Advanced provider search capabilities
+- **Search & Filter:** Advanced resident/fellow search capabilities
 - **Data Validation:** Zod schemas with business rule validation
 
 ### 3. GME (Graduate Medical Education) Management
@@ -253,7 +253,7 @@ data/
 - **Duplicate Resolution:** AI-powered duplicate detection and resolution
 
 ### 5. Analytics & Reporting
-- **Multi-dimensional Analytics:** Institutions, Programs, HCP-RF analytics
+- **Multi-dimensional Analytics:** Institutions, Programs, Residents/Fellows analytics
 - **Production Metrics:** User performance and productivity tracking
 - **Export Capabilities:** CSV, JSON, and Excel export functionality
 - **Real-time Dashboards:** Live metrics and activity feeds
@@ -367,4 +367,4 @@ OPENAI_API_KEY=your-openai-api-key (for AI parsing functionality)
 **API Endpoints:** 20+ REST endpoints + 1 edge function  
 **UI Components:** 50+ React components  
 
-This manifest represents a complete, production-ready healthcare data management platform with comprehensive features for managing institutions, programs, and healthcare providers in the GME ecosystem.
+This manifest represents a complete, production-ready residents/fellows data management platform with comprehensive features for managing institutions, programs, and residents/fellows in the GME ecosystem.

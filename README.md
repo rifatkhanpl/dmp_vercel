@@ -1,13 +1,13 @@
-# PracticeLink Data Management Portal (PL-DMP)
+# PracticeLink Residents/Fellows Data Management Portal (RF-DMP)
 
-A comprehensive, secure data collection and management platform designed specifically for PracticeLink's Provider Relations & Development Team. The PL-DMP serves as the central hub for managing healthcare provider data, Graduate Medical Education (GME) programs, and institutional relationships within the healthcare ecosystem.
+A comprehensive, secure data collection and management platform designed specifically for PracticeLink's Provider Relations & Development Team. The RF-DMP serves as the central hub for managing residents/fellows data, Graduate Medical Education (GME) programs, and institutional relationships within the healthcare ecosystem.
 
 ## 🎯 Project Overview
 
-The PracticeLink Data Management Portal is an enterprise-grade web application that streamlines the collection, validation, and management of healthcare provider data. Built with modern web technologies and AI-assisted workflows, it provides a robust foundation for PracticeLink's Universal Data Bank (UDB) initiative.
+The PracticeLink Residents/Fellows Data Management Portal is an enterprise-grade web application that streamlines the collection, validation, and management of residents/fellows data. Built with modern web technologies and AI-assisted workflows, it provides a robust foundation for PracticeLink's Universal Data Bank (UDB) initiative.
 
 ### Key Objectives
-- **Centralized Data Management**: Single source of truth for healthcare provider information
+- **Centralized Data Management**: Single source of truth for residents/fellows information
 - **AI-Enhanced Workflows**: Intelligent data extraction and field mapping capabilities
 - **Compliance & Security**: Enterprise-grade security with full audit trails
 - **Scalable Architecture**: Built to handle large-scale data operations
@@ -40,7 +40,7 @@ The PracticeLink Data Management Portal is an enterprise-grade web application t
 
 ### 1. Healthcare Provider Management
 **Individual Registration**
-- Comprehensive provider registration forms
+- Comprehensive resident/fellow registration forms
 - Real-time validation with business rules
 - Duplicate detection and prevention
 - Complete audit trail for all changes
@@ -52,9 +52,9 @@ The PracticeLink Data Management Portal is an enterprise-grade web application t
 - Batch processing with detailed error reporting
 
 **Advanced Search & Management**
-- Multi-criteria search across all provider fields
+- Multi-criteria search across all resident/fellow fields
 - Bulk operations for efficient data management
-- Provider assignment to team members
+- Resident/fellow assignment to team members
 - Export capabilities with custom field selection
 
 ### 2. Graduate Medical Education (GME) Management

@@ -165,7 +165,7 @@ export function Analytics() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
               <p className="text-gray-600 mt-1">
-                Comprehensive analytics for Institutions, Programs, and Healthcare Providers
+                Comprehensive analytics for Institutions, Programs, and Residents/Fellows
               </p>
             </div>
             <div className="flex space-x-3">
@@ -240,7 +240,7 @@ export function Analytics() {
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                HCP - Residents/Fellows
+                Residents/Fellows
               </button>
             </nav>
           </div>
@@ -276,7 +276,7 @@ export function Analytics() {
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">HCP - Residents/Fellows</p>
+                    <p className="text-sm font-medium text-gray-600">Residents/Fellows</p>
                     <p className="text-2xl font-bold text-gray-900">{hcpRfStats.total.toLocaleString()}</p>
                     <p className="text-sm text-purple-600 mt-1">{hcpRfStats.residents.toLocaleString()} residents, {hcpRfStats.fellows.toLocaleString()} fellows</p>
                   </div>
@@ -622,7 +622,7 @@ export function Analytics() {
                     </div>
                     <div className="text-right">
                       <span className="text-lg font-bold text-gray-900">{count.toLocaleString()}</span>
-                      <span className="text-sm text-gray-500 ml-2">providers</span>
+                      <span className="text-sm text-gray-500 ml-2">residents/fellows</span>
                     </div>
                   </div>
                 ))}
@@ -684,7 +684,7 @@ export function Analytics() {
                     </div>
                     <div className="text-right">
                       <span className="text-lg font-bold text-gray-900">{count.toLocaleString()}</span>
-                      <span className="text-sm text-gray-500 ml-2">providers</span>
+                      <span className="text-sm text-gray-500 ml-2">residents/fellows</span>
                     </div>
                   </div>
                 ))}

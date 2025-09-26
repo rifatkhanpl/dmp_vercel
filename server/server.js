@@ -58,7 +58,7 @@ app.post('/api/send-verification-email', async (req, res) => {
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
             <h1 style="color: white; margin: 0; font-size: 28px;">PracticeLink</h1>
-            <p style="color: #e8f4fd; margin: 10px 0 0 0;">Career Management Platform</p>
+            <p style="color: #e8f4fd; margin: 10px 0 0 0;">RF-DMP</p>
           </div>
           
           <div style="background: #ffffff; padding: 40px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
@@ -66,7 +66,7 @@ app.post('/api/send-verification-email', async (req, res) => {
             
             <p>Hello ${name},</p>
             
-            <p>Thank you for registering with PracticeLink's Data Collection Portal. To complete your account setup and start accessing our platform, please verify your email address.</p>
+            <p>Thank you for registering with PracticeLink's RF-DMP. To complete your account setup and start accessing our platform, please verify your email address.</p>
             
             <div style="text-align: center; margin: 30px 0;">
               <a href="${verificationUrl}" style="background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Verify Email Address</a>
@@ -150,7 +150,7 @@ app.post('/api/send-password-reset-email', async (req, res) => {
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
             <h1 style="color: white; margin: 0; font-size: 28px;">PracticeLink</h1>
-            <p style="color: #e8f4fd; margin: 10px 0 0 0;">Career Management Platform</p>
+            <p style="color: #e8f4fd; margin: 10px 0 0 0;">RF-DMP</p>
           </div>
           
           <div style="background: #ffffff; padding: 40px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
