@@ -5,31 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { errorService } from '../../services/errorService';
 import { SecurityUtils } from '../../utils/security';
 import { AdminUserUpdate, UserRole, UserStatus } from '../../types/user';
-import { 
-  Shield,
-  User,
-  Mail,
-  Phone,
-  Building,
-  MapPin,
-  Calendar,
-  Settings,
-  Save,
-  X,
-  AlertCircle,
-  CheckCircle,
-  Eye,
-  EyeOff,
-  RefreshCw,
-  Ban,
-  Unlock,
-  UserCheck,
-  Clock,
-  Award,
-  Activity,
-  Trash2,
-  Edit
-} from 'lucide-react';
+import { Shield, User, Mail, Phone, Building, MapPin, Calendar, Settings, Save, X, AlertCircle, CheckCircle, Eye, EyeOff, RefreshCw, Ban, Unlock, UserCheck, Clock, Award, Activity, Trash2, CreditCard as Edit } from 'lucide-react';
 
 export function AdminUserSettings() {
   const { user, isAdmin } = useAuth();
@@ -390,7 +366,7 @@ export function AdminUserSettings() {
                           : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                       }`}
                     >
-                      <div className="flex items-center space-x-3">
+                      <option value="provider-relations-data-coordinator">Provider Relations Data Coordinator</option>
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                           <span className="text-xs font-medium text-blue-600">
                             {mockUser.firstName[0]}{mockUser.lastName[0]}

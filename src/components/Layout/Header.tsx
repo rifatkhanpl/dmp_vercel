@@ -53,7 +53,7 @@ export function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
               >
                 <span className="text-gray-600">Role:</span>
                 <span className={`font-medium ${isAdmin ? 'text-yellow-600' : 'text-blue-600'}`}>
-                  {user.role.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                  {user.role === 'provider-relations-data-coordinator' ? 'Provider Relations Data Coordinator' : 'Administrator'}
                 </span>
                 <ChevronDown className="h-4 w-4 text-gray-400" />
               </button>
@@ -76,7 +76,7 @@ export function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
                       }`}
                     >
                       <span className="capitalize">
-                        {role.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                        {role === 'provider-relations-data-coordinator' ? 'Provider Relations Data Coordinator' : 'Administrator'}
                       </span>
                       {user.role === role && (
                         <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Active</span>
@@ -107,7 +107,7 @@ export function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                       isAdmin ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
                     }`}>
-                      {user.role.replace(/-/g, ' ').toUpperCase()}
+                      {user.role === 'provider-relations-data-coordinator' ? 'PROVIDER RELATIONS DATA COORDINATOR' : 'ADMINISTRATOR'}
                     </span>
                   </p>
                 </div>

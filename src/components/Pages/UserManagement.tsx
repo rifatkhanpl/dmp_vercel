@@ -4,29 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { auth0Management } from '../../services/auth0Management';
 import { errorService } from '../../services/errorService';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
-import { 
-  Users,
-  UserPlus,
-  Search,
-  Filter,
-  Download,
-  ChevronDown,
-  X,
-  Eye,
-  Edit,
-  Ban,
-  Trash2,
-  Shield,
-  User,
-  Mail,
-  Phone,
-  Calendar,
-  Activity,
-  CheckCircle,
-  AlertTriangle,
-  Clock,
-  RefreshCw
-} from 'lucide-react';
+import { Users, UserPlus, Search, Filter, Download, ChevronDown, X, Eye, CreditCard as Edit, Ban, Trash2, Shield, User, Mail, Phone, Calendar, Activity, CheckCircle, AlertTriangle, Clock, RefreshCw } from 'lucide-react';
 
 interface AppUser {
   id: string;

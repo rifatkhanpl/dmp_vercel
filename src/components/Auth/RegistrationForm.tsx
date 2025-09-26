@@ -180,7 +180,7 @@ export function RegistrationForm() {
                 onChange={handleInputChange}
                 className="block w-full px-3 py-3 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="provider-relations-coordinator">Provider Relations Data Coordinator</option>
+                <option value="provider-relations-data-coordinator">Provider Relations Data Coordinator</option>
                 <option value="administrator">Administrator/Manager</option>
               </select>
             </div>

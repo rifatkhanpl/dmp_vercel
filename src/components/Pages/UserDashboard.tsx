@@ -31,7 +31,7 @@ function RequireRole({ roles }) {
   const { user } = useAuth();
   const loc = useLocation();
   const role = user?.role?.replace(/-/g, ' ').toLowerCase();
-  const ok = role && roles.map(r => r.toLowerCase()).includes(role);
+  const ok = role && roles.map(r => r.toLowerCase().replace(/\s+/g, ' ')).includes(role);
   if (!ok) return <Navigate to="/unauthorized" replace state={{ from: loc }} />;
   return <Outlet />;
 }

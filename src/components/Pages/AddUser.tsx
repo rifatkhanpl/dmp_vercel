@@ -358,7 +358,7 @@ export function AddUser() {
                       errors.role ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
                     }`}
                   >
-                    <option value="provider-relations-coordinator">Provider Relations Coordinator</option>
+                    <option value="provider-relations-data-coordinator">Provider Relations Data Coordinator</option>
                     <option value="administrator">Administrator</option>
                   </select>
                   {errors.role && (

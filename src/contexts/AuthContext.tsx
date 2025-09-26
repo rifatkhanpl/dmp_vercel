@@ -83,7 +83,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (metaRole === 'administrator' || metaRole === 'admin' || metaRole === 'Admin') {
         roles.push('administrator');
       } else {
-        roles.push('provider-relations-coordinator');
+        roles.push('provider-relations-data-coordinator');
       }
     }
 
@@ -93,8 +93,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       auth0User.user_metadata.roles.forEach((role: string) => {
         if ((role === 'administrator' || role === 'admin' || role === 'Admin') && !roles.includes('administrator')) {
           roles.push('administrator');
-        } else if (!roles.includes('provider-relations-coordinator')) {
-          roles.push('provider-relations-coordinator');
+        } else if (!roles.includes('provider-relations-data-coordinator')) {
+          roles.push('provider-relations-data-coordinator');
         }
       });
     }
@@ -106,8 +106,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       namespacedRoles.forEach(role => {
         if (role === 'Admin' || role === 'administrator') {
           if (!roles.includes('administrator')) roles.push('administrator');
-        } else if (role === 'provider-relations-coordinator' || role === 'User') {
-          if (!roles.includes('provider-relations-coordinator')) roles.push('provider-relations-coordinator');
+        } else if (role === 'provider-relations-data-coordinator' || role === 'User') {
+          if (!roles.includes('provider-relations-data-coordinator')) roles.push('provider-relations-data-coordinator');
         }
       });
     } else if (auth0User['https://practicelink.com/role']) {
@@ -116,8 +116,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.log('Found single namespaced role:', singleRole);
       if (singleRole === 'Admin' || singleRole === 'administrator') {
         if (!roles.includes('administrator')) roles.push('administrator');
-      } else if (!roles.includes('provider-relations-coordinator')) {
-        roles.push('provider-relations-coordinator');
+      } else if (!roles.includes('provider-relations-data-coordinator')) {
+        roles.push('provider-relations-data-coordinator');
       }
     }
 
@@ -128,8 +128,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Map Auth0 roles to application roles
         if (role === 'superadminudb' || role === 'administrator' || role === 'Admin') {
           if (!roles.includes('administrator')) roles.push('administrator');
-        } else if ((role === 'user' || role === 'User') && !roles.includes('provider-relations-coordinator')) {
-          roles.push('provider-relations-coordinator');
+        } else if ((role === 'user' || role === 'User') && !roles.includes('provider-relations-data-coordinator')) {
+          roles.push('provider-relations-data-coordinator');
         }
       });
     }
@@ -140,8 +140,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       auth0User.app_metadata.roles.forEach((role: string) => {
         if ((role === 'administrator' || role === 'Admin') && !roles.includes('administrator')) {
           roles.push('administrator');
-        } else if (!roles.includes('provider-relations-coordinator')) {
-          roles.push('provider-relations-coordinator');
+        } else if (!roles.includes('provider-relations-data-coordinator')) {
+          roles.push('provider-relations-data-coordinator');
         }
       });
     } else if (auth0User.app_metadata?.role) {
@@ -154,8 +154,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // If no roles found, default to provider-relations-coordinator
     if (roles.length === 0) {
-      console.log('No roles found, defaulting to provider-relations-coordinator');
-      roles.push('provider-relations-coordinator');
+      console.log('No roles found, defaulting to provider-relations-data-coordinator');
+      roles.push('provider-relations-data-coordinator');
     }
 
     console.log('Available roles:', roles);
@@ -230,7 +230,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(authUser);
 
         // Set permissions based on active role
-        const permissions = ROLE_PERMISSIONS[activeRole] || [];
+        const permissions = ROLE_PERMISSIONS[activeRole] || ROLE_PERMISSIONS['provider-relations-data-coordinator'] || [];
         setUserPermissions(permissions);
 
         console.log('Auth0 login successful, user set:', authUser);
@@ -300,14 +300,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         firstName,
         lastName,
         email,
-        role: 'provider-relations-coordinator',
+        role: 'provider-relations-data-coordinator',
         isEmailVerified: true,
         createdAt: new Date().toISOString()
       };
       setMockUser(mockUser);
       setUser(mockUser);
-      setAvailableRoles(['provider-relations-coordinator']);
-      setUserPermissions(ROLE_PERMISSIONS['provider-relations-coordinator']);
+      setAvailableRoles(['provider-relations-data-coordinator']);
+      setUserPermissions(ROLE_PERMISSIONS['provider-relations-data-coordinator']);
       setUseMockAuth(true);
       return;
     }
