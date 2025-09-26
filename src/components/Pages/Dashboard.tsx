@@ -37,7 +37,7 @@ export function Dashboard() {
       description: 'from last month'
     },
     {
-      title: 'New This Month',
+      title: 'Total RF-HCPs MTD',
       value: '156',
       change: '+8%',
       changeType: 'positive' as const,
