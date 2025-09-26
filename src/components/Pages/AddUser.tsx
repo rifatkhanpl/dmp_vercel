@@ -35,7 +35,7 @@ export function AddUser() {
     lastName: '',
     email: '',
     phone: '',
-    role: 'provider-relations-coordinator',
+    role: 'hcp-data-coordinator',
     department: 'Provider Relations',
     location: '',
     password: '',
@@ -358,7 +358,7 @@ export function AddUser() {
                       errors.role ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
                     }`}
                   >
-                    <option value="provider-relations-data-coordinator">Provider Relations Data Coordinator</option>
+                    <option value="hcp-data-coordinator">HCP Data Coordinator</option>
                     <option value="administrator">Administrator</option>
                   </select>
                   {errors.role && (

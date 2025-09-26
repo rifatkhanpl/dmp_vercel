@@ -76,7 +76,7 @@ export function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
                       }`}
                     >
                       <span className="capitalize">
-                        {role === 'provider-relations-data-coordinator' ? 'Provider Relations Data Coordinator' : 'Administrator'}
+                        {role === 'hcp-data-coordinator' ? 'HCP Data Coordinator' : 'Administrator'}
                       </span>
                       {user.role === role && (
                         <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Active</span>
@@ -107,7 +107,7 @@ export function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                       isAdmin ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
                     }`}>
-                      {user.role === 'provider-relations-data-coordinator' ? 'PROVIDER RELATIONS DATA COORDINATOR' : 'ADMINISTRATOR'}
+                      {user.role === 'hcp-data-coordinator' ? 'HCP DATA COORDINATOR' : 'ADMINISTRATOR'}
                     </span>
                   </p>
                 </div>

@@ -100,7 +100,7 @@ export function AdminUserSettings() {
     title: selectedUser?.title || '',
     bio: selectedUser?.bio || '',
     location: selectedUser?.location || '',
-    role: selectedUser?.role || 'provider-relations-coordinator',
+    role: selectedUser?.role || 'hcp-data-coordinator',
     status: selectedUser?.status || 'active',
     department: selectedUser?.department || '',
     employeeId: selectedUser?.employeeId || '',
@@ -579,7 +579,7 @@ export function AdminUserSettings() {
                         rows={3}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Brief description about the user..."
-                        maxLength={500}
+                        <option value="hcp-data-coordinator">HCP Data Coordinator</option>
                       />
                     ) : (
                       <p className="text-sm text-gray-900">{selectedUser.bio || 'No bio provided'}</p>

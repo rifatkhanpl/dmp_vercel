@@ -30,7 +30,7 @@ export function UserSettings() {
     { id: '5', type: 'subspecialty', name: 'Cardiology', category: 'Internal Medicine' },
     { id: '6', type: 'state', name: 'California' },
     { id: '7', type: 'state', name: 'New York' },
-  ]);
+    title: 'HCP Data Coordinator',
 
   const [newAssignment, setNewAssignment] = useState({
     type: 'profession' as 'profession' | 'specialty' | 'subspecialty' | 'state',
