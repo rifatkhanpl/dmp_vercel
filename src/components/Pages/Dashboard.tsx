@@ -86,7 +86,7 @@ export function Dashboard() {
       color: 'purple'
     },
     {
-      title: 'View Reports',
+      title: 'View RF-HCP Reports',
       description: 'Generate analytics and performance reports',
       icon: BarChart3,
       href: '/analytics',
