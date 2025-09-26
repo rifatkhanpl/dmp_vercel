@@ -45,7 +45,7 @@ export function Dashboard() {
       description: 'from last month'
     },
     {
-      title: 'Pending Verification',
+      title: 'Total RF-HCPs WTD',
       value: '23',
       change: '-5%',
       changeType: 'negative' as const,
