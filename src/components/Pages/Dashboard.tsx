@@ -223,7 +223,7 @@ export function Dashboard() {
                     </div>
                     <div className="flex-1">
                       <h3 className="font-medium text-gray-900 group-hover:text-blue-600">
-                        Import RF-HCPs
+                        {action.title}
                       </h3>
                       <p className="text-sm text-gray-500 mt-1">{action.description}</p>
                     </div>
