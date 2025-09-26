@@ -72,7 +72,7 @@ export function AdminDashboard() {
 
   const adminCards = [
     { title: 'User Management',  description: 'Manage users, roles, and permissions', icon: Users,    link: '/user-management',  color: 'bg-blue-500' },
-    { title: 'Add New User',     description: 'Create new user accounts',            icon: UserPlus, link: '/add-user',          color: 'bg-green-500' },
+    { title: 'Add RF-HCP',       description: 'Create new Resident/Fellow Healthcare Provider accounts', icon: UserPlus, link: '/add-user', color: 'bg-green-500' },
     { title: 'System Settings',  description: 'Configure system-wide settings',      icon: Settings, link: '/user-settings',     color: 'bg-gray-600' },
     { title: 'Analytics Dashboard', description: 'View system analytics and metrics', icon: BarChart, link: '/analytics',         color: 'bg-purple-500' },
     { title: 'Bulk Operations',  description: 'Import and manage bulk data',         icon: Database, link: '/bulk-import',       color: 'bg-indigo-500' },

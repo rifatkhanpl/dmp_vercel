@@ -346,7 +346,7 @@ export function UserManagement() {
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 <UserPlus className="h-4 w-4" />
-                <span>Add User</span>
+                <span>Add RF-HCP</span>
               </a>
             </div>
           </div>
