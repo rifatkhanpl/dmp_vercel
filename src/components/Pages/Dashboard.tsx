@@ -29,7 +29,7 @@ export function Dashboard() {
   // Mock data for dashboard
   const stats = [
     {
-      title: 'Total RF-HCPs YTD',
+      title: 'RF-HCPs YTD',
       value: '2,847',
       change: '+12%',
       changeType: 'positive' as const,
@@ -37,7 +37,7 @@ export function Dashboard() {
       description: 'from last month'
     },
     {
-      title: 'Total RF-HCPs MTD',
+      title: 'RF-HCPs MTD',
       value: '156',
       change: '+8%',
       changeType: 'positive' as const,
@@ -45,7 +45,7 @@ export function Dashboard() {
       description: 'from last month'
     },
     {
-      title: 'Total RF-HCPs WTD',
+      title: 'RF-HCPs WTD',
       value: '23',
       change: '-5%',
       changeType: 'negative' as const,
