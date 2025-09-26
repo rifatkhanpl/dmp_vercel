@@ -71,8 +71,8 @@ export function Dashboard() {
       color: 'blue'
     },
     {
-      title: 'Bulk Import',
-      description: 'Import multiple providers from CSV or Excel',
+      title: 'RF-HCP Import',
+      description: 'With URL or Copy/Paste.',
       icon: Upload,
       href: '/bulk-import',
       color: 'green'
