@@ -29,7 +29,7 @@ export function Dashboard() {
   // Mock data for dashboard
   const stats = [
     {
-      title: 'Total Providers',
+      title: 'Total RF-HCPs YTD',
       value: '2,847',
       change: '+12%',
       changeType: 'positive' as const,
