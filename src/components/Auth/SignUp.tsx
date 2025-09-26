@@ -25,7 +25,10 @@ export function SignUp() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <a href="/" className="text-blue-600 hover:text-blue-700 transition-colors">
-            <h1 className="text-4xl font-bold mb-2">PracticeLink RF-DMP</h1>
+            <h1 className="text-4xl font-bold mb-2">
+              PracticeLink<br />
+              <span className="text-blue-600">RF-DMP</span>
+            </h1>
           </a>
           <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
           <p className="mt-2 text-sm text-gray-600">

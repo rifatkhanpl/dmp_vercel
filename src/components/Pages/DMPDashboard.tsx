@@ -166,10 +166,10 @@ export function DMPDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Residents/Fellows Data Management Platform
+                Residents & Fellows Data Management Platform
               </h1>
               <p className="text-gray-600 mt-1">
-                Internal residents/fellows data collection and validation for PracticeLink Universal Data Bank
+                Internal residents & fellows data collection and validation for PracticeLink Universal Data Bank
               </p>
             </div>
             <div className="flex items-center space-x-3">
