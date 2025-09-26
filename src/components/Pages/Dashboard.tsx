@@ -165,7 +165,7 @@ export function Dashboard() {
                 Welcome back, {user?.firstName}!
               </h1>
               <p className="text-gray-600 mt-1">
-                Here's what's happening with the Residents & Fellows Data Management Portal today!
+                Here's what's happening with the Resident & Fellow Data Management Portal today!
               </p>
             </div>
             <div className="text-right">
