@@ -29,41 +29,6 @@ export function Dashboard() {
   const [timeRange, setTimeRange] = useState('month');
 
   // Mock data for dashboard
-  const stats = [
-    {
-      title: 'HCP-Rs YTD',
-      value: '2,847',
-      change: '+12%',
-      changeType: 'positive' as const,
-      icon: Users,
-      description: 'from last month'
-    },
-    {
-      title: 'HCP-Rs MTD',
-      value: '156',
-      change: '+8%',
-      changeType: 'positive' as const,
-      icon: UserPlus,
-      description: 'from last month'
-    },
-    {
-      title: 'HCP-Rs WTD',
-      value: '23',
-      change: '-5%',
-      changeType: 'negative' as const,
-      icon: Clock,
-      description: 'from last month'
-    },
-    {
-      title: 'HCP-Rs in WIP',
-      value: '2,824',
-      change: '+15%',
-      changeType: 'positive' as const,
-      icon: CheckCircle,
-      description: 'from last month'
-    }
-  ];
-
   const gmeStats = [
     {
       title: 'GME-R Programs YTD',
@@ -108,6 +73,41 @@ export function Dashboard() {
       icon: Activity,
       description: 'from last month',
       yoyDescription: 'vs last year'
+    }
+  ];
+
+  const stats = [
+    {
+      title: 'HCP-Rs YTD',
+      value: '2,847',
+      change: '+12%',
+      changeType: 'positive' as const,
+      icon: Users,
+      description: 'from last month'
+    },
+    {
+      title: 'HCP-Rs MTD',
+      value: '156',
+      change: '+8%',
+      changeType: 'positive' as const,
+      icon: UserPlus,
+      description: 'from last month'
+    },
+    {
+      title: 'HCP-Rs WTD',
+      value: '23',
+      change: '-5%',
+      changeType: 'negative' as const,
+      icon: Clock,
+      description: 'from last month'
+    },
+    {
+      title: 'HCP-Rs in WIP',
+      value: '2,824',
+      change: '+15%',
+      changeType: 'positive' as const,
+      icon: CheckCircle,
+      description: 'from last month'
     }
   ];
 
@@ -275,34 +275,6 @@ export function Dashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-start justify-between h-full">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                    <div className="flex items-center mt-2">
-                      <span className={`text-sm font-medium ${
-                        stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {stat.change}
-                      </span>
-                      <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
-                    </div>
-                  </div>
-                  <div className={`p-3 rounded-full ${getIconColorClasses('blue')} flex-shrink-0 ml-4`}>
-                    <Icon className="h-6 w-6" />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* GME-R Programs Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {gmeStats.map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -331,6 +303,34 @@ export function Dashboard() {
                     </div>
                   </div>
                   <div className={`p-3 rounded-full ${getIconColorClasses('purple')} flex-shrink-0 ml-4`}>
+                    <Icon className="h-6 w-6" />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* HCP-Rs Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
+                <div className="flex items-start justify-between h-full">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                    <div className="flex items-center mt-2">
+                      <span className={`text-sm font-medium ${
+                        stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {stat.change}
+                      </span>
+                      <span className="text-sm text-gray-500 ml-1">{stat.description}</span>
+                    </div>
+                  </div>
+                  <div className={`p-3 rounded-full ${getIconColorClasses('blue')} flex-shrink-0 ml-4`}>
                     <Icon className="h-6 w-6" />
                   </div>
                 </div>
