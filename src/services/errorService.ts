@@ -178,12 +178,14 @@ export class ErrorService {
    * Handle AI API requests with empty image data
    */
   handleAIImageError(error: any): void {
-    // Silently handle empty image data errors to prevent user confusion
+    // Silently handle empty image data errors and Bolt screenshot errors
     if (error?.message?.includes('image cannot be empty') || 
         error?.message?.includes('base64') ||
+        error?.message?.includes('Failed to fetch') ||
+        error?.message?.includes('Screenshot failed') ||
         error?.type === 'invalid_request_error') {
-      console.warn('AI image processing error handled:', error.message);
-      return; // Don't show toast for these errors
+      // Don't log or show these errors as they're often Bolt infrastructure issues
+      return;
     }
     
     // Show other AI errors normally

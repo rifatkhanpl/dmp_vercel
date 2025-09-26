@@ -196,8 +196,7 @@ export class SecurityUtils {
    * Intercept and block invalid AI API requests
    */
   static interceptAIRequests() {
-    // Note: AI request interception disabled to prevent interference with Bolt's screenshot functionality
-    // The empty image error handling is now done at the service level instead
-    console.log('AI request interception disabled to preserve Bolt functionality');
+    // Completely disabled to prevent any interference with Bolt's screenshot functionality
+    // All error handling is done at the service level to avoid blocking Bolt's internal operations
   }
 }
