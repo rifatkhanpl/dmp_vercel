@@ -78,7 +78,6 @@ export function Dashboard() {
       color: 'green'
     },
     {
-      title: 'Search RF-HCP-WIP',
       title: 'Search RF-HCPs WIP',
       description: 'Find and manage RF-HCPs in process.',
       icon: Search,
