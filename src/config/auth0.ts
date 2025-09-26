@@ -11,7 +11,7 @@ export const auth0Config = {
 
 export const ROLES = {
   ADMIN: 'administrator',
-  USER: 'provider-relations-data-coordinator',
+  USER: 'hcp-data-coordinator',
 } as const;
 
 export const ROLE_PERMISSIONS = {
@@ -23,7 +23,7 @@ export const ROLE_PERMISSIONS = {
     'manage:templates',
     'manage:bulk_operations',
   ],
-  ['provider-relations-data-coordinator']: [
+  ['hcp-data-coordinator']: [
     'view:dashboard',
     'manage:own_profile',
     'create:registrations',

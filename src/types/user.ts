@@ -1,4 +1,4 @@
-export type UserRole = 'provider-relations-data-coordinator' | 'administrator';
+export type UserRole = 'hcp-data-coordinator' | 'administrator';
 
 export type UserStatus = 'active' | 'inactive' | 'pending' | 'suspended';
 
