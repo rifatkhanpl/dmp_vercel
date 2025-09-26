@@ -29,8 +29,7 @@ export function UserSettings() {
     { id: '4', type: 'specialty', name: 'Emergency Medicine', category: 'Hospital-Based' },
     { id: '5', type: 'subspecialty', name: 'Cardiology', category: 'Internal Medicine' },
     { id: '6', type: 'state', name: 'California' },
-    { id: '7', type: 'state', name: 'New York' },
-  ]);
+    { id: '7', type: 'state', name: 'New York' }
   ]);
 
   const [newAssignment, setNewAssignment] = useState({
