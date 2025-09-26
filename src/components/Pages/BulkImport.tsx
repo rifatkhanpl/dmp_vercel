@@ -557,7 +557,7 @@ export function BulkImport() {
             {/* Header */}
             <div className="bg-white rounded-lg shadow-sm p-6 flex items-start justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">Bulk Import Healthcare Providers</h1>
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">Bulk Import Residents/Fellows</h1>
                 <p className="text-gray-600">
                   Import via CSV/Excel or let AI parse residents/fellows from text or URLs.
                 </p>

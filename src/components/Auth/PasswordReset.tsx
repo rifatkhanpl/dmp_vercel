@@ -165,7 +165,7 @@ export function PasswordReset() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-blue-600 mb-2">PracticeLink</h1>
-          <p className="text-sm text-gray-600 mb-8">Career Management Platform</p>
+          <p className="text-sm text-gray-600 mb-8">RF-DMP</p>
           <h2 className="text-2xl font-bold text-gray-900">Reset Your Password</h2>
           <p className="mt-2 text-sm text-gray-600">
             Enter your new password below

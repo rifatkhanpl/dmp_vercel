@@ -165,7 +165,7 @@ export function Dashboard() {
                 Welcome back, {user?.firstName}!
               </h1>
               <p className="text-gray-600 mt-1">
-                Here's what's happening with the HCP-DMP today!
+                Here's what's happening with the RF-DMP today!
               </p>
             </div>
             <div className="text-right">

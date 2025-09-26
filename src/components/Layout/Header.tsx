@@ -40,7 +40,7 @@ export function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) {
             <Home className="h-8 w-8" />
             <div>
               <h1 className="text-xl font-bold">PracticeLink</h1>
-              <p className="text-xs text-gray-500 hidden sm:block">Data Management Portal</p>
+              <p className="text-xs text-gray-500 hidden sm:block">RF-DMP</p>
             </div>
           </a>
         </div>
