@@ -25,7 +25,8 @@ import {
   User,
   Star,
   Trophy,
-  Briefcase
+  Briefcase,
+  Shield
 } from 'lucide-react';
 
 export function Dashboard() {
