@@ -346,6 +346,32 @@ export function Dashboard() {
           </div>
         </div>
 
+        {/* Admin Dashboard Link - Only show for administrators */}
+        {user?.role === 'administrator' && (
+          <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-sm p-6 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
+                  <Shield className="h-8 w-8 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold mb-1">Admin Dashboard</h2>
+                  <p className="text-purple-100">
+                    Access system-wide analytics, user management, and administrative tools
+                  </p>
+                </div>
+              </div>
+              <a
+                href="/admin"
+                className="flex items-center space-x-2 px-6 py-3 bg-white text-purple-600 rounded-lg hover:bg-purple-50 transition-colors font-medium"
+              >
+                <Shield className="h-5 w-5" />
+                <span>Go to Admin Dashboard</span>
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* Performance Summary Card */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-sm p-6 text-white">
           <div className="flex items-center justify-between">
